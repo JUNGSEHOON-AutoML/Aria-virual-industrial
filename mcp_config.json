@@ -1,0 +1,44 @@
+{
+  "mcpDetectors": [],
+  "mcpServers": {
+    "filesystem": {
+      "command": "python",
+      "args": ["aria/mcp/servers/filesystem_mcp.py"],
+      "env": {}
+    },
+    "system": {
+      "command": "python",
+      "args": ["aria/mcp/servers/system_mcp.py"],
+      "env": {}
+    },
+    "database": {
+      "command": "python",
+      "args": ["aria/mcp/servers/database_mcp.py"],
+      "env": {}
+    },
+    "huggingface": {
+      "command": "python",
+      "args": ["aria/mcp/servers/huggingface_mcp.py"],
+      "env": {
+        "HUGGINGFACE_TOKEN": "${HUGGINGFACE_TOKEN}"
+      }
+    }
+  },
+  "_disabled_servers": {},
+  "models": {
+    "chat_ko": "qwen2.5:14b",
+    "chat_fallback": "llama3.1",
+    "reasoning": "deepseek-r1:8b",
+    "code": "qwen2.5-coder:14b",
+    "vision": "qwen2.5vl:7b",
+    "anomaly": "ccifps"
+  },
+  "safety": {
+    "shell_policy": "whitelist-only commands via system-mcp",
+    "web_policy": "localhost/127.0.0.1 only",
+    "require_approval_for": [
+      "delete_file", "write_file"
+    ],
+    "failsafe_enabled": true
+  }
+}

@@ -1,0 +1,8 @@
+{
+  "product_id": "peach",
+  "name": "peach",
+  "good_images_dir": "/userHome/userhome4/sehoon/CMDIAD-main/datasets/mvtec_3d/peach/train/good",
+  "n_images": 100,
+  "backbone": "dino_vit_b8",
+  "enrolled_at": "2026-06-05T00:57:02.634551"
+}

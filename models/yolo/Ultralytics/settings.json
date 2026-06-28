@@ -1,0 +1,21 @@
+{
+  "settings_version": "0.0.6",
+  "datasets_dir": "/userHome/userhome4/sehoon/Agentic-CCIFPS-main/datasets",
+  "weights_dir": "weights",
+  "runs_dir": "runs",
+  "uuid": "6400b7851bd2493920599d597c0e8886927ef95d0b952a68274a19b7d55aaac3",
+  "sync": true,
+  "api_key": "",
+  "openai_api_key": "",
+  "clearml": true,
+  "comet": true,
+  "dvc": true,
+  "hub": true,
+  "mlflow": true,
+  "neptune": true,
+  "raytune": true,
+  "tensorboard": false,
+  "wandb": false,
+  "vscode_msg": true,
+  "openvino_msg": true
+}

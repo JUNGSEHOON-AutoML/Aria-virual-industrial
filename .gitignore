@@ -1,0 +1,66 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+dist/
+build/
+*.egg
+
+# Model weights & large files
+*.pt
+*.pth
+*.onnx
+*.safetensors
+*.bin
+*.h5
+
+# Data & downloads
+data/
+downloads/
+datasets/
+heatmaps/
+outputs/
+results/
+uploads/
+*.png
+*.jpg
+*.jpeg
+# 로고/UI 에셋은 추적 허용
+!static/images/*.png
+!static/images/*.jpg
+
+
+# Env
+.env
+*.log
+.vscode/
+.idea/
+
+# Conda/venv
+venv/
+.conda/
+
+# MCP servers (keep code, exclude cache)
+aria/mcp/servers/__pycache__/
+
+# Agent bridge (runtime)
+agent_bridge/*.json
+
+# Chat histories (runtime)
+chat_histories/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Memory banks (large)
+ccifps_banks/
+*.npy
+skills/ccifps_vision/memory_bank.npy
+
+# Scratch directories
+scratch/
+Desktop/
+~/
+*.db

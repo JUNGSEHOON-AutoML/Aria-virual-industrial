@@ -1,0 +1,8 @@
+{
+  "product_id": "cable_gland",
+  "name": "cable_gland",
+  "good_images_dir": "/userHome/userhome4/sehoon/CMDIAD-main/datasets/mvtec_3d/cable_gland/train/good",
+  "n_images": 100,
+  "backbone": "dino_vit_b8",
+  "enrolled_at": "2026-06-05T00:56:31.405636"
+}
