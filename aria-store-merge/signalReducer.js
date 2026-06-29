@@ -15,12 +15,6 @@ export const initialState = {
   training: null,              // 최신 training 이벤트
   joints: null,                // joint_state.joints
   messages: [],                // {ts, kind, text}
-  liveCategory: null,          // 현재 가동 중인 검사 클래스(시편 형상 결정)
-  // ── Agentic 유지보수 트윈(Spec 2) ──
-  agent: { task: 'IDLE', targetAssetId: null },   // task: IDLE|MOVING|REPAIRING
-  approvals: [],               // {id, assetId, action, actionLabel, status:'pending|approved|rejected', ts}
-  episodes: [],                // {ts, event, assetId, action, approval, result}
-  detections: [],              // yolo_detection — 순찰 로봇 YOLO 동적 탐지(실 WS만)
 }
 
 // 메시지 1건 → 상태 부분 패치(없으면 null). 순수 함수.
@@ -46,12 +40,6 @@ export function applyMessage(state, msg) {
 
     case 'class_result':
       return { lines: { ...state.lines, [msg.classId]: msg } }
-
-    case 'yolo_detection': {
-      // 순찰 로봇 YOLO 동적 탐지 — 실 WS 수신만(클라 위조 없음). 최근 12건 유지.
-      const det = { ...msg, _rx: Date.now() }
-      return { detections: [det, ...state.detections].slice(0, 12) }
-    }
 
     case 'agent_status':
       return { agents: { ...state.agents, [msg.agent]: { state: msg.state, detail: msg.detail } } }

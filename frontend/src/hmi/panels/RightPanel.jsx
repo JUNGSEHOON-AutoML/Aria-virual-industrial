@@ -6,6 +6,7 @@ import { classSamples } from '../../api/apiClient'
 import { DATA_ROOT } from '../sceneModel'
 import { useUiMode } from '../uiMode'
 import { deriveAssets, statusColor, statusKo, faultyAssets } from '../scene/assetModel'
+import { buildVlmReport } from '../scene/vlmReport'
 
 // 시뮬 지표 갱신용 — 1초마다 리렌더
 function useTick(ms = 1000) {
@@ -226,6 +227,37 @@ function ScanResult() {
           )}
         </Box>
       )}
+
+      {/* VLM 분석 — 가설+신뢰도(확인 요망), 원인 단정 금지 (명세 §4) */}
+      <VlmSection scan={scan} />
+    </Box>
+  )
+}
+
+// ── VLM 분석 섹션 (관측/추정원인/권장조치) ─────────────────────────────
+function VlmSection({ scan, mock = false }) {
+  const r = buildVlmReport(scan, mock)
+  return (
+    <Box sx={{ mt: 1, pt: 1, borderTop: '1px solid rgba(255,255,255,0.06)' }}>
+      <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.7, mb: 0.5 }}>
+        <Typography sx={head}>VLM 분석</Typography>
+        {r.placeholder && <Typography sx={{ fontSize: 8, color: '#a78b4b' }}>placeholder</Typography>}
+      </Box>
+      <Typography sx={{ fontSize: 11, color: '#cbd5e1', lineHeight: 1.5 }}>
+        <span style={{ color: '#6b7280' }}>관측 · </span>{r.observation}
+      </Typography>
+      {r.cause ? (
+        <Typography sx={{ fontSize: 11, lineHeight: 1.5, mt: 0.4 }}>
+          <span style={{ color: '#6b7280' }}>추정 원인 · </span>
+          <span style={{ color: '#facc15' }}>{r.cause.text}</span>
+          <span style={{ color: '#9aa0aa' }}> (신뢰도 {r.cause.confidence.toFixed(2)} · {r.cause.note})</span>
+        </Typography>
+      ) : (
+        <Typography sx={{ fontSize: 11, color: '#34d399', mt: 0.4 }}>추정 원인 · 해당 없음(정상)</Typography>
+      )}
+      <Typography sx={{ fontSize: 11, color: '#cbd5e1', lineHeight: 1.5, mt: 0.4 }}>
+        <span style={{ color: '#6b7280' }}>권장 조치 · </span>{r.action}
+      </Typography>
     </Box>
   )
 }

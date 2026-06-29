@@ -35,11 +35,10 @@ function YieldCard({ yieldRate }) {
   const pct = Math.round((yieldRate ?? 0) * 100)
   const delta = pct - 90
   const color = pct >= 90 ? '#34d399' : pct >= 80 ? '#facc15' : '#f87171'
+  // 명세 G2: "목표 90% 대비 -40%p (경고)" 형식 — delta 수치 항상 표기
   const ctxLabel = delta >= 0
-    ? `목표(90%) 달성 +${delta}%p`
-    : delta >= -10
-      ? `수율 경고: 목표(90%) 대비 낮음`
-      : `수율 위험: 목표(90%) 대비 -${Math.abs(delta)}%p`
+    ? `목표 90% 대비 +${delta}%p`
+    : `목표 90% 대비 ${delta}%p (${delta < -10 ? '위험' : '경고'})`
   return (
     <Paper elevation={0} sx={{ flex: '0 0 auto', minWidth: 130, px: 2, py: 1,
       bgcolor: 'rgba(255,255,255,0.04)', borderRadius: 2 }}>

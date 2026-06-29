@@ -42,15 +42,8 @@ export const useSignalStore = create((set, get) => ({
     try { const r = await mvtecScan(DATA_ROOT); if (r?.ok) set({ classes: r.classes || [] }) } catch {}
   },
 
-  // ── Agentic 유지보수 트윈(Spec 2) — Simulate-then-Approve ──
-  setAgent: (patch) => set((s) => ({ agent: { ...s.agent, ...patch } })),
-  addApproval: (req) => set((s) => ({ approvals: [req, ...s.approvals].slice(0, 50) })),
-  resolveApproval: (id, status) => set((s) => ({
-    approvals: s.approvals.map((a) => (a.id === id ? { ...a, status } : a)) })),
-  logEpisode: (ep) => set((s) => ({ episodes: [ep, ...s.episodes].slice(0, 200) })),
-
   // ── API 액션 (apiClient 래핑 — UI는 이것만 호출) ──
-  startNode: (opts) => { if (opts?.category) set({ liveCategory: opts.category }); return inspectorStart(opts) },
+  startNode: (opts) => inspectorStart(opts),
   stopNode: () => inspectorStop(),
   setLatency: (o) => inspectorSetLatency(o),
   trainClass: (c, p) => classTrain(c, p),

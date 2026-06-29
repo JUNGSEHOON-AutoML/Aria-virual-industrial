@@ -11,6 +11,20 @@ export const ASSET_DEFS = [
   { id: 'conveyor_motor', name: '컨베이어 모터', kind: 'motor',  labelPos: [2.0, 1.45, 0.0] },
 ]
 
+// 아바타 이동 목표(지면 좌표) — 각 설비 앞. 라벨 위치 아래.
+export const ASSET_GROUND = {
+  robot_arm:      [-6.2, 0, 2.0],
+  vision_camera:  [0.0, 0, 1.6],
+  conveyor_motor: [2.0, 0, 1.6],
+}
+
+// 설비 → 권고 실 액션(승인 게이트 통과 시 /api 호출). 모두 기존 액션만.
+export const ASSET_ACTION = {
+  robot_arm:      { id: 'inspector_restart', label: '로봇 재동기화' },
+  vision_camera:  { id: 'inspector_restart', label: '카메라 재교정' },
+  conveyor_motor: { id: 'inspector_restart', label: '모터 재시작' },
+}
+
 const STATUS_COLOR = { Running: '#34d399', Idle: '#9aa0aa', Warning: '#facc15', Error: '#f87171' }
 const STATUS_KO    = { Running: '가동 중', Idle: '대기', Warning: '경고', Error: '오류' }
 export const statusColor = s => STATUS_COLOR[s] || '#9aa0aa'

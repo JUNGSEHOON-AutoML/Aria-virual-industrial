@@ -1,7 +1,7 @@
 // QCLine — 공정 충실 검사 라인 씬 (V1→V3)
 // InfeedSource → RollerConveyor → VisionBooth → Diverter → OK/NG Bin + StackLight
 // 부품 흐름은 flowEngine(순수 JS), 판정 분기는 inspector_result.verdict(signalStore)
-import { useRef, useState, useMemo } from 'react'
+import { useRef, useState, useMemo, useEffect } from 'react'
 import { useFrame } from '@react-three/fiber'
 import { Text, Html } from '@react-three/drei'
 import { useSignalStore } from '../signalStore'
@@ -16,6 +16,9 @@ import Diverter from './prefabs/Diverter'
 import SortBin from './prefabs/SortBin'
 import StackLight from './prefabs/StackLight'
 import RobotArm from './prefabs/RobotArm'
+import InspectionSpecimen from './InspectionSpecimen'
+import WorkerAgent from './WorkerAgent'
+import PatrolRobot from './PatrolRobot'
 
 const CHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789 ·_-%.:/|·'
 
@@ -117,9 +120,9 @@ function Structure({ environment }) {
   const floorTex = useMemo(() => makeFloorTexture(), [])
   return (
     <group>
-      {/* 바닥 — 산업 텍스처(절차적 캔버스) */}
-      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0.5, -0.01, 0]} receiveShadow>
-        <planeGeometry args={[24, 8]} />
+      {/* 바닥 — 거대 공장 스케일(Prompt 2) */}
+      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.01, 0]} receiveShadow>
+        <planeGeometry args={[110, 70]} />
         <meshStandardMaterial map={floorTex} color={floorColor}
           metalness={0.12} roughness={0.86} />
       </mesh>
@@ -153,24 +156,37 @@ function Structure({ environment }) {
   )
 }
 
-export default function QCLine({ environment = 'control_room' }) {
+export default function QCLine({ environment = 'control_room', onOpenPiP }) {
   const engineRef = useRef()
   if (!engineRef.current) engineRef.current = createQCFlowEngine()
   const engine = engineRef.current
 
   const kpi = useSignalStore(selectKpi)
   const scan = useSignalStore(selectScan)
+  const wsStatus = useSignalStore(s => s.wsStatus)
+  const connected = wsStatus === 'open'
 
   const [, force] = useState(0)
   const acc = useRef(0)
   // G3: NG 점멸용 — useFrame에서 매 프레임 갱신, 리렌더는 0.06s 간격
   const blinkRef = useRef(1)
   const nowRef = useRef(0)   // 설비 시뮬 지표용 시간(ms)
+  const lastPart = useRef(null)
+
+  // Prompt 1: 실 inspector_result 1건 → 부품 1개 스폰(랜덤 없음)
+  useEffect(() => {
+    if (scan && scan.part_id && scan.part_id !== lastPart.current) {
+      lastPart.current = scan.part_id
+      engine.spawnFromResult(scan)
+    }
+  }, [scan, engine])
 
   useFrame(({ clock }, dt) => {
+    // 백엔드 연결 끊기면 씬 애니메이션 정지(freeze) — 시늉 방지
+    if (!connected) return
     nowRef.current = clock.getElapsedTime() * 1000
     blinkRef.current = Math.sin(clock.getElapsedTime() * Math.PI * 3) > 0 ? 1.0 : 0.15
-    engine.tick(dt * 1000, scan)
+    engine.tick(dt * 1000)
     acc.current += dt
     if (acc.current > 0.06) { acc.current = 0; force(n => (n + 1) % 999999) }
   })
@@ -206,6 +222,15 @@ export default function QCLine({ environment = 'control_room' }) {
       {/* 비전 부스 */}
       <VisionBooth position={[0, 0, 0]} boothDwelling={isInspecting} />
 
+      {/* 검사 시편(클릭→스캔→Decal) + 카메라 노드(클릭→PiP) — 명세 A·B·C */}
+      <InspectionSpecimen position={[0, H + 0.15, 0]} onTrigger={onOpenPiP} />
+      <mesh position={[0, 1.46, 0]} onClick={(e) => { e.stopPropagation(); onOpenPiP?.() }}
+        onPointerOver={() => (document.body.style.cursor = 'pointer')}
+        onPointerOut={() => (document.body.style.cursor = 'default')}>
+        <sphereGeometry args={[0.12, 18, 18]} />
+        <meshStandardMaterial color="#1FB8CD" emissive="#1FB8CD" emissiveIntensity={0.85} />
+      </mesh>
+
       {/* Andon 신호탑 */}
       <StackLight position={[0.6, 0, -1.55]}
         running={true}
@@ -233,6 +258,21 @@ export default function QCLine({ environment = 'control_room' }) {
       {/* 설비 상태 HTML 오버레이 라벨 (CCTV 관제) */}
       {assets.map(a => <AssetLabel key={a.id} asset={a} />)}
 
+      {/* 유지보수 에이전트 아바타 (Spec 2) */}
+      <WorkerAgent />
+
+      {/* Prompt 2: 병렬 컨베이어 행(거대 공장 느낌) — 후방 2개 데코 라인 */}
+      {[-6, -11].map((z, i) => (
+        <group key={`pl-${i}`} position={[0, 0, z]}>
+          <RollerConveyor length={20} width={0.95} position={[0, H - 0.06, 0]} running={lineRunning} speed={0.5} />
+          <InfeedSource position={[-10.5, 0, 0]} />
+          <SortBin position={[10.6, 0, 0]} kind="OK" count={0} />
+        </group>
+      ))}
+
+      {/* Prompt 2·3: 순찰 로봇 개(웨이포인트 순찰 + 시야 프러스텀 + YOLO 3D 매핑) */}
+      <PatrolRobot />
+
       {/* 전광판 */}
       <ScoreBoard scan={scan} counts={counts} />
 
@@ -247,10 +287,11 @@ export default function QCLine({ environment = 'control_room' }) {
           : p.verdict === 'OK' ? 0.28
           : 0.06
         return (
-          <mesh key={p.id} position={pos} castShadow>
-            <boxGeometry args={[0.19, 0.19, 0.19]} />
+          // 금속 프록시 부품(실린더, metalness 0.8) — 단순 큐브 폐기(명세 §1)
+          <mesh key={p.id} position={pos} rotation={[Math.PI / 2, 0, 0]} castShadow>
+            <cylinderGeometry args={[0.10, 0.10, 0.20, 16]} />
             <meshStandardMaterial color={col} emissive={col} emissiveIntensity={emissI}
-              metalness={0.38} roughness={0.52} />
+              metalness={0.8} roughness={0.3} />
           </mesh>
         )
       })}

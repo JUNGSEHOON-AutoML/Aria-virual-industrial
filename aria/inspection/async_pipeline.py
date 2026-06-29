@@ -290,10 +290,18 @@ class AsyncPipeline:
             )
             with self._results_lock:
                 self._results.append(res)
+            # 2D↔3D 시각화 보강(표현 레이어, 추론 불변) — image/heatmap/peak. 실패해도 무시.
+            extra = {}
+            try:
+                from aria.inspection.result_encode import enrich_result
+                extra = enrich_result(frame.image, heatmap)
+            except Exception:
+                extra = {}
             self._emit({
                 "type": "result", "part_id": res.part_id, "verdict": res.verdict,
                 "score": res.score, "tau": res.tau, "latency_ms": res.latency_ms,
                 "defect_class": res.defect_class, "bbox": res.bbox, "ts": res.ts,
+                **extra,
             })
 
     def _emit(self, msg: dict):

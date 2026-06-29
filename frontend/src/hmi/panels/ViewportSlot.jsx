@@ -5,6 +5,9 @@ import { useState } from 'react'
 import { Canvas } from '@react-three/fiber'
 import { OrbitControls, Grid, Environment, Lightformer } from '@react-three/drei'
 import QCLine from '../scene/QCLine'
+import VisionPiP from './VisionPiP'
+import ApprovalGate from './ApprovalGate'
+import MaintenanceController from '../scene/MaintenanceController'
 import { useSignalStore } from '../signalStore'
 import { selectScan, selectKpi } from '../signalReducer'
 
@@ -78,8 +81,12 @@ const chipActive = {
 
 export default function ViewportSlot() {
   const [env, setEnv] = useState('control_room')
+  const [pip, setPip] = useState(false)
+  const [pipData, setPipData] = useState(null)   // 시편 클릭 시 viz override
   const scan = useSignalStore(selectScan)
   const kpi = useSignalStore(selectKpi)
+  const wsStatus = useSignalStore(s => s.wsStatus)
+  const disconnected = wsStatus !== 'open'
 
   const bgColor = env === 'planner' ? '#dce4ee' : '#0d1320'
 
@@ -96,23 +103,55 @@ export default function ViewportSlot() {
         <Lights environment={env} />
         {env === 'control_room' && <FactoryEnv />}
 
-        {/* CCTV 관제용 그리드 — 두 환경 모두 (planner=밝게 / ctrl=은은하게) */}
-        <Grid infiniteGrid position={[0.5, 0.001, 0]}
-          cellSize={0.5} sectionSize={2}
-          cellColor={env === 'planner' ? '#a8b4c0' : '#26344a'}
-          sectionColor={env === 'planner' ? '#7a8898' : '#3a4f6e'}
-          fadeDistance={env === 'planner' ? 24 : 30} fadeStrength={1.2} />
+        {/* 대형 공장 그리드(Prompt 2: 100×100+) */}
+        <Grid infiniteGrid position={[0, 0.001, 0]}
+          cellSize={1} sectionSize={5}
+          cellColor={env === 'planner' ? '#a8b4c0' : '#22303f'}
+          sectionColor={env === 'planner' ? '#7a8898' : '#36506e'}
+          fadeDistance={120} fadeStrength={1.0} />
 
-        <QCLine environment={env} />
+        <QCLine environment={env}
+          onOpenPiP={(d) => { setPipData(d || null); setPip(true) }} />
 
         {/* CCTV 쿼터뷰 — 바닥 아래/완전 탑다운 차단, 전체 라인 조망 */}
         <OrbitControls
           enableDamping dampingFactor={0.08} makeDefault
-          minDistance={6} maxDistance={26}
+          minDistance={6} maxDistance={70}
           minPolarAngle={0.18} maxPolarAngle={Math.PI / 2.15}
           target={[0.5, 0.8, 0]}
         />
       </Canvas>
+
+      {/* 유지보수 루프(비시각) — Observe→Think→Act 규칙기반 (Spec 2) */}
+      <MaintenanceController />
+
+      {/* Vision PiP — 카메라/시편 클릭 시 슬라이드 (명세 A·§4) */}
+      <VisionPiP open={pip} data={pipData} onClose={() => setPip(false)} />
+
+      {/* 승인 게이트 — 실 액션은 승인 후에만 (Simulate-then-Approve) */}
+      <ApprovalGate />
+
+      {/* Prompt 1: 백엔드 끊김 경고 — 씬 freeze + 실데이터 강제(시늉 방지) */}
+      {disconnected && (
+        <div style={{ position: 'absolute', inset: 0, zIndex: 20, display: 'flex',
+          flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 10,
+          background: 'rgba(8,10,16,0.62)', backdropFilter: 'blur(2px)',
+          fontFamily: "'Courier New',monospace", pointerEvents: 'none' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '16px 24px',
+            borderRadius: 10, background: 'rgba(20,8,10,0.92)', border: '2px solid #f87171',
+            boxShadow: '0 0 30px rgba(248,113,113,0.4)' }}>
+            <span style={{ fontSize: 26, color: '#f87171' }}>⛔</span>
+            <div>
+              <div style={{ fontSize: 16, color: '#f87171', fontWeight: 700, letterSpacing: 0.5 }}>
+                Backend Disconnected — GPU Inference Offline
+              </div>
+              <div style={{ fontSize: 11, color: '#cbd5e1', marginTop: 4 }}>
+                WS: {wsStatus} · 실시간 추론 스트림 없음 — 씬 정지됨 (가짜 데이터 미생성)
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* 환경 토글 */}
       <div style={{ position: 'absolute', top: 10, right: 12, display: 'flex', gap: 5 }}>

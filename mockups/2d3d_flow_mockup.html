@@ -1,0 +1,405 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>ARIA · 2D↔3D 시각화 흐름 목업 (PiP · 스캔 · Decal)</title>
+<style>
+  :root { --cy:#1FB8CD; --ng:#f87171; --ok:#34d399; --warn:#facc15; --bg:#0d1320; }
+  * { box-sizing:border-box; }
+  html,body { margin:0; height:100%; background:var(--bg); color:#e2e8f0;
+    font-family:'Courier New',monospace; overflow:hidden; }
+  #app { position:fixed; inset:0; }
+  canvas { display:block; }
+
+  /* 상단 안내 */
+  #hud { position:absolute; top:12px; left:14px; z-index:5; max-width:430px;
+    background:rgba(10,14,22,0.72); border:1px solid rgba(255,255,255,0.1);
+    border-radius:8px; padding:10px 12px; font-size:12px; line-height:1.6; }
+  #hud b { color:var(--cy); }
+  #hud .k { color:var(--warn); }
+  #status { margin-top:6px; color:#9aa3b2; font-size:11px; }
+
+  /* PiP 패널 — 우측 슬라이드 */
+  #pip { position:absolute; top:0; right:0; height:100%; width:340px; z-index:6;
+    background:rgba(11,15,24,0.96); border-left:1px solid rgba(31,184,205,0.4);
+    transform:translateX(100%); transition:transform .35s cubic-bezier(.4,0,.2,1);
+    display:flex; flex-direction:column; padding:14px; gap:10px; }
+  #pip.open { transform:translateX(0); }
+  #pip h3 { margin:0; font-size:13px; color:var(--cy); letter-spacing:1px; }
+  #pip .hdr { display:flex; flex-wrap:wrap; gap:6px; }
+  #pip .chip { font-size:11px; padding:3px 8px; border-radius:5px;
+    background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.08); }
+  #pip .verdict { font-weight:700; }
+  #pipCanvasWrap { position:relative; width:100%; aspect-ratio:1/1;
+    border:1px solid rgba(255,255,255,0.12); border-radius:6px; overflow:hidden;
+    background:#05080e; }
+  #pipBase, #pipHeat { position:absolute; inset:0; width:100%; height:100%; }
+  #pipHeat { opacity:0; transition:opacity .25s; mix-blend-mode:screen; }
+  .toggles { display:flex; gap:6px; }
+  .toggles button { flex:1; font-family:inherit; font-size:11px; cursor:pointer;
+    padding:6px 0; border-radius:5px; color:#9aa3b2;
+    background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.1); }
+  .toggles button.active { color:var(--cy); border-color:var(--cy); background:rgba(31,184,205,0.12); }
+  #pip .note { font-size:10px; color:#5b6677; margin-top:auto; }
+  #pipClose { position:absolute; top:10px; right:12px; cursor:pointer; color:#6b7280;
+    font-size:18px; background:none; border:none; }
+
+  .legend { position:absolute; bottom:12px; left:14px; z-index:5; font-size:11px;
+    background:rgba(10,14,22,0.7); border:1px solid rgba(255,255,255,0.1);
+    border-radius:8px; padding:8px 11px; line-height:1.7; }
+  .legend .d { display:inline-block; width:9px; height:9px; border-radius:50%;
+    margin-right:5px; vertical-align:middle; }
+</style>
+</head>
+<body>
+<div id="app"></div>
+
+<div id="hud">
+  <div><b>ARIA 2D↔3D 흐름 목업</b> — 클릭 인터랙션 데모</div>
+  <div>· <span class="k">카메라 노드</span>(부스 위 시안 구) 클릭 → <b>PiP</b>(원본+heatmap)</div>
+  <div>· <span class="k">부품</span>(컨베이어 박스) 클릭 → <b>스캔라인</b> sweep → <b>Decal</b> 역투영 + PiP</div>
+  <div>· <span class="k">ESC</span> → 원복(decal/홀로 제거, 패널 닫기)</div>
+  <div id="status">대기 중 — 부품 또는 카메라 노드를 클릭하세요.</div>
+</div>
+
+<div class="legend">
+  <div><span class="d" style="background:#34d399"></span>Ground Truth 링(녹) — 실제 결함 위치</div>
+  <div><span class="d" style="background:#f87171"></span>Decal(적) — 2D→3D 역투영 결과</div>
+  <div style="color:#9aa3b2;margin-top:3px">두 위치가 겹치면 = 역투영 정합 성공(S3)</div>
+</div>
+
+<div id="pip">
+  <button id="pipClose">✕</button>
+  <h3>VISION PiP</h3>
+  <div class="hdr">
+    <span class="chip" id="pipPart">PART —</span>
+    <span class="chip" id="pipScore">SCORE —</span>
+    <span class="chip" id="pipTau">τ —</span>
+    <span class="chip verdict" id="pipVerdict">—</span>
+  </div>
+  <div id="pipCanvasWrap">
+    <canvas id="pipBase" width="256" height="256"></canvas>
+    <canvas id="pipHeat" width="256" height="256"></canvas>
+  </div>
+  <div class="toggles">
+    <button data-mode="base" class="active">원본</button>
+    <button data-mode="heat">heatmap</button>
+    <button data-mode="overlay">overlay</button>
+  </div>
+  <div class="note">데이터(목업): 합성 원본 + anomaly heatmap.<br>
+    통합 시 → inspector_result.image_b64 + min_val 업샘플 heatmap.</div>
+</div>
+
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+    "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+  }
+}
+</script>
+
+<script type="module">
+import * as THREE from 'three';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import { DecalGeometry } from 'three/addons/geometries/DecalGeometry.js';
+
+const app = document.getElementById('app');
+const statusEl = document.getElementById('status');
+
+// ── 렌더러/씬/카메라 ──────────────────────────────────────────────
+const renderer = new THREE.WebGLRenderer({ antialias:true });
+renderer.setPixelRatio(Math.min(2, devicePixelRatio));
+renderer.setSize(innerWidth, innerHeight);
+renderer.shadowMap.enabled = true;
+app.appendChild(renderer.domElement);
+
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0x0d1320);
+
+const camera = new THREE.PerspectiveCamera(45, innerWidth/innerHeight, 0.1, 100);
+camera.position.set(3.4, 2.6, 4.2);
+
+const controls = new OrbitControls(camera, renderer.domElement);
+controls.enableDamping = true; controls.target.set(0, 0.55, 0);
+controls.maxPolarAngle = Math.PI/2.1;
+
+// ── 조명 ──────────────────────────────────────────────────────────
+scene.add(new THREE.AmbientLight(0x8fa6c8, 0.7));
+scene.add(new THREE.HemisphereLight(0xcfe0ff, 0x141a26, 0.6));
+const key = new THREE.DirectionalLight(0xffffff, 1.6);
+key.position.set(3, 7, 4); key.castShadow = true;
+key.shadow.mapSize.set(1024,1024); scene.add(key);
+scene.add(new THREE.PointLight(0x1FB8CD, 2.2, 8).translateY(2.4));
+
+// ── 바닥/컨베이어 ─────────────────────────────────────────────────
+const floor = new THREE.Mesh(
+  new THREE.PlaneGeometry(20, 12),
+  new THREE.MeshStandardMaterial({ color:0x202a3c, roughness:0.9, metalness:0.1 }));
+floor.rotation.x = -Math.PI/2; floor.receiveShadow = true; scene.add(floor);
+
+const grid = new THREE.GridHelper(20, 40, 0x2a3850, 0x1c2636);
+grid.position.y = 0.002; scene.add(grid);
+
+const belt = new THREE.Mesh(
+  new THREE.BoxGeometry(7, 0.12, 1.1),
+  new THREE.MeshStandardMaterial({ color:0x2a3346, roughness:0.7, metalness:0.3 }));
+belt.position.set(0, 0.25, 0); belt.receiveShadow = true; scene.add(belt);
+
+// ── 비전 부스 아치 + 카메라 노드(클릭 대상) ──────────────────────
+const arch = new THREE.Group(); scene.add(arch);
+const postMat = new THREE.MeshStandardMaterial({ color:0x32405a, metalness:0.6, roughness:0.35 });
+[-0.75, 0.75].forEach(x => {
+  const p = new THREE.Mesh(new THREE.BoxGeometry(0.12, 1.9, 0.5), postMat);
+  p.position.set(x, 1.0, 0); p.castShadow = true; arch.add(p);
+});
+const beam = new THREE.Mesh(new THREE.BoxGeometry(1.7, 0.12, 0.5), postMat);
+beam.position.set(0, 1.95, 0); arch.add(beam);
+
+// 부스 카메라 노드 — 클릭하면 PiP. (실제 검사 카메라 위치)
+const boothCamMesh = new THREE.Mesh(
+  new THREE.SphereGeometry(0.13, 20, 20),
+  new THREE.MeshStandardMaterial({ color:0x1FB8CD, emissive:0x1FB8CD, emissiveIntensity:0.8 }));
+boothCamMesh.position.set(0, 1.78, 0); boothCamMesh.userData.kind = 'camera';
+arch.add(boothCamMesh);
+
+// 부스 카메라(역투영용 PerspectiveCamera) — 부품을 위에서 내려봄
+const boothCam = new THREE.PerspectiveCamera(40, 1, 0.2, 10);
+boothCam.position.set(0, 1.78, 0);
+boothCam.lookAt(0, 0.31, 0);
+boothCam.updateMatrixWorld(true);
+boothCam.updateProjectionMatrix();
+const boothHelper = new THREE.CameraHelper(boothCam);
+boothHelper.visible = false; scene.add(boothHelper);
+
+// ── 검사 부품 (클릭 대상) ─────────────────────────────────────────
+const parts = [];
+const PART_DEFS = [
+  { id:'P004812', x:-1.9, score:0.214, defect:[ 0.18, -0.12] },
+  { id:'P004813', x: 0.0, score:0.573, defect:[-0.22,  0.20] },  // NG
+  { id:'P004814', x: 1.9, score:0.351, defect:[ 0.05,  0.28] },
+];
+const TAU = 0.5;
+
+PART_DEFS.forEach(d => {
+  const mesh = new THREE.Mesh(
+    new THREE.BoxGeometry(0.6, 0.55, 0.6),
+    new THREE.MeshStandardMaterial({ color:0x9aa6b8, metalness:0.35, roughness:0.5 }));
+  mesh.position.set(d.x, 0.31 + 0.275, 0);
+  mesh.castShadow = true;
+  mesh.userData = { kind:'part', def:d };
+  injectScanShader(mesh.material);
+  scene.add(mesh);
+  parts.push(mesh);
+});
+
+// ── 스캔라인 셰이더 주입 (onBeforeCompile, 월드Y) ────────────────
+function injectScanShader(mat) {
+  mat.onBeforeCompile = (shader) => {
+    shader.uniforms.uScanY = { value: -999 };
+    shader.uniforms.uScanColor = { value: new THREE.Color(0x1FB8CD) };
+    mat.userData.shader = shader;
+    shader.vertexShader = 'varying vec3 vWPScan;\n' + shader.vertexShader.replace(
+      '#include <begin_vertex>',
+      '#include <begin_vertex>\n  vWPScan = (modelMatrix * vec4(transformed,1.0)).xyz;'
+    );
+    shader.fragmentShader =
+      'uniform float uScanY;\nuniform vec3 uScanColor;\nvarying vec3 vWPScan;\n' +
+      shader.fragmentShader.replace(
+        '#include <dithering_fragment>',
+        `#include <dithering_fragment>
+         float dScan = abs(vWPScan.y - uScanY);
+         float glow = smoothstep(0.07, 0.0, dScan);
+         gl_FragColor.rgb += glow * uScanColor * 1.8;`
+      );
+  };
+  mat.needsUpdate = true;
+}
+
+// ── 합성 2D 원본 / heatmap 캔버스 생성 ───────────────────────────
+function makePartImage(def, peakPx) {
+  const base = document.getElementById('pipBase');
+  const heat = document.getElementById('pipHeat');
+  const bx = base.getContext('2d'), hx = heat.getContext('2d');
+  const W = 256, H = 256;
+  // 원본 — 금속 질감 그라데이션 + 미세 노이즈
+  const g = bx.createRadialGradient(W/2, H/2, 30, W/2, H/2, 180);
+  g.addColorStop(0, '#c2cbd9'); g.addColorStop(1, '#5b6677');
+  bx.fillStyle = g; bx.fillRect(0,0,W,H);
+  for (let i=0;i<3500;i++){ const v=120+Math.random()*90;
+    bx.fillStyle=`rgba(${v},${v+6},${v+14},0.25)`; bx.fillRect(Math.random()*W,Math.random()*H,2,2); }
+  // 부품 윤곽
+  bx.strokeStyle='rgba(40,52,70,0.6)'; bx.lineWidth=8; bx.strokeRect(18,18,W-36,H-36);
+  // 결함 얼룩(원본에도 살짝)
+  const dr = bx.createRadialGradient(peakPx.x,peakPx.y,2,peakPx.x,peakPx.y,26);
+  dr.addColorStop(0,'rgba(30,20,24,0.85)'); dr.addColorStop(1,'rgba(60,55,60,0)');
+  bx.fillStyle=dr; bx.beginPath(); bx.arc(peakPx.x,peakPx.y,26,0,7); bx.fill();
+
+  // heatmap — 적색 가우시안(peak), 배경 투명
+  hx.clearRect(0,0,W,H);
+  const hr = hx.createRadialGradient(peakPx.x,peakPx.y,2,peakPx.x,peakPx.y,40);
+  const intense = def.score >= TAU;
+  hr.addColorStop(0, intense?'rgba(255,40,40,0.95)':'rgba(255,170,40,0.8)');
+  hr.addColorStop(0.5,'rgba(255,90,40,0.4)');
+  hr.addColorStop(1,'rgba(255,40,40,0)');
+  hx.fillStyle=hr; hx.fillRect(0,0,W,H);
+  return heat;  // CanvasTexture 소스로 재사용
+}
+
+// ── PiP 패널 제어 ─────────────────────────────────────────────────
+const pip = document.getElementById('pip');
+function openPiP(def, peakPx) {
+  makePartImage(def, peakPx);
+  document.getElementById('pipPart').textContent = 'PART ' + def.id;
+  document.getElementById('pipScore').textContent = 'SCORE ' + def.score.toFixed(3);
+  document.getElementById('pipTau').textContent = 'τ ' + TAU.toFixed(3);
+  const ng = def.score >= TAU;   // anomaly score: 낮을수록 정상. ≥τ → NG (로직 불변)
+  const vEl = document.getElementById('pipVerdict');
+  vEl.textContent = ng ? 'NG' : 'OK';
+  vEl.style.color = ng ? 'var(--ng)' : 'var(--ok)';
+  pip.classList.add('open');
+}
+document.getElementById('pipClose').onclick = () => pip.classList.remove('open');
+document.querySelectorAll('.toggles button').forEach(b => {
+  b.onclick = () => {
+    document.querySelectorAll('.toggles button').forEach(x=>x.classList.remove('active'));
+    b.classList.add('active');
+    const heat = document.getElementById('pipHeat');
+    const base = document.getElementById('pipBase');
+    const m = b.dataset.mode;
+    heat.style.opacity = (m==='heat'||m==='overlay') ? '1' : '0';
+    base.style.opacity = (m==='heat') ? '0.15' : '1';
+  };
+});
+
+// ── 클릭 흐름 ─────────────────────────────────────────────────────
+const ray = new THREE.Raycaster();
+const ndc = new THREE.Vector2();
+let busy = false;
+const activeOverlays = [];   // 홀로/decal/ring 정리용
+
+renderer.domElement.addEventListener('pointerdown', (e) => {
+  if (busy) return;
+  ndc.x = (e.clientX/innerWidth)*2 - 1;
+  ndc.y = -(e.clientY/innerHeight)*2 + 1;
+  ray.setFromCamera(ndc, camera);
+
+  // 카메라 노드 우선
+  const camHit = ray.intersectObject(boothCamMesh, false);
+  if (camHit.length) {
+    const def = PART_DEFS[1];
+    openPiP(def, defectPeakPx(parts[1], def));
+    setStatus('카메라 노드 클릭 → PiP(원본+heatmap) 오픈.');
+    return;
+  }
+  const pHit = ray.intersectObjects(parts, false);
+  if (pHit.length) runScanFlow(pHit[0].object);
+});
+
+window.addEventListener('keydown', (e) => { if (e.key==='Escape') resetAll(); });
+
+function setStatus(t){ statusEl.textContent = t; }
+
+// 결함의 2D 픽셀 좌표(heatmap 캔버스 기준) — 부품 표면 결함점을 부스카메라로 포워드 투영
+function defectWorld(part) {
+  const d = part.userData.def;
+  // 부품 윗면(살짝 위)의 결함 위치
+  return new THREE.Vector3(part.position.x + d.defect[0]*0.28,
+                           part.position.y + 0.28,
+                           part.position.z + d.defect[1]*0.28);
+}
+function defectPeakPx(part, def) {
+  const w = defectWorld(part).project(boothCam); // NDC in booth camera
+  return { x:(w.x*0.5+0.5)*256, y:(1-(w.y*0.5+0.5))*256 };
+}
+
+// B+C 통합: 스캔 sweep → decal 역투영 + PiP
+function runScanFlow(part) {
+  resetAll();
+  busy = true;
+  const def = part.userData.def;
+  boothHelper.visible = true;
+
+  // 1) 와이어프레임/홀로 오버레이
+  const holo = new THREE.Mesh(part.geometry.clone(),
+    new THREE.MeshBasicMaterial({ color:0x1FB8CD, wireframe:true, transparent:true, opacity:0.5 }));
+  holo.position.copy(part.position); holo.scale.setScalar(1.03);
+  scene.add(holo); activeOverlays.push(holo);
+
+  // 2) 스캔라인 sweep (bbox.min.y → max.y, ~1.1s)
+  const box = new THREE.Box3().setFromObject(part);
+  const shader = part.material.userData.shader;
+  setStatus(`부품 ${def.id} 스캔 중… (스캔라인 위→아래)`);
+  const t0 = performance.now(), DUR = 1100;
+  (function sweep(){
+    const k = Math.min(1, (performance.now()-t0)/DUR);
+    if (shader) shader.uniforms.uScanY.value = box.max.y - (box.max.y-box.min.y)*k;
+    if (k < 1) requestAnimationFrame(sweep);
+    else finishScan(part, def);
+  })();
+}
+
+function finishScan(part, def) {
+  const shader = part.material.userData.shader;
+  if (shader) shader.uniforms.uScanY.value = -999;  // 스캔선 끄기
+
+  // 3) Decal 역투영 — heatmap peak 픽셀 → 부스카메라 NDC → raycast → 표면 교점
+  const peakPx = defectPeakPx(part, def);
+  const ndcP = new THREE.Vector2((peakPx.x/256)*2-1, -((peakPx.y/256)*2-1));
+  const rc = new THREE.Raycaster();
+  rc.setFromCamera(ndcP, boothCam);
+  const hit = rc.intersectObject(part, false)[0];
+
+  if (hit) {
+    // (검증용) ground truth 링 — 실제 결함 월드점
+    const gt = defectWorld(part);
+    const ring = new THREE.Mesh(new THREE.RingGeometry(0.045, 0.07, 24),
+      new THREE.MeshBasicMaterial({ color:0x34d399, side:THREE.DoubleSide }));
+    ring.position.copy(gt).addScaledVector(hit.face.normal.clone().transformDirection(part.matrixWorld), 0.01);
+    ring.lookAt(gt.clone().add(hit.face.normal.clone().transformDirection(part.matrixWorld)));
+    scene.add(ring); activeOverlays.push(ring);
+
+    // decal (적색 emissive, map=heatmap 크롭)
+    const heatCanvas = makePartImage(def, peakPx);
+    const heatTex = new THREE.CanvasTexture(heatCanvas);
+    const n = hit.face.normal.clone().transformDirection(part.matrixWorld);
+    const helper = new THREE.Object3D();
+    helper.position.copy(hit.point);
+    helper.lookAt(hit.point.clone().add(n));
+    const decalGeo = new DecalGeometry(part, hit.point, helper.rotation, new THREE.Vector3(0.34,0.34,0.34));
+    const decal = new THREE.Mesh(decalGeo, new THREE.MeshStandardMaterial({
+      map:heatTex, emissiveMap:heatTex, emissive:0xff3344, emissiveIntensity:1.0,
+      transparent:true, depthTest:true, depthWrite:false,
+      polygonOffset:true, polygonOffsetFactor:-4 }));
+    scene.add(decal); activeOverlays.push(decal);
+
+    const dist = hit.point.distanceTo(gt);
+    setStatus(`완료 → Decal 부착(적) · GT 링(녹) 오차 ${(dist*1000).toFixed(1)}mm · PiP 오픈. (ESC 원복)`);
+  } else {
+    setStatus('역투영 raycast 미스 — 부품 표면 교점 없음.');
+  }
+
+  openPiP(def, defectPeakPx(part, def));
+  busy = false;
+}
+
+function resetAll() {
+  activeOverlays.forEach(o => { scene.remove(o); o.geometry?.dispose?.(); o.material?.dispose?.(); });
+  activeOverlays.length = 0;
+  parts.forEach(p => { const s=p.material.userData.shader; if(s) s.uniforms.uScanY.value=-999; });
+  boothHelper.visible = false;
+  pip.classList.remove('open');
+  busy = false;
+  setStatus('원복됨 — 부품 또는 카메라 노드를 클릭하세요.');
+}
+
+// ── 루프 ──────────────────────────────────────────────────────────
+addEventListener('resize', () => {
+  camera.aspect = innerWidth/innerHeight; camera.updateProjectionMatrix();
+  renderer.setSize(innerWidth, innerHeight);
+});
+(function loop(){ requestAnimationFrame(loop); controls.update(); renderer.render(scene, camera); })();
+</script>
+</body>
+</html>
