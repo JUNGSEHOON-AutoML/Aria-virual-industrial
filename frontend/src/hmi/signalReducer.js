@@ -21,6 +21,38 @@ export const initialState = {
   approvals: [],               // {id, assetId, action, actionLabel, status:'pending|approved|rejected', ts}
   episodes: [],                // {ts, event, assetId, action, approval, result}
   detections: [],              // yolo_detection — 순찰 로봇 YOLO 동적 탐지(실 WS만)
+  predictions: [],             // T1-B 예지 가설 — 상태기계(pending|approved|dismissed|resolved)
+}
+
+// ── T1-B 예지 가설 상태기계 (순수, 헤드리스 검증) ──────────────────────
+// 동일 cell 재발 → 새 카드 X, 기존 카드 count/표본 갱신(+occurrences). 상태 'resolved'/'dismissed'면 재개.
+export function upsertPrediction(list, hyp) {
+  if (!hyp || !hyp.cell) return list
+  const base = {
+    id: hyp.cell, cell: hyp.cell, class: hyp.class, row: hyp.row, col: hyp.col, grid: hyp.grid,
+    causal: hyp.causal, statConfidence: hyp.statConfidence,
+    ngTotal: hyp.ngTotal, total: hyp.total, window: hyp.window,
+    recommendedAction: hyp.recommendedAction, lastNgTs: hyp.ts,
+  }
+  const i = list.findIndex(p => p.id === hyp.cell)
+  if (i < 0) return [{ ...base, status: 'pending', occurrences: 1, ts: hyp.ts }, ...list].slice(0, 30)
+  const prev = list[i]
+  const status = (prev.status === 'resolved' || prev.status === 'dismissed') ? 'pending' : prev.status
+  const next = list.slice()
+  next[i] = { ...prev, ...base, occurrences: prev.occurrences + 1, status }
+  return next
+}
+
+// 자동 해소: pending|approved 가설이 일정 시간 NG 없으면 resolved로 가라앉힘(과거 가설 누적 방지).
+export function sweepPredictions(list, nowMs, resolveMs = 20000) {
+  let changed = false
+  const out = list.map(p => {
+    if ((p.status === 'pending' || p.status === 'approved') && nowMs - p.lastNgTs > resolveMs) {
+      changed = true; return { ...p, status: 'resolved' }
+    }
+    return p
+  })
+  return changed ? out : list
 }
 
 // 메시지 1건 → 상태 부분 패치(없으면 null). 순수 함수.
@@ -62,9 +94,22 @@ export function applyMessage(state, msg) {
     case 'joint_state':
       return { joints: msg.joints || null }
 
+    case 'diagnostic_result': {
+      // 백엔드 aggregator의 예지 가설 → predictions 상태기계(클라 엔진과 동일 경로)
+      const m = { messages: [{ ts: Date.now(), kind: t, text: msg.hypothesis || msg.content || msg.detail || t }, ...state.messages].slice(0, 200) }
+      if (msg.kind === 'predictive' && msg.cell) {
+        m.predictions = upsertPrediction(state.predictions, {
+          cell: msg.cell, class: msg.class, row: msg.row, col: msg.col, grid: msg.grid,
+          causal: { hypothesis: msg.hypothesis, assetHint: msg.asset_hint, verified: false },
+          statConfidence: msg.confidence, ngTotal: msg.ngTotal, total: msg.total,
+          window: msg.window, recommendedAction: msg.recommended_action, ts: msg.ts || Date.now(),
+        })
+      }
+      return m
+    }
+
     case 'thought':
     case 'response':
-    case 'diagnostic_result':
       return { messages: [{ ts: Date.now(), kind: t, text: msg.content || msg.detail || t }, ...state.messages].slice(0, 200) }
 
     default:

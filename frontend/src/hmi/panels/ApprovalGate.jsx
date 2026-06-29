@@ -43,7 +43,9 @@ export default function ApprovalGate() {
         <b style={{ color: '#facc15' }}>{ap.actionLabel}</b>
       </Typography>
       <Typography sx={{ fontSize: 10, color: '#6b7280', mb: 1.2 }}>
-        가상 트윈 수리 시연 완료. 승인 시에만 실제 {ap.action} 호출 (/api). 미승인 시 미실행.
+        {ap.kind === 'inspection'
+          ? `점검/조치 실행 결정 — 원인 확정 아님(가설). 승인 시에만 실제 ${ap.action} 호출 (/api).`
+          : `가상 트윈 수리 시연 완료. 승인 시에만 실제 ${ap.action} 호출 (/api). 미승인 시 미실행.`}
       </Typography>
       <Box sx={{ display: 'flex', gap: 1 }}>
         <Button size="small" variant="contained" color="success" onClick={approve}

@@ -1,13 +1,14 @@
 // InspectionSpecimen — 비전 부스 아래 검사 시편(클릭 대상). 명세 §1·§2·§3.
 // 형상=현재 라인 클래스(partShapes). 클릭→홀로+스캔 sweep→Decal 역투영(난수 금지).
 // Live=실 scan(image/heatmap/defect_xy), Standalone=합성 히트맵으로 동일 raycast(placeholder).
-import { useRef, useEffect, useMemo } from 'react'
+import { useRef, useEffect, useMemo, useState } from 'react'
 import { useThree, useFrame } from '@react-three/fiber'
 import * as THREE from 'three'
 import { useSignalStore } from '../signalStore'
 import { selectScan } from '../signalReducer'
 import { injectScanShader, setScanY, buildDecal, texFromDataURI } from './inspectVfx'
 import { classShape, halfHeight } from './partShapes'
+import LaserMarker from './LaserMarker'
 
 export default function InspectionSpecimen({ position = [0, 0.78, 0], onTrigger }) {
   const scan = useSignalStore(selectScan)
@@ -19,6 +20,7 @@ export default function InspectionSpecimen({ position = [0, 0.78, 0], onTrigger 
   const vfxRef = useRef()
   const phase = useRef('idle')
   const tScan = useRef(0)
+  const [laser, setLaser] = useState(null)   // {point, normal} — LaserMarker 선언적 렌더
 
   // 현재 클래스: 선택 라인 > 가동 카테고리 > 첫 클래스 > bottle
   const className = useMemo(() => {
@@ -59,6 +61,7 @@ export default function InspectionSpecimen({ position = [0, 0.78, 0], onTrigger 
     const g = vfxRef.current
     if (g) while (g.children.length) { const c = g.children.pop(); c.geometry?.dispose?.(); c.material?.dispose?.(); g.remove(c) }
     setScanY(mat, -9999)
+    setLaser(null)
   }
   function reset() { phase.current = 'idle'; clearVfx() }
 
@@ -83,20 +86,26 @@ export default function InspectionSpecimen({ position = [0, 0.78, 0], onTrigger 
     phase.current = 'idle'
     setScanY(mat, -9999)
 
-    // Prompt 1: 실 inspector_result만 사용(합성/난수 금지). defect_xy 없으면 decal 미생성.
+    // T1-A: 실 inspector_result만 사용(난수 금지). (u,v)→(x,y,z)는 coordinateTransform 단일 모듈.
     const hasLive = Array.isArray(scan?.defect_xy)
     if (hasLive) {
-      // 2D heatmap peak → 부스 카메라 raycast → 표면 교점 Decal (유도, 난수 아님)
       const heatTex = texFromDataURI(scan.heatmap_b64)
-      const built = buildDecal(meshRef.current, boothCam, scan.defect_xy, heatTex, Math.max(half, 0.12) * 2.0)
+      // F-07 blob 면적 → decal 크기 반영(있으면)
+      const area = scan?.defect_blob?.area
+      const sizeMul = area != null ? 1.2 + Math.min(2.2, Math.sqrt(area) * 4) : 2.0
+      const built = buildDecal(meshRef.current, boothCam, scan.defect_xy, heatTex,
+        Math.max(half, 0.12) * sizeMul)
       if (built) {
         vfxRef.current.add(built.decal)
+        // GT 근사 링
         const ring = new THREE.Mesh(
           new THREE.RingGeometry(0.05, 0.075, 20),
           new THREE.MeshBasicMaterial({ color: 0x34d399, side: THREE.DoubleSide, transparent: true, opacity: 0.9 }))
         ring.position.copy(built.point).addScaledVector(built.normal, 0.006)
         ring.lookAt(built.point.clone().add(built.normal))
         vfxRef.current.add(ring)
+        // 레이저 마커(선언적) — 결함 지시 투영
+        setLaser({ point: built.point.clone(), normal: built.normal.clone() })
       }
     }
     onTrigger?.(null)   // PiP는 실 store.scan만 표시(합성 override 없음)
@@ -122,6 +131,7 @@ export default function InspectionSpecimen({ position = [0, 0.78, 0], onTrigger 
         {shape.render === 'capsule' && <capsuleGeometry args={shape.args} />}
       </mesh>
       <group ref={vfxRef} />
+      {laser && <LaserMarker point={laser.point} normal={laser.normal} />}
     </group>
   )
 }

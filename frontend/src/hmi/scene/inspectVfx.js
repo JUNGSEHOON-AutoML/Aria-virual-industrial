@@ -2,6 +2,7 @@
 // 명세 §B/§C. 물리/리메시 없음. 셰이더 1개 + DecalGeometry.
 import * as THREE from 'three'
 import { DecalGeometry } from 'three/examples/jsm/geometries/DecalGeometry.js'
+import { project2Dto3D } from './coordinateTransform'
 
 // 표준 머티리얼에 월드Y 스캔라인 발광선 주입. material.userData.shader 로 uniforms 접근.
 export function injectScanShader(mat, color = 0x1FB8CD) {
@@ -41,26 +42,20 @@ export function texFromDataURI(uri) {
   return tex
 }
 
-// 부스 카메라 raycast 역투영 → 부품 표면 교점에 적색 emissive Decal 생성.
+// (u,v)→(x,y,z) 변환(coordinateTransform 단일 모듈) → 표면 교점에 적색 emissive Decal.
 // peakXY = [nx, ny] (0..1, heatmap 좌표) · boothCam = PerspectiveCamera · target = 부품 mesh
-// 반환: { decal, point, normal } 또는 null.
-export function buildDecal(target, boothCam, peakXY, heatTex, size = 0.34) {
+// opts = { mode:'sim'|'real', calib } (real 캘리브 없으면 sim 폴백)
+// 반환: { decal, point, normal, mode } 또는 null.
+export function buildDecal(target, boothCam, peakXY, heatTex, size = 0.34, opts = {}) {
   if (!target || !boothCam || !peakXY) return null
-  // heatmap 정규좌표(좌상단 원점) → NDC(중앙 원점, y 뒤집힘)
-  const ndc = new THREE.Vector2(peakXY[0] * 2 - 1, -(peakXY[1] * 2 - 1))
-  const rc = new THREE.Raycaster()
-  rc.setFromCamera(ndc, boothCam)
-  const hit = rc.intersectObject(target, false)[0]
-  if (!hit) return null
-
-  const normal = hit.face
-    ? hit.face.normal.clone().transformDirection(target.matrixWorld)
-    : new THREE.Vector3(0, 1, 0)
+  const r = project2Dto3D({ uv: peakXY, mode: opts.mode || 'sim', camera: boothCam, mesh: target, calib: opts.calib })
+  if (!r.ok) return null
+  const { point, normal } = r
   const helper = new THREE.Object3D()
-  helper.position.copy(hit.point)
-  helper.lookAt(hit.point.clone().add(normal))
+  helper.position.copy(point)
+  helper.lookAt(point.clone().add(normal))
 
-  const geo = new DecalGeometry(target, hit.point, helper.rotation,
+  const geo = new DecalGeometry(target, point, helper.rotation,
     new THREE.Vector3(size, size, size))
   const mat = new THREE.MeshStandardMaterial({
     map: heatTex || null, emissiveMap: heatTex || null,
@@ -70,5 +65,5 @@ export function buildDecal(target, boothCam, peakXY, heatTex, size = 0.34) {
     polygonOffset: true, polygonOffsetFactor: -4,
   })
   const decal = new THREE.Mesh(geo, mat)
-  return { decal, point: hit.point.clone(), normal }
+  return { decal, point: point.clone(), normal, mode: r.mode, fellBack: r.fellBack }
 }

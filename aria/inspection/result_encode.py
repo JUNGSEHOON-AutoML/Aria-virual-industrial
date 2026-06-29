@@ -69,10 +69,39 @@ def _heatmap_to_b64_and_peak(heatmap: Any, max_px: int = 96):
         return None, None
 
 
+def _heatmap_blob(heatmap: Any, thresh_ratio: float = 0.6):
+    """F-07: heatmap 임계화 → 결함 blob 면적·중심·bbox(정규 0..1). numpy만. 실패 시 None.
+
+    임계 = min + ratio*(max-min). 임계 초과 픽셀 집합을 단일 blob으로 근사(연결성분 의존성 회피).
+    """
+    try:
+        hm = np.asarray(heatmap, dtype=np.float32)
+        if hm.ndim != 2 or hm.size == 0:
+            return None
+        mn, mx = float(hm.min()), float(hm.max())
+        if mx <= mn:
+            return None
+        mask = hm >= (mn + thresh_ratio * (mx - mn))
+        ys, xs = np.nonzero(mask)
+        if xs.size == 0:
+            return None
+        H, W = hm.shape
+        cx = float(xs.mean()) / max(1, W - 1)
+        cy = float(ys.mean()) / max(1, H - 1)
+        x0, x1 = int(xs.min()), int(xs.max())
+        y0, y1 = int(ys.min()), int(ys.max())
+        bbox = [round(x0 / max(1, W - 1), 4), round(y0 / max(1, H - 1), 4),
+                round((x1 - x0) / max(1, W - 1), 4), round((y1 - y0) / max(1, H - 1), 4)]
+        area = round(float(xs.size) / float(hm.size), 5)   # 전체 대비 면적 비율
+        return {"cx": round(cx, 4), "cy": round(cy, 4), "area": area, "bbox": bbox}
+    except Exception:
+        return None
+
+
 def enrich_result(image: Any, heatmap: Any) -> dict:
     """워커가 emit 직전 호출. 가용한 것만 담은 dict 반환(없으면 빈 dict).
 
-    반환 키: image_b64?, heatmap_b64?, defect_xy?  (모두 직렬화 안전)
+    반환 키: image_b64?, heatmap_b64?, defect_xy?, defect_blob?  (모두 직렬화 안전)
     """
     out: dict = {}
     img = _img_to_b64(image)
@@ -83,4 +112,7 @@ def enrich_result(image: Any, heatmap: Any) -> dict:
         out["heatmap_b64"] = hb64
     if peak:
         out["defect_xy"] = peak
+    blob = _heatmap_blob(heatmap)
+    if blob:
+        out["defect_blob"] = blob
     return out

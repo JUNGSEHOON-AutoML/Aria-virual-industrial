@@ -318,6 +318,71 @@ function NodeCtx({ id }) {
   )
 }
 
+// ── T1-B: 예지보전 가설 카드 (통계 신뢰도 ↔ 인과 가설 분리, 표본 표기, 점검 지시) ──
+const ASSET_KO = { robot_arm: '로봇 팔', vision_camera: '비전 카메라', conveyor_motor: '컨베이어 모터' }
+function PredictiveCards() {
+  const predictions = useSignalStore(s => s.predictions) || []
+  const addApproval = useSignalStore(s => s.addApproval)
+  const setPredictionStatus = useSignalStore(s => s.setPredictionStatus)
+  // 활성(해소/기각 제외)만
+  const active = predictions.filter(p => p.status === 'pending' || p.status === 'approved')
+  if (!active.length) return null
+
+  const order = (id) => () => {
+    setPredictionStatus(id, 'approved')
+    const p = predictions.find(x => x.id === id)
+    const asset = p?.causal?.assetHint
+    // ★승인=인과 확정 아님. 점검/조치 실행을 승인 게이트로(request_real_action)
+    addApproval({
+      id: `ap_pred_${id}_${p.occurrences}`, assetId: asset, assetName: ASSET_KO[asset] || asset,
+      action: 'inspector_restart', actionLabel: '점검·재교정', kind: 'inspection',
+      status: 'pending', ts: Date.now(),
+    })
+  }
+
+  return (
+    <Box sx={{ mt: 1, pt: 1, borderTop: '1px solid rgba(255,255,255,0.06)' }}>
+      <Typography sx={{ ...head, color: '#f0a35a' }}>⚠ 예지보전 — 가설(확인 요망)</Typography>
+      {active.map(p => (
+        <Box key={p.id} sx={{ mt: 0.8, p: 1, borderRadius: 1.5,
+          bgcolor: 'rgba(240,163,90,0.06)', border: '1px solid rgba(240,163,90,0.28)' }}>
+          {/* 통계(위치 집중) — 숫자 신뢰도 + 표본 */}
+          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
+            <Typography sx={{ fontSize: 11, color: '#e2e8f0' }}>
+              위치 집중 <b style={{ color: '#f0a35a' }}>{(p.statConfidence ?? 0).toFixed(2)}</b>
+              <span style={{ fontSize: 9, color: '#6b7280' }}> (통계)</span>
+            </Typography>
+            <Typography sx={{ fontSize: 9, color: '#9aa0aa' }}>
+              최근 {p.total}검사 중 {p.ngTotal}회
+            </Typography>
+          </Box>
+          <Typography sx={{ fontSize: 9, color: '#6b7280' }}>
+            셀 {p.cell} · {p.status === 'approved' ? '점검 지시됨' : `재발 ${p.occurrences}회`}
+          </Typography>
+          {/* 인과 — 가설·미검증 (숫자 신뢰도 없음, 단정 아님) */}
+          <Typography sx={{ fontSize: 11, mt: 0.4 }}>
+            <span style={{ color: '#6b7280' }}>추정 원인 · </span>
+            <span style={{ color: '#facc15' }}>{p.causal?.hypothesis}</span>
+            <span style={{ color: '#9aa0aa' }}> (가설·미검증)</span>
+          </Typography>
+          {/* 점검 지시 — 원인 확정 아님 */}
+          {p.status !== 'approved' ? (
+            <Button size="small" variant="outlined" color="warning" fullWidth
+              onClick={order(p.id)}
+              sx={{ mt: 0.8, minHeight: 34, fontSize: 10 }}>
+              점검 지시 (승인 게이트)
+            </Button>
+          ) : (
+            <Typography sx={{ fontSize: 9, color: '#34d399', mt: 0.6 }}>
+              ✓ 점검 지시 — 승인 게이트에서 실행 결정
+            </Typography>
+          )}
+        </Box>
+      ))}
+    </Box>
+  )
+}
+
 export default function RightPanel() {
   const sel = useSignalStore(s => s.selection)
   const uiMode = useUiMode()
@@ -337,6 +402,8 @@ export default function RightPanel() {
 
         <Box sx={{ flex: 1, minHeight: 0, overflowY: 'auto' }}>
           {tab === 'inspect' ? <ScanResult /> : <AssetHealthPanel />}
+          {/* T1-B 예지보전 카드 — 통계/인과 분리, 점검 지시 버튼 */}
+          <PredictiveCards />
         </Box>
       </Box>
     )

@@ -78,6 +78,17 @@ export default function VisionPiP({ open, onClose, data }) {
         ))}
       </div>
 
+      {/* T1-A: 2D(u,v)→3D 좌표 + blob 면적 */}
+      {Array.isArray(scan?.defect_xy) && (
+        <div style={{ fontSize: 10, color: '#9aa3b2', lineHeight: 1.5 }}>
+          <span style={{ color: '#6b7280' }}>좌표 · </span>
+          (u,v)=({scan.defect_xy[0].toFixed(3)}, {scan.defect_xy[1].toFixed(3)}) → 3D 표면 투영(decal·laser)
+          {scan?.defect_blob?.area != null && (
+            <span> · blob {(scan.defect_blob.area * 100).toFixed(1)}%</span>
+          )}
+        </div>
+      )}
+
       {/* VLM 구조화 분석 */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
         <span style={{ ...secHead, marginTop: 0 }}>VLM 분석</span>

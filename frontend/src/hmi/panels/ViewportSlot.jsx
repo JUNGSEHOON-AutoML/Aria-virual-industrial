@@ -8,6 +8,7 @@ import QCLine from '../scene/QCLine'
 import VisionPiP from './VisionPiP'
 import ApprovalGate from './ApprovalGate'
 import MaintenanceController from '../scene/MaintenanceController'
+import PredictiveMaintenance from '../scene/PredictiveMaintenance'
 import { useSignalStore } from '../signalStore'
 import { selectScan, selectKpi } from '../signalReducer'
 
@@ -124,6 +125,8 @@ export default function ViewportSlot() {
 
       {/* 유지보수 루프(비시각) — Observe→Think→Act 규칙기반 (Spec 2) */}
       <MaintenanceController />
+      {/* 예지보전 루프(비시각) — 결함 패턴 집계 → 가설 (T1-B) */}
+      <PredictiveMaintenance />
 
       {/* Vision PiP — 카메라/시편 클릭 시 슬라이드 (명세 A·§4) */}
       <VisionPiP open={pip} data={pipData} onClose={() => setPip(false)} />

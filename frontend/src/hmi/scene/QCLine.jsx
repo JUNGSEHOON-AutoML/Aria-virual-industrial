@@ -7,7 +7,7 @@ import { Text, Html } from '@react-three/drei'
 import { useSignalStore } from '../signalStore'
 import { selectKpi, selectScan } from '../signalReducer'
 import { createQCFlowEngine } from './flowEngine'
-import { deriveAssets, statusColor, statusKo } from './assetModel'
+import { deriveAssets, statusColor, statusKo, ASSET_GROUND } from './assetModel'
 import { makeFloorTexture } from './textures'
 import InfeedSource from './prefabs/InfeedSource'
 import RollerConveyor from './prefabs/RollerConveyor'
@@ -83,6 +83,36 @@ function ScoreBoard({ scan, counts }) {
           ? `LAST ${verdict}  SCORE ${score}  ${cls}`
           : 'WAITING FOR INSPECTION...'}
       </Text>
+    </group>
+  )
+}
+
+// T1-B: 의심 스테이션(셀=설비) 강조 — 흐르는 부품 아님(오해 적음). 펄스 링 + Html.
+function SuspectStation({ assetId, hypothesis, conf }) {
+  const ground = ASSET_GROUND[assetId]
+  const ringRef = useRef()
+  useFrame(({ clock }) => {
+    if (!ringRef.current) return
+    const s = 1 + Math.sin(clock.getElapsedTime() * 3) * 0.18
+    ringRef.current.scale.setScalar(s)
+    ringRef.current.material.opacity = 0.4 + Math.abs(Math.sin(clock.getElapsedTime() * 3)) * 0.4
+  })
+  if (!ground) return null
+  return (
+    <group position={[ground[0], 0.04, ground[2]]}>
+      <mesh ref={ringRef} rotation={[-Math.PI / 2, 0, 0]}>
+        <ringGeometry args={[0.5, 0.7, 32]} />
+        <meshStandardMaterial color="#f0a35a" emissive="#f0a35a" emissiveIntensity={1.0}
+          transparent opacity={0.6} side={2} depthWrite={false} />
+      </mesh>
+      <Html position={[0, 1.7, 0]} center distanceFactor={16} style={{ pointerEvents: 'none' }}>
+        <div style={{ fontFamily: "'Courier New',monospace", fontSize: 11, whiteSpace: 'nowrap',
+          padding: '3px 9px', borderRadius: 6, background: 'rgba(28,18,8,0.9)',
+          border: '1px solid #f0a35a', color: '#f0a35a', textAlign: 'center' }}>
+          ⚠ 예지: {hypothesis}<br />
+          <span style={{ fontSize: 9, color: '#cbd5e1' }}>위치 집중 {conf.toFixed(2)} (가설·미검증)</span>
+        </div>
+      </Html>
     </group>
   )
 }
@@ -204,6 +234,14 @@ export default function QCLine({ environment = 'control_room', onOpenPiP }) {
   // 설비 건전성 — 기존 신호에서 파생(3D 오버레이 라벨용)
   const assets = deriveAssets(kpi, scan, nowRef.current)
 
+  // T1-B: 활성 예지 가설 → 의심 스테이션 강조(중복 asset 1개로)
+  const predictions = useSignalStore(s => s.predictions) || []
+  const suspectByAsset = {}
+  predictions.filter(p => p.status === 'pending' || p.status === 'approved').forEach(p => {
+    const a = p.causal?.assetHint
+    if (a && (!suspectByAsset[a] || p.statConfidence > suspectByAsset[a].statConfidence)) suspectByAsset[a] = p
+  })
+
   return (
     <group>
       {/* 환경 구조 */}
@@ -260,6 +298,11 @@ export default function QCLine({ environment = 'control_room', onOpenPiP }) {
 
       {/* 유지보수 에이전트 아바타 (Spec 2) */}
       <WorkerAgent />
+
+      {/* T1-B: 의심 스테이션 강조(예지 가설) */}
+      {Object.entries(suspectByAsset).map(([a, p]) => (
+        <SuspectStation key={a} assetId={a} hypothesis={p.causal.hypothesis} conf={p.statConfidence} />
+      ))}
 
       {/* Prompt 2: 병렬 컨베이어 행(거대 공장 느낌) — 후방 2개 데코 라인 */}
       {[-6, -11].map((z, i) => (

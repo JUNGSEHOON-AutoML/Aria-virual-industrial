@@ -1,7 +1,7 @@
 // signalStore (zustand) — 단일 WS·단일 ingest = "모든 신호의 유일한 지점".
 // reducer 기반 구조화 상태 + (구 twinStore 호환) raw 타입 팬아웃을 동시에 제공한다.
 import { create } from 'zustand'
-import { initialState, applyMessage } from './signalReducer'
+import { initialState, applyMessage, upsertPrediction, sweepPredictions } from './signalReducer'
 import { DATA_ROOT } from './sceneModel'
 import { pushType, subscribeType, getLatestType } from './signalFanout'
 import {
@@ -44,6 +44,10 @@ export const useSignalStore = create((set, get) => ({
 
   // ── Agentic 유지보수 트윈(Spec 2) — Simulate-then-Approve ──
   setAgent: (patch) => set((s) => ({ agent: { ...s.agent, ...patch } })),
+  upsertPrediction: (hyp) => set((s) => ({ predictions: upsertPrediction(s.predictions, hyp) })),
+  setPredictionStatus: (id, status) => set((s) => ({
+    predictions: s.predictions.map((p) => (p.id === id ? { ...p, status } : p)) })),
+  sweepPredictions: (nowMs) => set((s) => ({ predictions: sweepPredictions(s.predictions, nowMs) })),
   addApproval: (req) => set((s) => ({ approvals: [req, ...s.approvals].slice(0, 50) })),
   resolveApproval: (id, status) => set((s) => ({
     approvals: s.approvals.map((a) => (a.id === id ? { ...a, status } : a)) })),
