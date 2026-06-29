@@ -24,12 +24,12 @@ ac20440 feat(validation): virtual FAT acceptance gate — PASS/FAIL vs configura
 ## 🛠️ 주요 수정 및 추가 내역
 
 ### 1. 가상 FAT 합격 판정 게이트 (PASS/FAIL) 연동
-* **[validate.py](file:///userHome/userhome4/sehoon/ARIA-Anomaly-Reasoning-Intelligence-Agent--main/validation/validate.py)**: `run_validation()`에 `criteria` 인자를 지원하여 임계치를 초과하지 않는 escape율(놓침 ≤ 5%) 및 오검출율(FP ≤ 20%)에 근거해 `PASS`/`FAIL` 합격 판정(`fat_verdict`)을 연동했습니다.
-* **[app.py](file:///userHome/userhome4/sehoon/ARIA-Anomaly-Reasoning-Intelligence-Agent--main/app.py)**: `/api/sim/validate` 호출 시 동적으로 기준을 수신하고, WebSocket을 통해 `FAT` 에이전트 상태를 브로드캐스트합니다.
-* **[SimulationView.jsx](file:///userHome/userhome4/sehoon/ARIA-Anomaly-Reasoning-Intelligence-Agent--main/frontend/src/components/SimulationView.jsx)**: 시뮬레이션 결과 화면에 가상 FAT PASS/FAIL 결과 뱃지 및 합격 기준 텍스트를 렌더링하도록 반영했습니다.
+* **[validate.py](file:///userHome/userhome4/sehoon/ARIArefactored/validation/validate.py)**: `run_validation()`에 `criteria` 인자를 지원하여 임계치를 초과하지 않는 escape율(놓침 ≤ 5%) 및 오검출율(FP ≤ 20%)에 근거해 `PASS`/`FAIL` 합격 판정(`fat_verdict`)을 연동했습니다.
+* **[app.py](file:///userHome/userhome4/sehoon/ARIArefactored/app.py)**: `/api/sim/validate` 호출 시 동적으로 기준을 수신하고, WebSocket을 통해 `FAT` 에이전트 상태를 브로드캐스트합니다.
+* **[SimulationView.jsx](file:///userHome/userhome4/sehoon/ARIArefactored/frontend/src/components/SimulationView.jsx)**: 시뮬레이션 결과 화면에 가상 FAT PASS/FAIL 결과 뱃지 및 합격 기준 텍스트를 렌더링하도록 반영했습니다.
 
 ### 2. 3D 가상 산업현장 다중 라인 (<FactoryLine />) 확장
-* **[factory.jsx](file:///userHome/userhome4/sehoon/ARIA-Anomaly-Reasoning-Intelligence-Agent--main/frontend/src/sim/factory.jsx)**:
+* **[factory.jsx](file:///userHome/userhome4/sehoon/ARIArefactored/frontend/src/sim/factory.jsx)**:
   - **다중 생산 라인**: 단일 라인을 `ProductionLine` 컴포넌트로 분리하고 z=3, z=5, z=6.5 오프셋을 주어 3개의 라인이 동시에 부품을 분류하도록 확장했습니다.
   - **작업자 (Workers)**: 라인 통로에 작업자 5명을 배치하고, 들숨(Y축 바이브레이션) 및 고갯짓(머리 회전) idle 애니메이션을 주었습니다.
   - **산업 설비 (Equipment)**: 관절 각도가 수평/수직으로 회전하는 로봇팔 2대, 제어판 에미시브 점등창, 황색 안전통로선, 기둥 및 상단 구조물 빔 골조를 배치했습니다.

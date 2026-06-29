@@ -357,16 +357,29 @@ function Workers() {
   )
 }
 
-function RobotArm({ position }) {
+// jointState: { j1_key, j2_key, j3_key } — 백엔드 WS joint_state 이벤트의 joints 객체에서 꺼낸 값.
+// null이면 Math.sin idle fallback (R-1 이전 동작 유지).
+function RobotArm({ position, jointState = null, side = 'L' }) {
   const j1 = useRef()
   const j2 = useRef()
+  const j3 = useRef()
   useFrame((s) => {
     const t = s.clock.elapsedTime
-    if (j1.current) j1.current.rotation.y = Math.sin(t * 0.5) * 0.6
-    if (j2.current) j2.current.rotation.z = Math.sin(t * 0.7) * 0.5 + 0.3
+    if (jointState) {
+      // 백엔드 관절각을 그대로 반영 (R-2 모니터 브릿지)
+      if (j1.current) j1.current.rotation.y = jointState[`${side}_j1`] ?? 0
+      if (j2.current) j2.current.rotation.z = jointState[`${side}_j2`] ?? 0.3
+      if (j3.current) j3.current.rotation.z = jointState[`${side}_j3`] ?? 0
+    } else {
+      // mujoco 미연결 시 idle 애니메이션 (기존 동작)
+      if (j1.current) j1.current.rotation.y = Math.sin(t * 0.5) * 0.6
+      if (j2.current) j2.current.rotation.z = Math.sin(t * 0.7) * 0.5 + 0.3
+    }
   })
+  const active = !!jointState
   return (
     <group position={position}>
+      {/* 베이스 — 활성(백엔드 연결) 시 그리퍼 색 강조 */}
       <mesh castShadow>
         <cylinderGeometry args={[0.25, 0.3, 0.3, 12]} />
         <meshStandardMaterial color="#2d3240" metalness={0.7} />
@@ -381,21 +394,27 @@ function RobotArm({ position }) {
             <boxGeometry args={[0.6, 0.12, 0.12]} />
             <meshStandardMaterial color="#3a4150" metalness={0.6} />
           </mesh>
-          <mesh position={[0.6, 0, 0]}>
-            <boxGeometry args={[0.1, 0.18, 0.18]} />
-            <meshStandardMaterial color="#1FB8CD" emissive="#1FB8CD" emissiveIntensity={0.4} />
-          </mesh>
+          <group ref={j3} position={[0.6, 0, 0]}>
+            <mesh>
+              <boxGeometry args={[0.1, 0.18, 0.18]} />
+              <meshStandardMaterial
+                color="#1FB8CD"
+                emissive="#1FB8CD"
+                emissiveIntensity={active ? 1.0 : 0.4}
+              />
+            </mesh>
+          </group>
         </group>
       </group>
     </group>
   )
 }
 
-function Equipment() {
+function Equipment({ jointState = null }) {
   return (
     <group>
-      <RobotArm position={[-4.5, 0.5, 4.2]} />
-      <RobotArm position={[4.5, 0.5, 5.8]} />
+      <RobotArm position={[-4.5, 0.5, 4.2]} jointState={jointState} side="L" />
+      <RobotArm position={[4.5, 0.5, 5.8]}  jointState={jointState} side="R" />
       {/* 제어판 */}
       <group position={[-5.5, 0.5, 3]}>
         <mesh position={[0, 0.5, 0]} castShadow>
@@ -583,7 +602,7 @@ function LearningCore({ trainState }) {
   )
 }
 
-export default function FactoryLine({ classes = [], classResults = {}, looping, cycle, validation, trainState }) {
+export default function FactoryLine({ classes = [], classResults = {}, looping, cycle, validation, trainState, jointState = null }) {
   const lines = (classes && classes.length) ? classes : MVTEC_CLASSES
   const baseZ = 3, gap = 2.0
   return (
@@ -594,7 +613,7 @@ export default function FactoryLine({ classes = [], classResults = {}, looping, 
           ngProb={classResults[cid]?.escape_rate ?? 0.12} />
       ))}
       <Workers />
-      <Equipment />
+      <Equipment jointState={jointState} />
       <StatusBoard cycle={cycle} validation={validation} looping={looping} />
       <LearningCore trainState={trainState} />
     </group>

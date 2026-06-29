@@ -1,6 +1,7 @@
 #!/bin/bash
 # ARIA (Anomaly Reasoning Intelligence Agent) 통합 시작 스크립트
-# 백엔드(FastAPI, 8080) + 프론트엔드(React/Vite, 5173) 동시 구동
+# 단일 URL: FastAPI(8080)가 React 빌드(frontend/dist)를 직접 서빙 → 접속은 http://localhost:8080 하나로.
+# (개발용 Vite HMR이 필요하면 맨 아래 주석 블록 참고)
 set -e
 
 # GPU 0 하드웨어 오류 우회 (동작하는 1, 2번 GPU만 사용)
@@ -25,43 +26,39 @@ pkill -f "uvicorn app:app" 2>/dev/null || true
 pkill -f "vite"            2>/dev/null || true
 sleep 1
 
-# ── React 프론트엔드 빌드 (dist 생성) ──
-echo "📦 [0/2] React 프론트엔드 빌드 중..."
+# ── React 프론트엔드 빌드 (dist 생성 → FastAPI가 서빙) ──
+echo "📦 [0/1] React 프론트엔드 빌드 중..."
 cd "$FRONTEND_DIR"
 $NPM run build
 cd "$ROOT_DIR"
 
-# ── FastAPI 백엔드 기동 (포트 8080) ──
-echo "🚀 [1/2] ARIA FastAPI 백엔드 시작 중... (port: 8080)"
+# ── FastAPI 백엔드 기동 (포트 8080, dist를 직접 서빙) ──
+echo "🚀 [1/1] ARIA 시작 중... (단일 포트 8080)"
 nohup $PYTHON -m uvicorn app:app \
     --host 0.0.0.0 \
     --port 8080 \
     --reload \
     > logs/backend_$(date +%Y%m%d).log 2>&1 &
 BACKEND_PID=$!
-echo "  ✅ 백엔드 PID: $BACKEND_PID"
+echo "  ✅ PID: $BACKEND_PID"
 echo "  📋 로그: tail -f logs/backend_$(date +%Y%m%d).log"
 
-# 백엔드 기동 대기
+# 기동 대기
 sleep 2
 
-# ── React 프론트엔드 개발 서버 기동 (포트 5173) ──
-echo "🚀 [2/2] React 프론트엔드 개발 서버 시작 중... (port: 5173)"
-cd "$FRONTEND_DIR"
-export BACKEND_HOST=localhost
-export VITE_API_URL=""
-nohup $NPM run dev \
-    > $ROOT_DIR/logs/frontend_$(date +%Y%m%d).log 2>&1 &
-FRONTEND_PID=$!
-echo "  ✅ 프론트엔드 PID: $FRONTEND_PID"
-echo "  📋 로그: tail -f $ROOT_DIR/logs/frontend_$(date +%Y%m%d).log"
-
 echo ""
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-echo "  🖥️  ARIA Dashboard (React)  →  http://localhost:5173"
-echo "  🔧 FastAPI Backend          →  http://localhost:8080"
+echo "  🖥️  ARIA Dashboard          →  http://localhost:8080"
+echo "  🔧 API (동일 포트)           →  http://localhost:8080/api/..."
 echo "  📡 WebSocket Chat           →  ws://localhost:8080/ws/chat"
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+echo "  ✅ 접속 주소가 8080 하나로 통일되었습니다."
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 echo ""
-echo "종료하려면: pkill -f 'uvicorn app:app' && pkill -f 'vite'"
+echo "종료하려면: pkill -f 'uvicorn app:app'"
 
+# ──────────────────────────────────────────────────────────────────────────
+# [선택] 개발 중 Vite HMR(즉시 반영)이 필요할 때만 아래를 수동 실행:
+#   cd frontend && VITE_API_URL="" BACKEND_HOST=localhost npm run dev   # → http://localhost:5173
+# 이 경우 5173(프론트 HMR) + 8080(API) 두 포트를 쓰게 됩니다. 평상시엔 빌드+8080 단일 권장.
+# ──────────────────────────────────────────────────────────────────────────

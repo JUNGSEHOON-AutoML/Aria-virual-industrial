@@ -4,8 +4,8 @@ import react from '@vitejs/plugin-react'
 // Docker 컨테이너(172.20.0.2)에서 호스트 백엔드(8000)에 접근
 // Linux Docker: host.docker.internal 미동작 → 게이트웨이 IP 직접 사용
 // BACKEND_HOST 환경변수로 오버라이드 가능
-const BACKEND_HOST = process.env.BACKEND_HOST || 'backend'
-const BACKEND_PORT = process.env.BACKEND_PORT || '8080'
+const BACKEND_HOST = process.env.BACKEND_HOST || 'localhost'
+const BACKEND_PORT = process.env.BACKEND_PORT || '8200'
 const BACKEND_URL = `http://${BACKEND_HOST}:${BACKEND_PORT}`
 const WS_URL = `ws://${BACKEND_HOST}:${BACKEND_PORT}`
 

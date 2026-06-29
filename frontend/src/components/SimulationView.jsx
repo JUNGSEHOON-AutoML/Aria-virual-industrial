@@ -144,7 +144,7 @@ export default function SimulationView() {
   const [defectRatio, setDefectRatio] = useState(0.3)
 
   // MVTec AD 데이터셋 루트 경로 및 클래스별 결과 상태 추가
-  const [mvtecRoot, setMvtecRoot] = useState('/userHome/userhome4/sehoon/ARIA-Anomaly-Reasoning-Intelligence-Agent--main/data')
+  const [mvtecRoot, setMvtecRoot] = useState('/userHome/userhome4/sehoon/ARIArefactored/data')
   const [availableClasses, setAvailableClasses] = useState([])
   const [selectedClasses, setSelectedClasses]   = useState([])
   const [activeClass, setActiveClass]           = useState(null)
@@ -174,6 +174,7 @@ export default function SimulationView() {
   const [cycle, setCycle]       = useState(0)
   const [looping, setLooping]   = useState(false)
   const [loopError, setLoopError] = useState(null)
+  const [jointState, setJointState] = useState(null)  // R-2: 로봇 관절 상태 (WS joint_state)
 
   function armStall(ms) {                         // 무응답 ms 지나면 정지
     clearTimeout(trainTimerRef.current)
@@ -201,7 +202,9 @@ export default function SimulationView() {
       ws.onmessage = (e) => {
         try {
           const d = JSON.parse(e.data)
-          if (d.type === 'agent_status') {
+          if (d.type === 'joint_state') {
+            setJointState(d.joints)   // R-2: 로봇팔 포즈 업데이트
+          } else if (d.type === 'agent_status') {
             setSimAgents(a => ({ ...a, [d.agent]: { state: d.state, detail: d.detail } }))
           } else if (d.type === 'class_result') {
             setClassResults(prev => ({ ...prev, [d.classId]: d }))
@@ -288,33 +291,20 @@ export default function SimulationView() {
     }
   }
 
+  // Phase 2(C) 자가생성 루프 (phase2_autonomous_loop_spec.md §3-D)
+  // 3D 씬이 매 사이클 합성데이터를 만들어 학습→검증→반복. 3D가 데이터 원천.
   async function factoryLoop() {
     setLoopError(null); setLooping(true); loopRef.current = true
     let cyc = 0
-    const classes = (selectedClasses && selectedClasses.length) ? selectedClasses : MVTEC_CLASSES
     while (loopRef.current) {
-      for (const cid of classes) {
-        if (!loopRef.current) break
-        if (typeof setActiveClass === 'function') {
-          setActiveClass(cid)
-        }
-        const path = `${mvtecRoot}/${cid}`
-        try {
-          const t = await classTrain(cid, path)
-          if (t?.ok) {
-            await waitTrainingDone().catch(() => {})
-            await classValidate(cid, path)
-            await showResults(cid)
-          }
-        } catch (e) {
-          console.warn('[loop] class 실패:', cid, e)
-        }
-        if (!loopRef.current) break
-        await sleep(1500)
-      }
       setCycle(++cyc)
+      try {
+        await runCycle()                       // ① 합성데이터 생성 ② 학습 ③ 검증
+      } catch (e) {
+        setLoopError(String(e)); loopRef.current = false; break   // 단계 실패 → 정지
+      }
       if (!loopRef.current) break
-      await sleep(3000)
+      await sleep(3000)                          // 다음 사이클 전 대기
     }
     setLooping(false)
   }
@@ -556,7 +546,7 @@ export default function SimulationView() {
         <InspectionLights />
 
         <group ref={factoryGroupRef}>
-          <FactoryLine classes={selectedClasses} looping={looping} cycle={cycle} validation={validation} trainState={trainState} ngProb={ngProb} classResults={classResults} />
+          <FactoryLine classes={selectedClasses} looping={looping} cycle={cycle} validation={validation} trainState={trainState} ngProb={ngProb} classResults={classResults} jointState={jointState} />
         </group>
 
         {/* 3x3 입체 격자 결과물 갤러리 */}

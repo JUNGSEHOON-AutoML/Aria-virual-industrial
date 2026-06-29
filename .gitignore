@@ -64,3 +64,8 @@ scratch/
 Desktop/
 ~/
 *.db
+
+# Claude/Agent configs
+.claude/
+files (1)/
+

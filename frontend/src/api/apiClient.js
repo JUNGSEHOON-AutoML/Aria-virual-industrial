@@ -200,5 +200,23 @@ export async function classSamples(classId, mvtec_path) {
   return data
 }
 
+// ── 비전 검사 노드 (비병목 파이프라인 HMI) ──
+export async function inspectorStart(opts = {}) {
+  const { data } = await api.post('/api/inspector/start', opts)
+  return data
+}
+export async function inspectorStop() {
+  const { data } = await api.post('/api/inspector/stop', {})
+  return data
+}
+export async function inspectorSetLatency(opts) {
+  const { data } = await api.post('/api/inspector/set_latency', opts)
+  return data
+}
+export async function inspectorState() {
+  const { data } = await api.get('/api/inspector/state')
+  return data
+}
+
 export default api
 

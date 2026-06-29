@@ -2229,6 +2229,201 @@ async def shutdown_event():
     print("[EventBus] 중앙 비동기 이벤트 버스 중지 완료")
 
 
+# ── R-2 모니터 브릿지: 로봇 관절 상태를 WS로 스트리밍 ──────────────────────
+@app.post("/api/robot/demo")
+async def robot_demo(payload: dict = Body(...)):
+    """백엔드 관절 상태를 WS joint_state 이벤트로 브로드캐스트.
+
+    - action="start" → 백그라운드 루프 시작 (0.05 s 간격, ~20 fps)
+    - action="stop"  → 루프 정지
+    Three.js RobotArm이 이 이벤트를 받아 Math.sin 대신 실제 각도로 포즈.
+    """
+    import asyncio, math, threading
+
+    action = payload.get("action", "start")
+
+    if action == "stop":
+        app.state._robot_demo_running = False
+        return {"ok": True, "action": "stopped"}
+
+    if getattr(app.state, "_robot_demo_running", False):
+        return {"ok": True, "action": "already_running"}
+
+    app.state._robot_demo_running = True
+    loop = asyncio.get_running_loop()
+
+    def _demo_loop():
+        import time
+        t = 0.0
+        while getattr(app.state, "_robot_demo_running", False):
+            # 데모 웨이브폼 (mujoco 없이도 "진짜 데이터처럼" 보이는 부드러운 움직임)
+            js = {
+                "L_j1": math.sin(t * 0.5) * 0.6,
+                "L_j2": math.sin(t * 0.7) * 0.5 + 0.3,
+                "L_j3": math.sin(t * 0.9) * 0.4,
+                "L_g":  math.sin(t * 1.2) * 0.015,
+                "R_j1": math.sin(t * 0.5 + 1.0) * 0.6,
+                "R_j2": math.sin(t * 0.7 + 1.0) * 0.5 + 0.3,
+                "R_j3": math.sin(t * 0.9 + 1.0) * 0.4,
+                "R_g":  math.sin(t * 1.2 + 1.0) * 0.015,
+            }
+            asyncio.run_coroutine_threadsafe(
+                manager.broadcast({"type": "joint_state", "joints": js}), loop
+            )
+            t += 0.05
+            time.sleep(0.05)
+
+    threading.Thread(target=_demo_loop, daemon=True).start()
+    return {"ok": True, "action": "started"}
+
+
+# ── 비전 검사 노드 (ARIA_Vision_Inspection_Node_Spec §10-5: 비병목 노드 HMI 연동) ──
+# 비병목 파이프라인을 /api/inspector/* 로 제어하고, 텔레메트리를 WS(inspector_result/state)로 송출.
+def _inspector_collect_images(category: str, limit: int = 60):
+    import glob
+    from pathlib import Path
+    cat = BASE_DIR / "data" / category
+    good, defect = [], []
+    test = cat / "test"
+    if test.is_dir():
+        for sub in sorted(test.iterdir()):
+            if not sub.is_dir():
+                continue
+            files = [str(p) for p in sorted(sub.glob("*")) if p.suffix.lower() in IMG_EXT]
+            (good if sub.name.lower() == "good" else defect).extend(files)
+    out = []
+    for i in range(max(len(good), len(defect))):
+        if i < len(good):
+            out.append(good[i])
+        if i < len(defect):
+            out.append(defect[i])
+    return out[:limit] if limit else out
+
+
+@app.post("/api/inspector/start")
+async def inspector_start(payload: dict = Body(default={})):
+    import asyncio
+    from aria.inspection.async_pipeline import AsyncPipeline, MockDriver, mock_infer_factory
+    from aria.inspection.twin_bridge import TwinBridge, WsFloorSink
+
+    if getattr(app.state, "_inspector", None) and app.state._inspector.get("running"):
+        return {"ok": False, "error": "이미 가동 중 — 먼저 stop"}
+
+    mode = payload.get("mode", "mock")           # mock | patchcore
+    category = payload.get("category", "bottle")
+    tau = float(payload.get("tau", 0.5))
+    q = int(payload.get("queue", 4))
+    workers = int(payload.get("workers", 2))
+    line_hz = float(payload.get("line_hz", 20.0))
+    # 라이브 조정용 홀더(set_latency가 갱신)
+    holder = {"infer_ms": float(payload.get("infer_ms", 40.0)),
+              "extra_ms": float(payload.get("inflate_ms", 0.0))}
+
+    # 추론 함수 구성 (추론 재작성 X — 기존 디텍터 주입)
+    if mode in ("patchcore", "combined"):
+        import time as _t
+        from aria.inspection.detectors import PatchCoreDetector
+        bank = BANKS_DIR / f"{category}.npy"
+        if not bank.exists():
+            return {"ok": False, "error": f"뱅크 없음: banks/{category}.npy — 먼저 학습/생성"}
+        detector = PatchCoreDetector(str(bank), tau=tau)
+        if mode == "combined":
+            from aria.inspection.detectors import YoloDetector, CombinedDetector
+            w = BASE_DIR / "models" / "yolo" / f"{category}.pt"
+            if not w.exists():
+                return {"ok": False, "error": f"YOLO weights 없음: models/yolo/{category}.pt — 먼저 학습"}
+            detector = CombinedDetector(detector, YoloDetector(str(w), conf=0.25), tau=tau)
+        images = _inspector_collect_images(category, limit=80)
+        if not images:
+            return {"ok": False, "error": f"이미지 없음: data/{category}/test"}
+        detector.infer(images[0])                 # 백본/모델 웜업
+
+        def infer_fn(image):
+            out = detector.infer(image)
+            if holder["extra_ms"] > 0:
+                _t.sleep(holder["extra_ms"] / 1000.0)
+            return out
+        driver = MockDriver(grab_ms=2.0, image_paths=images)
+    else:
+        infer_fn = mock_infer_factory(lambda: holder["infer_ms"])
+        driver = MockDriver(grab_ms=2.0, seed=7)
+
+    loop = asyncio.get_running_loop()
+
+    def _ws(msg):
+        # 파이프라인 result/state → inspector_* 타입으로 내부 트윈(/ws) 송출
+        t = msg.get("type")
+        out = {**msg, "type": f"inspector_{t}"}
+        asyncio.run_coroutine_threadsafe(manager.broadcast(out), loop)
+
+    bridge = TwinBridge([WsFloorSink(_ws)])
+    pipe = AsyncPipeline(driver, infer_fn, tau=tau, queue_capacity=q,
+                         n_workers=workers, telemetry_cb=bridge.telemetry_cb())
+    pipe.start()
+    bridge.start_state_pump(pipe.snapshot, hz=5.0)
+
+    import threading
+
+    def _trigger_loop():
+        interval = 1.0 / max(0.1, line_hz)
+        while app.state._inspector.get("running"):
+            pipe.trigger()
+            time.sleep(interval)
+
+    app.state._inspector = {"running": True, "pipe": pipe, "bridge": bridge,
+                            "holder": holder, "mode": mode, "category": category}
+    th = threading.Thread(target=_trigger_loop, name="inspector-trigger", daemon=True)
+    th.start()
+    app.state._inspector["trigger_thread"] = th
+    return {"ok": True, "mode": mode, "category": category, "line_hz": line_hz}
+
+
+@app.post("/api/inspector/stop")
+async def inspector_stop():
+    ins = getattr(app.state, "_inspector", None)
+    if not ins or not ins.get("running"):
+        return {"ok": True, "note": "이미 정지"}
+    ins["running"] = False
+    th = ins.get("trigger_thread")
+    if th:
+        th.join(timeout=1.0)
+    try:
+        ins["pipe"].stop()
+        ins["bridge"].stop()
+    except Exception as e:
+        return {"ok": True, "warn": str(e)}
+    return {"ok": True}
+
+
+@app.post("/api/inspector/set_latency")
+async def inspector_set_latency(payload: dict = Body(...)):
+    ins = getattr(app.state, "_inspector", None)
+    if not ins or not ins.get("running"):
+        return {"ok": False, "error": "가동 중 아님"}
+    h = ins["holder"]
+    if "infer_ms" in payload:
+        h["infer_ms"] = float(payload["infer_ms"])
+    if "inflate_ms" in payload:
+        h["extra_ms"] = float(payload["inflate_ms"])
+    return {"ok": True, "infer_ms": h["infer_ms"], "inflate_ms": h["extra_ms"]}
+
+
+@app.get("/api/inspector/state")
+async def inspector_state():
+    ins = getattr(app.state, "_inspector", None)
+    if not ins or not ins.get("running"):
+        return {"ok": True, "running": False}
+    pipe = ins["pipe"]
+    snap = pipe.snapshot()
+    recent = [
+        {"part_id": r.part_id, "verdict": r.verdict, "score": round(r.score, 4),
+         "latency_ms": r.latency_ms, "defect_class": r.defect_class}
+        for r in list(pipe.results())[-12:]
+    ]
+    return {"ok": True, "running": True, "mode": ins["mode"],
+            "category": ins["category"], "snapshot": snap, "recent": recent}
+
+
 @app.get("/{full_path:path}")
 async def spa_fallback(full_path: str):
     """SPA fallback redirecting all unknown routes to React root."""

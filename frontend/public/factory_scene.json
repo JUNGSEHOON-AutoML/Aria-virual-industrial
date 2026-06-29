@@ -1,0 +1,84 @@
+{
+  "factory": {
+    "id": "aria-qc-line",
+    "version": "1.0",
+    "environment": {
+      "tone": "control_room",
+      "floor": "checker_grid",
+      "shadows": true
+    },
+    "equipment": [
+      {
+        "id": "src1", "type": "InfeedSource",
+        "material": "metal_nut",
+        "pos": [-8.5, 0, 0],
+        "ports": { "out": "p1" }
+      },
+      {
+        "id": "c1", "type": "RollerConveyor",
+        "length": 6.2, "width": 0.95, "speed": 0.6,
+        "pos": [-4.5, 0, 0],
+        "ports": { "in": "p1", "out": "p2" }
+      },
+      {
+        "id": "booth1", "type": "VisionBooth",
+        "category": "metal_nut",
+        "pos": [0, 0, 0],
+        "bind": { "state": "inspector_state", "result": "inspector_result" },
+        "ports": { "in": "p2", "out": "p3" }
+      },
+      {
+        "id": "st1", "type": "StackLight",
+        "attach": "booth1",
+        "pos": [0.6, 0, -1.55],
+        "bind": { "state": "inspector_state", "verdict": "inspector_result.verdict" }
+      },
+      {
+        "id": "c2", "type": "RollerConveyor",
+        "length": 3.0, "width": 0.95, "speed": 0.6,
+        "pos": [2.0, 0, 0],
+        "ports": { "in": "p3", "out": "p4" }
+      },
+      {
+        "id": "div1", "type": "Diverter",
+        "pos": [3.6, 0, 0],
+        "bind": { "route": "inspector_result.verdict" },
+        "ports": { "in": "p4", "ok": "p5", "ng": "p6" }
+      },
+      {
+        "id": "c3ok", "type": "RollerConveyor",
+        "length": 4.5, "width": 0.75, "speed": 0.6,
+        "pos": [6.0, 0, 1.0],
+        "ports": { "in": "p5", "out": "p7" }
+      },
+      {
+        "id": "c3ng", "type": "RollerConveyor",
+        "length": 4.5, "width": 0.75, "speed": 0.6,
+        "pos": [6.0, 0, -1.0],
+        "ports": { "in": "p6", "out": "p8" }
+      },
+      {
+        "id": "binOK", "type": "SortBin",
+        "kind": "OK",
+        "pos": [8.8, 0, 1.0],
+        "ports": { "in": "p7" }
+      },
+      {
+        "id": "binNG", "type": "SortBin",
+        "kind": "NG",
+        "pos": [8.8, 0, -1.0],
+        "ports": { "in": "p8" }
+      }
+    ],
+    "connections": [
+      ["src1.out", "c1.in"],
+      ["c1.out", "booth1.in"],
+      ["booth1.out", "c2.in"],
+      ["c2.out", "div1.in"],
+      ["div1.ok", "c3ok.in"],
+      ["div1.ng", "c3ng.in"],
+      ["c3ok.out", "binOK.in"],
+      ["c3ng.out", "binNG.in"]
+    ]
+  }
+}
