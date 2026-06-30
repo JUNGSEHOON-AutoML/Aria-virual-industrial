@@ -6,11 +6,34 @@ import time
 from pathlib import Path
 
 import numpy as np
-from fastapi import APIRouter, UploadFile, File, Form
+from fastapi import APIRouter, UploadFile, File, Form, Body
 
-from server.config import UPLOAD_DIR, BANKS_DIR
+from server.config import UPLOAD_DIR, BANKS_DIR, ROOT, DATA_ROOT
 
 router = APIRouter(prefix="/api", tags=["analyze"])
+
+
+@router.post("/analyze_path")
+async def analyze_path(payload: dict = Body(...)):
+    """서버 측 이미지 경로 분석 → score/verdict + image_b64/heatmap_b64/defect_xy(결함 3D 뷰어용)."""
+    category = payload.get("category", "bottle")
+    path = payload.get("path")
+    tau = float(payload.get("tau", 0.5))
+    bank = BANKS_DIR / f"{category}.npy"
+    if not bank.exists():
+        return {"ok": False, "error": f"bank 없음 — 먼저 학습: {category}"}
+    p = Path(path).resolve() if path else None
+    allowed = [ROOT.resolve(), DATA_ROOT.resolve()]
+    if not p or not p.is_file() or not any(str(p).startswith(str(a)) for a in allowed):
+        return {"ok": False, "error": "허용되지 않은 이미지 경로"}
+    from aria.inspection.detectors import PatchCoreDetector
+    from aria.inspection.result_encode import enrich_result
+    det = PatchCoreDetector(str(bank), tau=tau)
+    out = det.infer(str(p))
+    score = float(out.get("score", -1.0))
+    ex = enrich_result(str(p), out.get("heatmap"))
+    return {"ok": True, "category": category, "score": round(score, 4), "tau": tau,
+            "verdict": "NG" if score > tau else "OK", **ex}
 
 
 @router.post("/analyze")

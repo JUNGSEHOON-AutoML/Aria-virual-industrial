@@ -3,6 +3,7 @@
 """
 import asyncio
 import threading
+import time
 import urllib.parse
 from pathlib import Path
 
@@ -38,11 +39,28 @@ async def class_train(payload: dict = Body(...)):
             bank = build_bank(goods, run_id=cid)
             np.save(str(BANKS_DIR / f"{cid}.npy"), bank)
             emit("done", f"bank {bank.shape[0]} 패치")
+            # F2: 클래스 학습 완료 — 전용 신호(준비됨). UI가 클래스별 ready 추적.
+            broadcast_threadsafe(loop, {
+                "type": "class_trained", "classId": cid,
+                "n_patches": int(bank.shape[0]), "ready": True, "ts": time.time(),
+            })
         except Exception as e:
             emit("idle", f"실패: {e}")
 
     threading.Thread(target=worker, daemon=True).start()
     return {"ok": True, "classId": cid, "n_good": len(goods)}
+
+
+@router.get("/classes/status")
+def classes_status():
+    """학습 완료(뱅크 보유) 클래스 목록 — 초기 로드 시 UI ready 배지용. banks/*.npy 스캔."""
+    out = []
+    try:
+        for p in sorted(BANKS_DIR.glob("*.npy")):
+            out.append({"classId": p.stem, "trained": True, "mtime": p.stat().st_mtime})
+    except Exception:
+        pass
+    return {"ok": True, "classes": out}
 
 
 @router.post("/class/validate")
@@ -90,12 +108,12 @@ async def class_samples(classId: str, mvtec_path: str, n: int = 9):
     if good_dir.is_dir():
         for p in sorted(good_dir.glob("*"))[:max(1, n // 3)]:
             if p.suffix.lower() in IMG_EXT:
-                items.append({"url": url(p), "label": "OK"})
+                items.append({"url": url(p), "label": "OK", "path": str(p)})
     for d in sorted(test.iterdir()):
         if d.is_dir() and d.name != "good":
             for p in sorted(d.glob("*"))[:2]:
                 if p.suffix.lower() in IMG_EXT:
-                    items.append({"url": url(p), "label": "NG", "defect": d.name})
+                    items.append({"url": url(p), "label": "NG", "defect": d.name, "path": str(p)})
                 if len(items) >= n:
                     break
         if len(items) >= n:

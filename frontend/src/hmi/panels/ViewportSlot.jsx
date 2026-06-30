@@ -7,6 +7,8 @@ import { OrbitControls, Grid, Environment, Lightformer } from '@react-three/drei
 import QCLine from '../scene/QCLine'
 import VisionPiP from './VisionPiP'
 import ApprovalGate from './ApprovalGate'
+import ReplayBar from './ReplayBar'
+import SceneErrorBoundary from './SceneErrorBoundary'
 import MaintenanceController from '../scene/MaintenanceController'
 import PredictiveMaintenance from '../scene/PredictiveMaintenance'
 import { useSignalStore } from '../signalStore'
@@ -93,6 +95,7 @@ export default function ViewportSlot() {
 
   return (
     <div style={{ width: '100%', height: '100%', position: 'relative' }}>
+      <SceneErrorBoundary>
       <Canvas
         shadows
         camera={{ position: [11.5, 8.5, 12], fov: 42 }}
@@ -122,6 +125,7 @@ export default function ViewportSlot() {
           target={[0.5, 0.8, 0]}
         />
       </Canvas>
+      </SceneErrorBoundary>
 
       {/* 유지보수 루프(비시각) — Observe→Think→Act 규칙기반 (Spec 2) */}
       <MaintenanceController />
@@ -133,6 +137,9 @@ export default function ViewportSlot() {
 
       {/* 승인 게이트 — 실 액션은 승인 후에만 (Simulate-then-Approve) */}
       <ApprovalGate />
+
+      {/* ① 3D 리플레이 블랙박스 — 데이터 되먹임으로 과거 재생 */}
+      <ReplayBar />
 
       {/* Prompt 1: 백엔드 끊김 경고 — 씬 freeze + 실데이터 강제(시늉 방지) */}
       {disconnected && (

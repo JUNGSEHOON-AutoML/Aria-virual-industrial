@@ -20,6 +20,7 @@
 """
 from __future__ import annotations
 
+import os
 import threading
 import time
 import random
@@ -290,6 +291,11 @@ class AsyncPipeline:
             )
             with self._results_lock:
                 self._results.append(res)
+            # 터미널 추론 로그(ARIA_LOG_RESULTS=1 일 때) — 추론 불변, stdout 한 줄.
+            if os.environ.get("ARIA_LOG_RESULTS"):
+                cls = f" cls={res.defect_class}" if res.defect_class else ""
+                print(f"[INSPECT] {res.part_id} {res.verdict:<3} score={res.score:.3f} "
+                      f"tau={res.tau:.2f} {res.latency_ms:6.1f}ms{cls}", flush=True)
             # 2D↔3D 시각화 보강(표현 레이어, 추론 불변) — image/heatmap/peak. 실패해도 무시.
             extra = {}
             try:

@@ -23,6 +23,22 @@ export const initialState = {
   detections: [],              // yolo_detection — 순찰 로봇 YOLO 동적 탐지(실 WS만)
   predictions: [],             // T1-B 예지 가설 — 상태기계(pending|approved|dismissed|resolved)
   report: [],                  // 에이전트 점검 보고서 — 자동 승인 모달 대신 누적(경보 피로 방지)
+  trained: {},                 // F2: classId -> {ready, n_patches, ts} 학습 완료(검사 준비) 상태
+  lanes: {},                   // 멀티레인: laneIdx -> {category, kpi, scan} (각 레인 다른 클래스)
+  activeMode: null,            // 현재 가동 모델(mock|patchcore|combined) — 공정 투명성
+  replay: { active: false, frames: [], t: 0, t0: 0, t1: 0, playing: false, speed: 1, markers: [] },  // ① 3D 리플레이
+}
+
+// ① 리플레이: 기록 프레임을 t시점까지 reducer로 되먹여 그 순간의 씬 상태 재구성(순수).
+// 반환 = 씬 표출 상태(kpi/scan/detectors/alarms/lines/agents/joints)만. 헤드리스 검증 가능.
+export function rebuildSceneAt(frames, t) {
+  let st = { ...initialState }
+  for (const f of frames) {
+    if (f.ts > t) break
+    const p = applyMessage(st, f.msg)
+    if (p) st = { ...st, ...p }
+  }
+  return { kpi: st.kpi, scan: st.scan, detectors: st.detectors, alarms: st.alarms, lines: st.lines, agents: st.agents, joints: st.joints }
 }
 
 // ── 에이전트 보고서: 자동 모달 대신 발견사항을 누적. 동일 key 병합(occurrences++). ──
@@ -74,10 +90,24 @@ export function applyMessage(state, msg) {
   if (!t) return null
   switch (t) {
     case 'inspector_state':
+      if (msg.lane != null)   // 멀티레인: 레인별 kpi + 전역 kpi(메인 패널)도 갱신
+        return { kpi: { ...msg }, lanes: { ...state.lanes, [msg.lane]: { ...(state.lanes[msg.lane] || {}), category: msg.category, kpi: msg } } }
       return { kpi: { ...msg } }
+
+    case 'inspector_done': {   // 검사 1바퀴 완료 → 완료 메시지(멀티레인은 다음 클래스로 자동 전환)
+      const yld = msg.yield_rate != null ? `${(msg.yield_rate * 100).toFixed(0)}%` : '—'
+      const m = {
+        messages: [{ ts: Date.now(), kind: 'inspector_done',
+          text: `${msg.lane != null ? `레인${msg.lane} ` : ''}검사 완료 — ${msg.category || ''} · OK ${msg.n_ok ?? 0}/NG ${msg.n_ng ?? 0} · 수율 ${yld}` }, ...state.messages].slice(0, 200),
+      }
+      if (msg.lane == null) m.kpi = { ...state.kpi, state: 'done' }   // 단일 노드만 종료 처리
+      return m
+    }
 
     case 'inspector_result': {
       const patch = { scan: msg }
+      if (msg.lane != null)   // 멀티레인: 레인별 최신 결과 라우팅
+        patch.lanes = { ...state.lanes, [msg.lane]: { ...(state.lanes[msg.lane] || {}), category: msg.category, scan: msg } }
       const det = { ...state.detectors }
       if (msg.score != null && msg.score >= 0) det.patchcore = { score: msg.score, verdict: msg.verdict, tau: msg.tau }
       if (msg.defect_class || msg.bbox) det.yolo = { defect_class: msg.defect_class, bbox: msg.bbox }
@@ -91,6 +121,12 @@ export function applyMessage(state, msg) {
 
     case 'class_result':
       return { lines: { ...state.lines, [msg.classId]: msg } }
+
+    case 'class_trained':       // F2: 클래스 학습 완료(검사 준비됨)
+      return msg.classId
+        ? { trained: { ...state.trained, [msg.classId]: { ready: !!msg.ready, n_patches: msg.n_patches, ts: msg.ts } },
+            messages: [{ ts: Date.now(), kind: 'class_trained', text: `${msg.classId} 학습 완료 — 검사 준비됨 (${msg.n_patches} 패치)` }, ...state.messages].slice(0, 200) }
+        : null
 
     case 'yolo_detection': {
       // 순찰 로봇 YOLO 동적 탐지 — 실 WS 수신만(클라 위조 없음). 최근 12건 유지.

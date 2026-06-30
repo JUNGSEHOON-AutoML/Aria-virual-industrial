@@ -200,11 +200,30 @@ export async function classSamples(classId, mvtec_path) {
   return data
 }
 
+export async function classesStatus() {
+  const { data } = await api.get('/api/classes/status')
+  return data
+}
+
+export async function analyzePath(category, path, tau = 0.5) {
+  const { data } = await api.post('/api/analyze_path', { category, path, tau })
+  return data
+}
+
 // ── 비전 검사 노드 (비병목 파이프라인 HMI) ──
 export async function inspectorStart(opts = {}) {
   const { data } = await api.post('/api/inspector/start', opts)
   return data
 }
+export async function inspectorStartLanes(opts = {}) {
+  const { data } = await api.post('/api/inspector/start_lanes', opts)
+  return data
+}
+export async function inspectorStopLanes() {
+  const { data } = await api.post('/api/inspector/stop_lanes')
+  return data
+}
+
 export async function inspectorStop() {
   const { data } = await api.post('/api/inspector/stop', {})
   return data

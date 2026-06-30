@@ -71,6 +71,53 @@ export default function VisionBooth({ position = [0, 0, 0], boothDwelling = fals
         <meshStandardMaterial color={ARCH} metalness={0.62} roughness={0.38} />
       </mesh>
 
+      {/* 머신 하우징(상단 후드) + 액센트 엣지 */}
+      <mesh position={[0, aH + 0.30, 0]} castShadow>
+        <boxGeometry args={[aW + 0.34, 0.42, aD + 0.18]} />
+        <meshStandardMaterial color="#1a2030" metalness={0.7} roughness={0.3} />
+      </mesh>
+      <mesh position={[0, aH + 0.10, (aD + 0.18) / 2]}>
+        <boxGeometry args={[aW + 0.34, 0.03, 0.02]} />
+        <meshStandardMaterial color={DOME_C} emissive={DOME_C} emissiveIntensity={0.8} />
+      </mesh>
+
+      {/* 베이스 플레이트 + 경고 스트라이프(좌우 기둥 하단) */}
+      {[-aW / 2, aW / 2].map((x, i) => (
+        <group key={i} position={[x, 0.04, 0]}>
+          <mesh receiveShadow>
+            <boxGeometry args={[0.34, 0.08, aD + 0.12]} />
+            <meshStandardMaterial color="#11151d" metalness={0.5} roughness={0.5} />
+          </mesh>
+          <mesh position={[0, 0.05, 0]}>
+            <boxGeometry args={[0.30, 0.012, aD + 0.05]} />
+            <meshStandardMaterial color="#f5c518" emissive="#f5c518" emissiveIntensity={0.2} />
+          </mesh>
+        </group>
+      ))}
+
+      {/* 측면 HMI 스크린(우측 기둥) — verdict 색 패널 */}
+      <group position={[aW / 2 + 0.02, aH * 0.62, aD / 2 - 0.05]} rotation={[0, -0.25, 0]}>
+        <mesh>
+          <boxGeometry args={[0.34, 0.26, 0.03]} />
+          <meshStandardMaterial color="#0a0e14" metalness={0.4} roughness={0.5} />
+        </mesh>
+        <mesh position={[0, 0, 0.02]}>
+          <boxGeometry args={[0.30, 0.22, 0.01]} />
+          <meshStandardMaterial color="#0a0e14" emissive={verdictColor} emissiveIntensity={0.5} />
+        </mesh>
+      </group>
+
+      {/* 링 라이트 LED 도트(검사 영역 조명 어레이) */}
+      {Array.from({ length: 10 }).map((_, i) => {
+        const a = (i / 10) * Math.PI * 2
+        return (
+          <mesh key={`led-${i}`} position={[Math.cos(a) * 0.38, aH * 0.55, Math.sin(a) * 0.30]}>
+            <sphereGeometry args={[0.016, 6, 6]} />
+            <meshStandardMaterial color={RING_C} emissive={RING_C} emissiveIntensity={0.6} />
+          </mesh>
+        )
+      })}
+
       {/* 돔/구형 라이트 — 검사 중 펄스 */}
       <mesh ref={domeRef} position={[0, aH - 0.22, 0]}>
         <sphereGeometry args={[0.19, 16, 16]} />

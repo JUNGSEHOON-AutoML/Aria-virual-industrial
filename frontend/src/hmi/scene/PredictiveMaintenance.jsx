@@ -17,14 +17,15 @@ export default function PredictiveMaintenance() {
   if (!engineRef.current) engineRef.current = createDefectPatternEngine()
   const lastPart = useRef(null)
 
-  // 실 inspector_result 1건 → 엔진 관찰 → 가설이면 predictions upsert
+  const replayActive = useSignalStore(s => s.replay.active)
+  // 실 inspector_result 1건 → 엔진 관찰 → 가설이면 predictions upsert (리플레이 중 제외)
   useEffect(() => {
-    if (!connected || !scan || !scan.part_id) return
+    if (!connected || replayActive || !scan || !scan.part_id) return
     if (scan.part_id === lastPart.current) return
     lastPart.current = scan.part_id
     const hyp = engineRef.current.observe(scan, { className: liveCategory, nowMs: Date.now() })
     if (hyp) upsertPrediction(hyp)
-  }, [scan, connected, liveCategory, upsertPrediction])
+  }, [scan, connected, replayActive, liveCategory, upsertPrediction])
 
   // 자동 해소 — NG 멎은 cell 가설을 일정 시간 후 가라앉힘
   useEffect(() => {

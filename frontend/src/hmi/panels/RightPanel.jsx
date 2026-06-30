@@ -7,6 +7,7 @@ import { DATA_ROOT } from '../sceneModel'
 import { useUiMode } from '../uiMode'
 import { deriveAssets, statusColor, statusKo, faultyAssets } from '../scene/assetModel'
 import { buildVlmReport } from '../scene/vlmReport'
+import DefectViewer from './DefectViewer'
 
 // 시뮬 지표 갱신용 — 1초마다 리렌더
 function useTick(ms = 1000) {
@@ -170,6 +171,25 @@ function ScoreGauge({ score, tau }) {
   )
 }
 
+// ── 공정 파이프라인 배너 — "지금 어떤 모델/공정으로 검사 중인지" 투명 표시 ──
+const PIPELINE = {
+  mock: '시뮬 드라이버 (실 추론 아님 — UI 점검용)',
+  patchcore: 'PatchCore 이상탐지 (DINO feature · 코사인 거리)',
+  combined: 'PatchCore 이상게이트 → 이상 시에만 YOLO 결함분류 (효율 라우팅)',
+}
+function ProcessBanner() {
+  const mode = useSignalStore(s => s.activeMode)
+  if (!mode) return null
+  return (
+    <Box sx={{ mb: 1, px: 1, py: 0.7, borderRadius: 1, bgcolor: 'rgba(31,184,205,0.07)',
+      border: '1px solid rgba(31,184,205,0.25)' }}>
+      <Typography sx={{ fontSize: 9, color: '#6b7280', letterSpacing: 0.5 }}>공정 · 모델</Typography>
+      <Typography sx={{ fontSize: 10.5, color: '#1FB8CD' }}>{mode}</Typography>
+      <Typography sx={{ fontSize: 9.5, color: '#9aa3b2', mt: 0.2 }}>{PIPELINE[mode] || '—'}</Typography>
+    </Box>
+  )
+}
+
 // ── Operator: 현재 스캔 결과 집중 표시 ─────────────────────────────────
 function ScanResult() {
   const scan = useSignalStore(s => s.scan)
@@ -183,8 +203,10 @@ function ScanResult() {
 
   if (!scan) {
     return (
-      <Box sx={{ height: '100%', display: 'flex', flexDirection: 'column',
-        alignItems: 'center', justifyContent: 'center', gap: 1 }}>
+      <Box sx={{ height: '100%', display: 'flex', flexDirection: 'column', gap: 1 }}>
+        <ProcessBanner />
+        <Box sx={{ flex: 1, display: 'flex', flexDirection: 'column',
+          alignItems: 'center', justifyContent: 'center', gap: 1 }}>
         <span style={{ fontSize: 28, color: '#4b5563' }}>◎</span>
         <Typography sx={{ fontSize: 11, color: '#6b7280', letterSpacing: 1 }}>
           검사 대기 중...
@@ -192,12 +214,14 @@ function ScanResult() {
         {k.state && <Typography sx={{ fontSize: 10, color: '#4b5563' }}>
           INSP {String(k.state).toUpperCase()}
         </Typography>}
+        </Box>
       </Box>
     )
   }
 
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%', gap: 0.5 }}>
+      <ProcessBanner />
       <Typography sx={head}>검사 결과</Typography>
 
       {/* 대형 verdict */}
@@ -396,8 +420,11 @@ function ReportPanel() {
   const report = useSignalStore(s => s.report) || []
   const addApproval = useSignalStore(s => s.addApproval)
   const setReportStatus = useSignalStore(s => s.setReportStatus)
+  const trained = useSignalStore(s => s.trained) || {}
+  const [viewer, setViewer] = useState(false)
   const open = report.filter(r => r.status === 'open')
   const done = report.filter(r => r.status !== 'open').slice(0, 6)
+  const anyTrained = Object.keys(trained).length > 0
 
   const act = (r) => {
     // 운영자가 보고서에서 조치를 시작할 때만 승인 게이트 생성(원인 확정 아님)
@@ -411,6 +438,16 @@ function ReportPanel() {
 
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.8 }}>
+      {/* 결함 3D 뷰어 — 학습 완료 클래스의 결함을 360° 회전 검수 */}
+      <Button size="small" variant="outlined" disabled={!anyTrained}
+        onClick={() => setViewer(true)}
+        sx={{ fontSize: 10, minHeight: 32, mb: 0.5,
+          color: anyTrained ? '#1FB8CD' : '#4b5563',
+          borderColor: anyTrained ? '#1FB8CD55' : 'rgba(255,255,255,0.1)' }}>
+        🔄 결함 3D 뷰어 (360° 검수)
+      </Button>
+      <DefectViewer open={viewer} onClose={() => setViewer(false)} category="bottle" />
+
       <Typography sx={head}>에이전트 점검 보고서</Typography>
       {!open.length && (
         <Typography sx={{ fontSize: 11, color: '#6b7280' }}>

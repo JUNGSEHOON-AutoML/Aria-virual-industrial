@@ -4,14 +4,18 @@
 import { useRef, useState, useMemo, useEffect } from 'react'
 import { useFrame } from '@react-three/fiber'
 import { Text, Html } from '@react-three/drei'
+import * as THREE from 'three'
 import { useSignalStore } from '../signalStore'
 import { selectKpi, selectScan } from '../signalReducer'
 import { createQCFlowEngine } from './flowEngine'
 import { deriveAssets, statusColor, statusKo, ASSET_GROUND } from './assetModel'
 import { makeFloorTexture } from './textures'
+import { heightTexFromDataURI } from './inspectVfx'
+import ReliefPatch from './ReliefPatch'
+import { evaluateDeviation } from './deviationModel'
 import InfeedSource from './prefabs/InfeedSource'
 import RollerConveyor from './prefabs/RollerConveyor'
-import VisionBooth from './prefabs/VisionBooth'
+import InspectionArm from './prefabs/InspectionArm'
 import Diverter from './prefabs/Diverter'
 import SortBin from './prefabs/SortBin'
 import StackLight from './prefabs/StackLight'
@@ -46,8 +50,17 @@ function partPos(p) {
     case 'conveyor': return lerp3(WP.src, WP.boothIn, p.t)
     case 'dwell':    return [WP.booth[0], H + Math.sin(p.dwellT / 280) * 0.018, WP.booth[2]]
     case 'exit':     return lerp3(WP.booth, WP.divert, p.t)
-    case 'ok_lane':  return lerp3(WP.divert, WP.okEnd, p.t)
-    case 'ng_lane':  return lerp3(WP.divert, WP.ngEnd, p.t)
+    // 레인 진입: z(횡방향)는 앞 25%에서 빠르게 ±1로 이동 → 이후 벨트 위 직진(레인 이탈 방지)
+    case 'ok_lane': {
+      const x = WP.divert[0] + (WP.okEnd[0] - WP.divert[0]) * p.t
+      const z = WP.okEnd[2] * Math.min(1, p.t / 0.25)
+      return [x, H, z]
+    }
+    case 'ng_lane': {
+      const x = WP.divert[0] + (WP.ngEnd[0] - WP.divert[0]) * p.t
+      const z = WP.ngEnd[2] * Math.min(1, p.t / 0.25)
+      return [x, H, z]
+    }
     case 'done':     return p.verdict === 'NG' ? WP.ngEnd : WP.okEnd
     default:         return WP.booth
   }
@@ -60,11 +73,12 @@ function partColor(p) {
 }
 
 // 공장 전광판
-function ScoreBoard({ scan, counts }) {
+function ScoreBoard({ scan, kpi }) {
   const verdict = scan?.verdict
   const vColor = verdict === 'NG' ? '#f87171' : verdict === 'OK' ? '#34d399' : '#9aa3b2'
   const score = scan?.score != null ? scan.score.toFixed(3) : '--'
   const cls = scan?.defect_class || ''
+  const counts = { ok: kpi?.n_ok ?? 0, ng: kpi?.n_ng ?? 0, total: (kpi?.n_ok ?? 0) + (kpi?.n_ng ?? 0) }
 
   return (
     <group position={[0.5, 3.05, -2.8]}>
@@ -83,6 +97,195 @@ function ScoreBoard({ scan, counts }) {
           ? `LAST ${verdict}  SCORE ${score}  ${cls}`
           : 'WAITING FOR INSPECTION...'}
       </Text>
+    </group>
+  )
+}
+
+// F1: 선택 부품의 결함을 3D로 — 그 부품 record.heatmap_b64 → relief + 선택 링.
+function SelectedPartViz({ part, partPos }) {
+  const rec = part?.record
+  const heightTex = useMemo(
+    () => (rec?.heatmap_b64 ? heightTexFromDataURI(rec.heatmap_b64) : null),
+    [rec?.heatmap_b64])
+  if (!part || !rec) return null
+  const pos = partPos(part)
+  const isNG = rec.verdict === 'NG'
+  return (
+    <group>
+      {/* 선택 링 */}
+      <mesh position={[pos[0], pos[1] - 0.12, pos[2]]} rotation={[-Math.PI / 2, 0, 0]}>
+        <ringGeometry args={[0.16, 0.22, 24]} />
+        <meshStandardMaterial color="#38d9f5" emissive="#38d9f5" emissiveIntensity={1.0}
+          side={2} transparent opacity={0.85} depthWrite={false} />
+      </mesh>
+      {/* 결함 요철(heatmap displacement) — 부품 위로 띄움 */}
+      {heightTex && isNG && (
+        <ReliefPatch heightTex={heightTex} size={0.42} score={rec.score ?? 0.6}
+          position={[pos[0], pos[1] + 0.32, pos[2]]} />
+      )}
+      <Html position={[pos[0], pos[1] + 0.62, pos[2]]} center distanceFactor={12}
+        style={{ pointerEvents: 'none' }}>
+        <div style={{ fontFamily: "'Courier New',monospace", fontSize: 10, whiteSpace: 'nowrap',
+          padding: '2px 7px', borderRadius: 5, background: 'rgba(10,14,20,0.85)',
+          border: `1px solid ${isNG ? '#f87171' : '#34d399'}`, color: isNG ? '#f87171' : '#34d399' }}>
+          {rec.part_id} · {rec.verdict}{rec.defect_class ? ` · ${rec.defect_class}` : ''}
+        </div>
+      </Html>
+    </group>
+  )
+}
+
+// 완전한 검사 라인 1개(z 오프셋) — 모든 레인이 동일: 인입→검사팔→분기→OK/NG 분류함 + WP 라우팅.
+// laneScan(lanes[laneIdx]) 결과로 부품 스폰. 단일노드(레인0, lanes 비어있음)면 전역 scan 사용.
+function LaneAssembly({ z, laneIdx, interactive = false, onOpenPiP }) {
+  const lane = useSignalStore(s => s.lanes?.[laneIdx])
+  const globalScan = useSignalStore(selectScan)
+  const liveCategory = useSignalStore(s => s.liveCategory)
+  const activeMode = useSignalStore(s => s.activeMode)
+  const connected = useSignalStore(s => s.wsStatus) === 'open'
+  const replayActive = useSignalStore(s => s.replay.active)
+  const laneScan = lane ? lane.scan : (laneIdx === 0 ? globalScan : null)
+  const category = lane?.category ?? (laneIdx === 0 ? liveCategory : null)
+
+  const engineRef = useRef()
+  if (!engineRef.current) engineRef.current = createQCFlowEngine()
+  const eng = engineRef.current
+  const lastPart = useRef(null)
+  const blinkRef = useRef(1)
+  const acc = useRef(0)
+  const [, force] = useState(0)
+  const [selId, setSelId] = useState(null)
+
+  useEffect(() => {
+    if (replayActive) return
+    if (laneScan && laneScan.part_id && laneScan.part_id !== lastPart.current) {
+      lastPart.current = laneScan.part_id
+      eng.spawnFromResult(laneScan)
+    }
+  }, [laneScan, eng, replayActive])
+
+  useEffect(() => {
+    const k = (e) => { if (e.key === 'Escape') setSelId(null) }
+    window.addEventListener('keydown', k)
+    return () => window.removeEventListener('keydown', k)
+  }, [])
+
+  useFrame(({ clock }, dt) => {
+    if (!connected || replayActive) return
+    blinkRef.current = Math.sin(clock.getElapsedTime() * Math.PI * 3) > 0 ? 1.0 : 0.15
+    eng.tick(dt * 1000)
+    acc.current += dt
+    if (acc.current > 0.06) { acc.current = 0; force(n => (n + 1) % 999999) }
+  })
+
+  const counts = eng.counts
+  const parts = eng.parts
+  const running = connected && !replayActive
+  const isInspecting = parts.some(p => p.phase === 'dwell')
+  const divertNG = parts.some(p => p.phase === 'ng_lane') || laneScan?.verdict === 'NG'
+  const lastV = laneScan?.verdict
+  const lastColor = lastV === 'NG' ? '#f87171' : lastV === 'OK' ? '#34d399' : '#6b7280'
+  const pp = (p) => { const q = partPos(p); return [q[0], q[1], q[2] + z] }
+
+  return (
+    <group>
+      <InfeedSource position={[-8.5, 0, z]} />
+      <RollerConveyor length={6.2} width={0.95} position={[-4.5, H - 0.06, z]} running={running} speed={0.6} />
+      {/* 비전 검사 로봇 팔(연속 동작) */}
+      <InspectionArm position={[0, 0, z]} dwelling={isInspecting} laneScan={laneScan} />
+      <RollerConveyor length={3.0} width={0.95} position={[2.0, H - 0.06, z]} running={running} speed={0.6} />
+      <Diverter position={[3.6, 0, z]} ngActive={divertNG} />
+      <RollerConveyor length={4.5} width={0.75} position={[6.0, H - 0.06, z + 1.0]} running={running} speed={0.5} />
+      <RollerConveyor length={4.5} width={0.75} position={[6.0, H - 0.06, z - 1.0]} running={running} speed={0.5} />
+      <SortBin position={[8.8, 0, z + 1.0]} kind="OK" count={counts.ok} />
+      <SortBin position={[8.8, 0, z - 1.0]} kind="NG" count={counts.ng} />
+
+      {interactive && (
+        <>
+          <InspectionSpecimen position={[0, H + 0.15, z]} onTrigger={onOpenPiP} />
+          <mesh position={[0, 1.46, z]} onClick={(e) => { e.stopPropagation(); onOpenPiP?.() }}
+            onPointerOver={() => (document.body.style.cursor = 'pointer')}
+            onPointerOut={() => (document.body.style.cursor = 'default')}>
+            <sphereGeometry args={[0.12, 18, 18]} />
+            <meshStandardMaterial color="#1FB8CD" emissive="#1FB8CD" emissiveIntensity={0.85} />
+          </mesh>
+        </>
+      )}
+
+      {/* 부품 흐름(WP 라우팅 + z 오프셋) — 클릭 시 PiP */}
+      {parts.map(p => {
+        const q = pp(p); const col = partColor(p)
+        const ng = p.verdict === 'NG' && p.phase !== 'dwell'
+        const emissI = p.phase === 'dwell' ? 0.55 : ng ? 0.85 * blinkRef.current : p.verdict === 'OK' ? 0.28 : 0.06
+        return (
+          <mesh key={p.id} position={q} rotation={[Math.PI / 2, 0, 0]} castShadow
+            onClick={(e) => { e.stopPropagation(); setSelId(p.id); onOpenPiP?.(p.record || null) }}
+            onPointerOver={() => (document.body.style.cursor = 'pointer')}
+            onPointerOut={() => (document.body.style.cursor = 'default')}>
+            <cylinderGeometry args={[0.10, 0.10, 0.20, 16]} />
+            <meshStandardMaterial color={col} emissive={col} emissiveIntensity={emissI} metalness={0.8} roughness={0.3} />
+          </mesh>
+        )
+      })}
+
+      <SelectedPartViz part={parts.find(p => p.id === selId)} partPos={pp} />
+
+      {/* NG 마커 링 */}
+      {parts.filter(p => p.verdict === 'NG' && p.phase !== 'conveyor').map(p => {
+        const q = pp(p)
+        return (
+          <mesh key={`ng-${p.id}`} position={[q[0], H - 0.02, q[2]]} rotation={[-Math.PI / 2, 0, 0]}>
+            <ringGeometry args={[0.20, 0.30, 16]} />
+            <meshStandardMaterial color="#f87171" emissive="#f87171" emissiveIntensity={1.2 * blinkRef.current}
+              transparent opacity={0.6 * blinkRef.current} depthWrite={false} />
+          </mesh>
+        )
+      })}
+
+      {/* 레인 라벨 — 클래스/모델 + 마지막 결과 */}
+      <Html position={[-8.5, 1.55, z + 0.6]} center distanceFactor={16} style={{ pointerEvents: 'none' }}>
+        <div style={{ fontFamily: "'Courier New',monospace", fontSize: 11, whiteSpace: 'nowrap', textAlign: 'center',
+          padding: '3px 9px', borderRadius: 6, background: 'rgba(10,14,20,0.88)',
+          border: `1px solid ${laneIdx === 0 ? '#34d399' : '#1FB8CD'}`, color: laneIdx === 0 ? '#34d399' : '#1FB8CD' }}>
+          레인{laneIdx} · {category || '대기'}{activeMode ? ` · ${activeMode}` : ''}
+          <br />
+          <span style={{ fontSize: 9, color: '#cbd5e1' }}>
+            OK {counts.ok}/NG {counts.ng} · 최근{' '}
+            <span style={{ color: lastColor }}>{lastV || '—'}{laneScan?.score != null && laneScan.score >= 0 ? ` ${laneScan.score.toFixed(3)}` : ''}</span>
+          </span>
+        </div>
+      </Html>
+    </group>
+  )
+}
+
+// ② 병목 인디케이터 — 비전 스테이션 적색 박스 + BOTTLENECK 라벨(편차 진단).
+function BottleneckIndicator({ dev, position = [0, 1.0, 0] }) {
+  const ref = useRef()
+  useFrame(({ clock }) => {
+    if (!ref.current) return
+    const b = 0.4 + Math.abs(Math.sin(clock.getElapsedTime() * 4)) * 0.5
+    ref.current.material.opacity = b
+  })
+  if (!dev?.bottleneck) return null
+  return (
+    <group position={position}>
+      <lineSegments>
+        <edgesGeometry args={[new THREE.BoxGeometry(2.0, 2.2, 1.6)]} />
+        <lineBasicMaterial color="#f87171" />
+      </lineSegments>
+      <mesh ref={ref}>
+        <boxGeometry args={[2.0, 2.2, 1.6]} />
+        <meshBasicMaterial color="#f87171" transparent opacity={0.5} depthWrite={false} />
+      </mesh>
+      <Html position={[0, 1.5, 0]} center distanceFactor={14} style={{ pointerEvents: 'none' }}>
+        <div style={{ fontFamily: "'Courier New',monospace", fontSize: 12, whiteSpace: 'nowrap',
+          padding: '4px 10px', borderRadius: 6, background: 'rgba(30,8,10,0.92)',
+          border: '2px solid #f87171', color: '#f87171', fontWeight: 700, textAlign: 'center' }}>
+          ⚠ BOTTLENECK<br />
+          <span style={{ fontSize: 9, color: '#fca5a5', fontWeight: 400 }}>{dev.reason}</span>
+        </div>
+      </Html>
     </group>
   )
 }
@@ -118,24 +321,64 @@ function SuspectStation({ assetId, hypothesis, conf }) {
 }
 
 // 설비 머리 위 HTML 상태 오버레이 라벨 (drei <Html>)
-function AssetLabel({ asset }) {
+// ③ 디제틱 라벨 — 클릭 시 상세 팝업 토글(가장자리 패널 아님, 공간 내부)
+function AssetLabel({ asset, onClick, selected }) {
   const c = statusColor(asset.status)
   const blink = asset.status === 'Error'
   return (
     <Html position={asset.labelPos} center distanceFactor={12} zIndexRange={[20, 0]}
-      style={{ pointerEvents: 'none', userSelect: 'none' }}>
-      <div style={{
-        display: 'flex', alignItems: 'center', gap: 6, whiteSpace: 'nowrap',
-        fontFamily: "'Courier New', monospace", fontSize: 12, lineHeight: 1,
-        padding: '4px 9px', borderRadius: 6,
-        background: 'rgba(10,14,20,0.82)', border: `1px solid ${c}`,
-        color: c, boxShadow: `0 0 10px ${c}55`,
-        animation: blink ? 'ariaBlink 0.8s steps(2,end) infinite' : 'none',
-      }}>
+      style={{ pointerEvents: 'auto', userSelect: 'none' }}>
+      <div onClick={(e) => { e.stopPropagation(); onClick?.() }}
+        style={{
+          display: 'flex', alignItems: 'center', gap: 6, whiteSpace: 'nowrap', cursor: 'pointer',
+          fontFamily: "'Courier New', monospace", fontSize: 12, lineHeight: 1,
+          padding: '4px 9px', borderRadius: 6,
+          background: 'rgba(10,14,20,0.82)', border: `1px solid ${selected ? '#fff' : c}`,
+          color: c, boxShadow: `0 0 ${selected ? 14 : 10}px ${c}66`,
+          animation: blink ? 'ariaBlink 0.8s steps(2,end) infinite' : 'none',
+        }}>
         <span style={{ width: 7, height: 7, borderRadius: '50%', background: c,
           boxShadow: `0 0 6px ${c}` }} />
         <span style={{ color: '#e2e8f0' }}>{asset.name}</span>
         <span>· {statusKo(asset.status)}</span>
+        <span style={{ color: '#5b6677', fontSize: 10 }}>{selected ? '▾' : 'ⓘ'}</span>
+      </div>
+    </Html>
+  )
+}
+
+// ③ 객체 디제틱 팝업 — 클릭한 설비 옆 공간에 라이브 데이터 추적 표시.
+function DiegeticPopup({ asset, scan }) {
+  if (!asset) return null
+  const c = statusColor(asset.status)
+  const lp = asset.labelPos
+  const isCam = asset.id === 'vision_camera'
+  return (
+    <Html position={[lp[0] + 0.6, lp[1] - 0.35, lp[2]]} distanceFactor={11}
+      style={{ pointerEvents: 'none' }}>
+      <div style={{ fontFamily: "'Courier New',monospace", fontSize: 11, width: 190,
+        background: 'rgba(9,13,20,0.94)', border: `1px solid ${c}`, borderRadius: 8,
+        padding: '8px 10px', color: '#cbd5e1', boxShadow: `0 0 16px ${c}55` }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 5 }}>
+          <span style={{ color: '#e2e8f0', fontWeight: 700 }}>{asset.name}</span>
+          <span style={{ color: c }}>{statusKo(asset.status)}</span>
+        </div>
+        {asset.metrics.map((m, i) => (
+          <div key={i} style={{ display: 'flex', justifyContent: 'space-between', padding: '1px 0' }}>
+            <span style={{ color: '#6b7280' }}>{m.k}{m.sim ? ' ◦' : ''}</span>
+            <span style={{ color: '#cbd5e1' }}>{m.v}{m.unit ? ` ${m.unit}` : ''}</span>
+          </div>
+        ))}
+        {isCam && scan && (
+          <div style={{ marginTop: 5, paddingTop: 5, borderTop: '1px solid rgba(255,255,255,0.08)' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+              <span style={{ color: '#6b7280' }}>last</span>
+              <span style={{ color: scan.verdict === 'NG' ? '#f87171' : '#34d399' }}>
+                {scan.verdict} {scan.score != null && scan.score >= 0 ? scan.score.toFixed(3) : ''}
+              </span>
+            </div>
+          </div>
+        )}
       </div>
     </Html>
   )
@@ -182,60 +425,99 @@ function Structure({ environment }) {
         <boxGeometry args={[21, 0.17, 0.17]} />
         <meshStandardMaterial color={beamColor} metalness={0.52} roughness={0.48} />
       </mesh>
+
+      {isDark && <FactoryBackdrop />}
+    </group>
+  )
+}
+
+// 스마트 공장 배경 — 후벽·천장 트러스·천장 조명·측면 설비 실루엣(경량, 깊이감)
+function FactoryBackdrop() {
+  return (
+    <group>
+      {/* 후벽(패널) */}
+      <mesh position={[0.5, 4, -14]} receiveShadow>
+        <planeGeometry args={[80, 12]} />
+        <meshStandardMaterial color="#161d2a" metalness={0.2} roughness={0.9} />
+      </mesh>
+      {/* 후벽 가로 패널 라인 */}
+      {[1.5, 4, 6.5].map((y, i) => (
+        <mesh key={`wl-${i}`} position={[0.5, y, -13.95]}>
+          <planeGeometry args={[78, 0.04]} />
+          <meshStandardMaterial color="#26344a" emissive="#26344a" emissiveIntensity={0.2} />
+        </mesh>
+      ))}
+
+      {/* 천장 트러스(가로 빔 × 세로 빔) */}
+      {[-9, -3, 3, 9, 15].map((x, i) => (
+        <mesh key={`tx-${i}`} position={[x, 6.2, -2]} castShadow>
+          <boxGeometry args={[0.18, 0.18, 18]} />
+          <meshStandardMaterial color="#1c2536" metalness={0.5} roughness={0.5} />
+        </mesh>
+      ))}
+      {[-7, -1, 5].map((z, i) => (
+        <mesh key={`tz-${i}`} position={[3, 6.2, z]}>
+          <boxGeometry args={[44, 0.14, 0.14]} />
+          <meshStandardMaterial color="#1c2536" metalness={0.5} roughness={0.5} />
+        </mesh>
+      ))}
+
+      {/* 천장 조명 패널(발광) */}
+      {[-8, 0, 8, 16].map((x, i) => (
+        <mesh key={`cl-${i}`} position={[x, 6.0, 0]} rotation={[Math.PI / 2, 0, 0]}>
+          <planeGeometry args={[2.4, 0.5]} />
+          <meshStandardMaterial color="#0a0e14" emissive="#dbe8ff" emissiveIntensity={0.7} />
+        </mesh>
+      ))}
+
+      {/* 측면 설비 실루엣(캐비닛/랙) — 깊이감 */}
+      {[[-13, -8], [-13, 6], [16, -8], [16, 6], [22, 0]].map(([x, z], i) => (
+        <mesh key={`cab-${i}`} position={[x, 1.1, z]} castShadow>
+          <boxGeometry args={[1.6, 2.2, 1.2]} />
+          <meshStandardMaterial color="#1a2230" metalness={0.4} roughness={0.6} />
+        </mesh>
+      ))}
     </group>
   )
 }
 
 export default function QCLine({ environment = 'control_room', onOpenPiP }) {
-  const engineRef = useRef()
-  if (!engineRef.current) engineRef.current = createQCFlowEngine()
-  const engine = engineRef.current
-
   const kpi = useSignalStore(selectKpi)
   const scan = useSignalStore(selectScan)
-  const wsStatus = useSignalStore(s => s.wsStatus)
-  const connected = wsStatus === 'open'
+  const replayActive = useSignalStore(s => s.replay.active)
+  const lanesMap = useSignalStore(s => s.lanes)
+  const predictions = useSignalStore(s => s.predictions) || []
 
-  const [, force] = useState(0)
+  const nowRef = useRef(0)
   const acc = useRef(0)
-  // G3: NG 점멸용 — useFrame에서 매 프레임 갱신, 리렌더는 0.06s 간격
-  const blinkRef = useRef(1)
-  const nowRef = useRef(0)   // 설비 시뮬 지표용 시간(ms)
-  const lastPart = useRef(null)
+  const [, force] = useState(0)
+  const [selAsset, setSelAsset] = useState(null)   // ③ 디제틱 팝업 선택 설비
 
-  // Prompt 1: 실 inspector_result 1건 → 부품 1개 스폰(랜덤 없음)
   useEffect(() => {
-    if (scan && scan.part_id && scan.part_id !== lastPart.current) {
-      lastPart.current = scan.part_id
-      engine.spawnFromResult(scan)
-    }
-  }, [scan, engine])
+    const onKey = (e) => { if (e.key === 'Escape') setSelAsset(null) }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [])
 
+  // 설비 시뮬 지표용 시간 + 경량 리렌더(에셋/팝업 갱신). 레인 흐름은 각 LaneAssembly가 자체 tick.
   useFrame(({ clock }, dt) => {
-    // 백엔드 연결 끊기면 씬 애니메이션 정지(freeze) — 시늉 방지
-    if (!connected) return
     nowRef.current = clock.getElapsedTime() * 1000
-    blinkRef.current = Math.sin(clock.getElapsedTime() * Math.PI * 3) > 0 ? 1.0 : 0.15
-    engine.tick(dt * 1000)
     acc.current += dt
-    if (acc.current > 0.06) { acc.current = 0; force(n => (n + 1) % 999999) }
+    if (acc.current > 0.12) { acc.current = 0; force(n => (n + 1) % 999999) }
   })
 
-  const counts = engine.counts
-  const parts = engine.parts
-
-  // StackLight 신호: flowEngine(dwell) + store(kpi.state)
-  const isInspecting = kpi.state === 'running' || parts.some(p => p.phase === 'dwell')
+  const isRunning = String(kpi.state || '').toLowerCase().startsWith('run')
   const ngAlert = scan?.verdict === 'NG'
-  // NG 분기 중인 부품이 있으면 diverter 강조
-  const divertNG = parts.some(p => p.phase === 'ng_lane') || ngAlert
-  const lineRunning = String(kpi.state || '').toLowerCase().startsWith('run')
-
-  // 설비 건전성 — 기존 신호에서 파생(3D 오버레이 라벨용)
+  const dev = evaluateDeviation(kpi)
   const assets = deriveAssets(kpi, scan, nowRef.current)
 
-  // T1-B: 활성 예지 가설 → 의심 스테이션 강조(중복 asset 1개로)
-  const predictions = useSignalStore(s => s.predictions) || []
+  // 레인 구성: 멀티레인이면 lanes 키, 아니면 단일(레인0)
+  const laneIdxs = lanesMap && Object.keys(lanesMap).length
+    ? Object.keys(lanesMap).map(Number).sort((a, b) => a - b)
+    : [0]
+  const LANE_Z = { 0: 0, 1: -6, 2: -11, 3: -16 }
+
+  // T1-B: 의심 스테이션 강조
   const suspectByAsset = {}
   predictions.filter(p => p.status === 'pending' || p.status === 'approved').forEach(p => {
     const a = p.causal?.assetHint
@@ -244,116 +526,37 @@ export default function QCLine({ environment = 'control_room', onOpenPiP }) {
 
   return (
     <group>
-      {/* 환경 구조 */}
       <Structure environment={environment} />
+      <RobotArm position={[-6.2, 0, 4.4]} active={isRunning} />
 
-      {/* ── 장비 프리팹 ── */}
-      {/* 로봇 암 프롭 — 컨베이어 좌측, 절차적 애니메이션(키네매틱스 없음) */}
-      <RobotArm position={[-6.2, 0, 1.4]} active={isInspecting} />
+      {/* 동일 검사 라인 N개 — 레인0(인터랙티브) + 멀티레인 시 1·2 추가 */}
+      {laneIdxs.map(i => (
+        <LaneAssembly key={i} z={LANE_Z[i] ?? -6 - 5 * (i - 1)} laneIdx={i}
+          interactive={i === 0} onOpenPiP={onOpenPiP} />
+      ))}
 
-      <InfeedSource position={[-8.5, 0, 0]} />
-
-      {/* 인입 컨베이어 (src→booth) */}
-      <RollerConveyor length={6.2} width={0.95} position={[-4.5, H - 0.06, 0]}
-        running={lineRunning} speed={0.6} />
-
-      {/* 비전 부스 */}
-      <VisionBooth position={[0, 0, 0]} boothDwelling={isInspecting} />
-
-      {/* 검사 시편(클릭→스캔→Decal) + 카메라 노드(클릭→PiP) — 명세 A·B·C */}
-      <InspectionSpecimen position={[0, H + 0.15, 0]} onTrigger={onOpenPiP} />
-      <mesh position={[0, 1.46, 0]} onClick={(e) => { e.stopPropagation(); onOpenPiP?.() }}
-        onPointerOver={() => (document.body.style.cursor = 'pointer')}
-        onPointerOut={() => (document.body.style.cursor = 'default')}>
-        <sphereGeometry args={[0.12, 18, 18]} />
-        <meshStandardMaterial color="#1FB8CD" emissive="#1FB8CD" emissiveIntensity={0.85} />
-      </mesh>
+      {/* ② 병목 인디케이터(레인0 비전 스테이션) */}
+      <BottleneckIndicator dev={dev} position={[0, 1.0, 0]} />
 
       {/* Andon 신호탑 */}
-      <StackLight position={[0.6, 0, -1.55]}
-        running={true}
-        inspecting={isInspecting}
-        ngAlert={ngAlert} />
+      <StackLight position={[0.6, 0, -1.55]} running inspecting={isRunning} ngAlert={ngAlert || dev.bottleneck} />
 
-      {/* 후부 출구 컨베이어 (booth→divert) */}
-      <RollerConveyor length={3.0} width={0.95} position={[2.0, H - 0.06, 0]}
-        running={lineRunning} speed={0.6} />
+      {/* 설비 상태 라벨 + 디제틱 팝업 */}
+      {assets.map(a => (
+        <AssetLabel key={a.id} asset={a} selected={selAsset === a.id}
+          onClick={() => setSelAsset(selAsset === a.id ? null : a.id)} />
+      ))}
+      <DiegeticPopup asset={assets.find(a => a.id === selAsset)} scan={scan} />
 
-      {/* Diverter */}
-      <Diverter position={[3.6, 0, 0]} ngActive={divertNG} />
-
-      {/* OK 레인 컨베이어 */}
-      <RollerConveyor length={4.5} width={0.75} position={[6.0, H - 0.06, 1.0]}
-        running={lineRunning} speed={0.5} />
-      {/* NG 레인 컨베이어 */}
-      <RollerConveyor length={4.5} width={0.75} position={[6.0, H - 0.06, -1.0]}
-        running={lineRunning} speed={0.5} />
-
-      {/* 분류 함 */}
-      <SortBin position={[8.8, 0, 1.0]} kind="OK" count={counts.ok} />
-      <SortBin position={[8.8, 0, -1.0]} kind="NG" count={counts.ng} />
-
-      {/* 설비 상태 HTML 오버레이 라벨 (CCTV 관제) */}
-      {assets.map(a => <AssetLabel key={a.id} asset={a} />)}
-
-      {/* 유지보수 에이전트 아바타 (Spec 2) */}
+      {/* 유지보수 에이전트 + 예지 의심 강조 + 순찰 로봇 */}
       <WorkerAgent />
-
-      {/* T1-B: 의심 스테이션 강조(예지 가설) */}
       {Object.entries(suspectByAsset).map(([a, p]) => (
         <SuspectStation key={a} assetId={a} hypothesis={p.causal.hypothesis} conf={p.statConfidence} />
       ))}
-
-      {/* Prompt 2: 병렬 컨베이어 행(거대 공장 느낌) — 후방 2개 데코 라인 */}
-      {[-6, -11].map((z, i) => (
-        <group key={`pl-${i}`} position={[0, 0, z]}>
-          <RollerConveyor length={20} width={0.95} position={[0, H - 0.06, 0]} running={lineRunning} speed={0.5} />
-          <InfeedSource position={[-10.5, 0, 0]} />
-          <SortBin position={[10.6, 0, 0]} kind="OK" count={0} />
-        </group>
-      ))}
-
-      {/* Prompt 2·3: 순찰 로봇 개(웨이포인트 순찰 + 시야 프러스텀 + YOLO 3D 매핑) */}
       <PatrolRobot />
 
       {/* 전광판 */}
-      <ScoreBoard scan={scan} counts={counts} />
-
-      {/* ── 부품 흐름 (Material Flow) ── */}
-      {/* G3: OK=연녹 발광(0.28) / NG=강한 적색 발광+점멸(0.85×blink) / dwell=시안 펄스 */}
-      {parts.map(p => {
-        const pos = partPos(p)
-        const col = partColor(p)
-        const isNgPart = p.verdict === 'NG' && p.phase !== 'dwell'
-        const emissI = p.phase === 'dwell' ? 0.55
-          : isNgPart ? 0.85 * blinkRef.current
-          : p.verdict === 'OK' ? 0.28
-          : 0.06
-        return (
-          // 금속 프록시 부품(실린더, metalness 0.8) — 단순 큐브 폐기(명세 §1)
-          <mesh key={p.id} position={pos} rotation={[Math.PI / 2, 0, 0]} castShadow>
-            <cylinderGeometry args={[0.10, 0.10, 0.20, 16]} />
-            <meshStandardMaterial color={col} emissive={col} emissiveIntensity={emissI}
-              metalness={0.8} roughness={0.3} />
-          </mesh>
-        )
-      })}
-
-      {/* G3: NG 마커 링 — conveyor 제외(아직 판정 전), dwell 이후만 표시 */}
-      {parts.filter(p => p.verdict === 'NG' && p.phase !== 'conveyor').map(p => {
-        const pos = partPos(p)
-        return (
-          <mesh key={`ng-ring-${p.id}`}
-            position={[pos[0], H - 0.02, pos[2]]}
-            rotation={[-Math.PI / 2, 0, 0]}>
-            <ringGeometry args={[0.20, 0.30, 16]} />
-            <meshStandardMaterial color="#f87171" emissive="#f87171"
-              emissiveIntensity={1.2 * blinkRef.current}
-              transparent opacity={0.6 * blinkRef.current}
-              depthWrite={false} />
-          </mesh>
-        )
-      })}
+      <ScoreBoard scan={scan} kpi={kpi} />
     </group>
   )
 }

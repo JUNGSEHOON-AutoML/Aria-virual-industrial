@@ -9,8 +9,9 @@ export default function ApprovalGate() {
   const logEpisode = useSignalStore(s => s.logEpisode)
   const action = useSignalStore(s => s.action)
 
+  const replayActive = useSignalStore(s => s.replay.active)
   const pending = approvals.filter(a => a.status === 'pending')
-  if (!pending.length) return null
+  if (replayActive || !pending.length) return null   // 리플레이 중 읽기 전용
   const ap = pending[0]   // 한 번에 하나씩
 
   const approve = async () => {

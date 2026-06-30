@@ -22,7 +22,13 @@ export function createQCFlowEngine(cfg = {}) {
     seen.add(scan.part_id)
     if (seen.size > 256) seen.clear()             // 메모리 가드
     if (activeParts() >= C.maxActiveParts) return
-    parts.push({ id: ++nextId, partId: scan.part_id, phase: 'conveyor', t: 0, dwellT: 0, verdict: v })
+    // F1: 부품마다 검사 레코드 전체 보관 → 분류함에서 클릭 시 그 부품 결함 조회
+    const record = {
+      part_id: scan.part_id, verdict: v, score: scan.score, tau: scan.tau,
+      defect_class: scan.defect_class, defect_xy: scan.defect_xy, defect_blob: scan.defect_blob,
+      image_b64: scan.image_b64, heatmap_b64: scan.heatmap_b64,
+    }
+    parts.push({ id: ++nextId, partId: scan.part_id, phase: 'conveyor', t: 0, dwellT: 0, verdict: v, record })
     counts.total++
     if (v === 'OK') counts.ok++; else counts.ng++
   }

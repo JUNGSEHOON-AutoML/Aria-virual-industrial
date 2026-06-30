@@ -27,15 +27,16 @@ export default function VisionPiP({ open, onClose, data }) {
     return () => window.removeEventListener('keydown', onKey)
   }, [onClose])
 
-  const verdict = scan?.verdict
+  // F1: 클릭된 부품(data) 우선 — 헤더·이미지·VLM 전부 그 부품 record 기준. 없으면 최신 scan.
+  const r = (data && data.part_id) ? data : scan
+  const verdict = r?.verdict
   const vColor = verdict === 'NG' ? '#f87171' : verdict === 'OK' ? '#34d399' : '#9aa0aa'
 
-  // 이미지/heatmap: override(합성) 우선 → 실 scan
-  const img = data?.image_b64 || scan?.image_b64
-  const heat = data?.heatmap_b64 || scan?.heatmap_b64
+  const img = r?.image_b64
+  const heat = r?.heatmap_b64
   const isMock = !!data?._mock
 
-  const report = buildVlmReport(scan, isMock)
+  const report = buildVlmReport(r, isMock)
 
   return (
     <div style={{ ...wrap, transform: open ? 'translateX(0)' : 'translateX(100%)' }}>
@@ -44,9 +45,9 @@ export default function VisionPiP({ open, onClose, data }) {
       <h3 style={{ margin: 0, fontSize: 13, color: '#1FB8CD', letterSpacing: 1 }}>VISION PiP · 분석</h3>
 
       <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
-        <span style={chip}>PART {scan?.part_id || '—'}</span>
-        <span style={chip}>SCORE {scan?.score != null && scan.score >= 0 ? scan.score.toFixed(3) : '—'}</span>
-        <span style={chip}>τ {scan?.tau != null ? scan.tau.toFixed(3) : '—'}</span>
+        <span style={chip}>PART {r?.part_id || '—'}</span>
+        <span style={chip}>SCORE {r?.score != null && r.score >= 0 ? r.score.toFixed(3) : '—'}</span>
+        <span style={chip}>τ {r?.tau != null ? r.tau.toFixed(3) : '—'}</span>
         <span style={{ ...chip, color: vColor, fontWeight: 700 }}>{verdict || '—'}</span>
       </div>
 
@@ -79,12 +80,12 @@ export default function VisionPiP({ open, onClose, data }) {
       </div>
 
       {/* T1-A: 2D(u,v)→3D 좌표 + blob 면적 */}
-      {Array.isArray(scan?.defect_xy) && (
+      {Array.isArray(r?.defect_xy) && (
         <div style={{ fontSize: 10, color: '#9aa3b2', lineHeight: 1.5 }}>
           <span style={{ color: '#6b7280' }}>좌표 · </span>
-          (u,v)=({scan.defect_xy[0].toFixed(3)}, {scan.defect_xy[1].toFixed(3)}) → 3D 표면 투영(decal·laser)
-          {scan?.defect_blob?.area != null && (
-            <span> · blob {(scan.defect_blob.area * 100).toFixed(1)}%</span>
+          (u,v)=({r.defect_xy[0].toFixed(3)}, {r.defect_xy[1].toFixed(3)}) → 3D 표면 투영(decal·laser)
+          {r?.defect_blob?.area != null && (
+            <span> · blob {(r.defect_blob.area * 100).toFixed(1)}%</span>
           )}
         </div>
       )}
