@@ -359,6 +359,14 @@ function PredictiveCards() {
           <Typography sx={{ fontSize: 9, color: '#6b7280' }}>
             셀 {p.cell} · {p.status === 'approved' ? '점검 지시됨' : `재발 ${p.occurrences}회`}
           </Typography>
+          {/* 실 결함종류(YOLO) — 데이터 사실(가설 아님) */}
+          {p.defectClass && (
+            <Typography sx={{ fontSize: 11, mt: 0.4 }}>
+              <span style={{ color: '#6b7280' }}>반복 결함 · </span>
+              <span style={{ color: '#fca5a5' }}>{p.defectClass}</span>
+              <span style={{ color: '#9aa0aa' }}> ×{p.defectClassN} (YOLO 검출)</span>
+            </Typography>
+          )}
           {/* 인과 — 가설·미검증 (숫자 신뢰도 없음, 단정 아님) */}
           <Typography sx={{ fontSize: 11, mt: 0.4 }}>
             <span style={{ color: '#6b7280' }}>추정 원인 · </span>
@@ -383,27 +391,93 @@ function PredictiveCards() {
   )
 }
 
+// ── 에이전트 점검 보고서 — 자동 승인 모달 대신 누적. 운영자가 필요할 때만 조치. ──
+function ReportPanel() {
+  const report = useSignalStore(s => s.report) || []
+  const addApproval = useSignalStore(s => s.addApproval)
+  const setReportStatus = useSignalStore(s => s.setReportStatus)
+  const open = report.filter(r => r.status === 'open')
+  const done = report.filter(r => r.status !== 'open').slice(0, 6)
+
+  const act = (r) => {
+    // 운영자가 보고서에서 조치를 시작할 때만 승인 게이트 생성(원인 확정 아님)
+    addApproval({
+      id: `ap_rep_${r.id}`, assetId: r.asset, assetName: r.assetName,
+      action: r.action || 'inspector_restart', actionLabel: r.recommendedAction || '점검·재교정',
+      kind: 'inspection', status: 'pending', ts: Date.now(),
+    })
+    setReportStatus(r.id, 'acted')
+  }
+
+  return (
+    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.8 }}>
+      <Typography sx={head}>에이전트 점검 보고서</Typography>
+      {!open.length && (
+        <Typography sx={{ fontSize: 11, color: '#6b7280' }}>
+          ◎ 미처리 항목 없음 — 에이전트가 라인을 점검 중입니다.
+        </Typography>
+      )}
+      {open.map(r => (
+        <Box key={r.id} sx={{ p: 1, borderRadius: 1.5,
+          bgcolor: 'rgba(240,163,90,0.06)', border: '1px solid rgba(240,163,90,0.28)' }}>
+          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
+            <Typography sx={{ fontSize: 12, color: '#f0a35a' }}>⚠ {r.title}</Typography>
+            <Typography sx={{ fontSize: 9, color: '#6b7280' }}>
+              {r.occurrences > 1 ? `누적 ${r.occurrences}회` : ''} {new Date(r.ts).toLocaleTimeString()}
+            </Typography>
+          </Box>
+          <Typography sx={{ fontSize: 10, color: '#cbd5e1', mt: 0.3 }}>{r.observation}</Typography>
+          <Typography sx={{ fontSize: 10, color: '#9aa0aa', mt: 0.2 }}>
+            권장 조치 · {r.recommendedAction}
+          </Typography>
+          <Stack direction="row" spacing={1} sx={{ mt: 0.8 }}>
+            <Button size="small" variant="outlined" color="warning" onClick={() => act(r)}
+              sx={{ flex: 1, minHeight: 32, fontSize: 10 }}>조치 실행 (승인)</Button>
+            <Button size="small" variant="text" color="inherit"
+              onClick={() => setReportStatus(r.id, 'dismissed')}
+              sx={{ minHeight: 32, fontSize: 10 }}>확인</Button>
+          </Stack>
+        </Box>
+      ))}
+      {done.length > 0 && (
+        <Box sx={{ mt: 1, pt: 1, borderTop: '1px solid rgba(255,255,255,0.06)' }}>
+          <Typography sx={{ fontSize: 9, color: '#4b5563', mb: 0.4 }}>처리됨</Typography>
+          {done.map(r => (
+            <Typography key={r.id} sx={{ fontSize: 9, color: '#5b6677' }}>
+              {r.status === 'acted' ? '✓ 조치' : '— 확인'} · {r.title}
+            </Typography>
+          ))}
+        </Box>
+      )}
+    </Box>
+  )
+}
+
 export default function RightPanel() {
   const sel = useSignalStore(s => s.selection)
   const uiMode = useUiMode()
   const [tab, setTab] = useState('inspect')
+  const reportOpen = useSignalStore(s => (s.report || []).filter(r => r.status === 'open').length)
 
   if (uiMode === 'operator') {
     return (
       <Box sx={{ height: '100%', display: 'flex', flexDirection: 'column', p: 1.2,
         bgcolor: 'rgba(255,255,255,0.03)', borderRadius: 2,
         fontFamily: "'Courier New', monospace" }}>
-        {/* 탭: 검사 결과 ↔ 설비 건전성 */}
+        {/* 탭: 검사 / 설비 / 보고서 */}
         <ToggleButtonGroup size="small" exclusive value={tab}
           onChange={(_, v) => v && setTab(v)} fullWidth sx={{ mb: 1 }}>
-          <ToggleButton value="inspect" sx={{ fontSize: 10, py: 0.4 }}>검사 결과</ToggleButton>
-          <ToggleButton value="assets" sx={{ fontSize: 10, py: 0.4 }}>설비 건전성</ToggleButton>
+          <ToggleButton value="inspect" sx={{ fontSize: 10, py: 0.4 }}>검사</ToggleButton>
+          <ToggleButton value="assets" sx={{ fontSize: 10, py: 0.4 }}>설비</ToggleButton>
+          <ToggleButton value="report" sx={{ fontSize: 10, py: 0.4 }}>
+            보고서{reportOpen ? ` (${reportOpen})` : ''}
+          </ToggleButton>
         </ToggleButtonGroup>
 
         <Box sx={{ flex: 1, minHeight: 0, overflowY: 'auto' }}>
-          {tab === 'inspect' ? <ScanResult /> : <AssetHealthPanel />}
-          {/* T1-B 예지보전 카드 — 통계/인과 분리, 점검 지시 버튼 */}
-          <PredictiveCards />
+          {tab === 'inspect' && <><ScanResult /><PredictiveCards /></>}
+          {tab === 'assets' && <AssetHealthPanel />}
+          {tab === 'report' && <ReportPanel />}
         </Box>
       </Box>
     )

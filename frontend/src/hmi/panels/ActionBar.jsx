@@ -10,7 +10,8 @@ export default function ActionBar() {
   const stopNode = useSignalStore(s => s.stopNode)
   const loadClasses = useSignalStore(s => s.loadClasses)
   const action = useSignalStore(s => s.action)
-  const [det, setDet] = useState('mock')
+  // 기본 = combined(PatchCore 이상탐지 + YOLO 결함분류, GPU). mock/patchcore는 expert에서 선택.
+  const [det, setDet] = useState('combined')
   const [running, setRunning] = useState(false)
   const [err, setErr] = useState(null)
   const uiMode = useUiMode()
@@ -18,8 +19,11 @@ export default function ActionBar() {
 
   const start = async () => {
     setErr(null)
+    // patchcore는 추론 ~150ms라 라인 속도를 낮춰 과도 드롭 방지(mock은 20Hz)
+    const isMock = det === 'mock'
     const r = await startNode({
-      mode: det, category: 'bottle', line_hz: 20, queue: 4, infer_ms: 40, inflate_ms: 0, tau: 0.5,
+      mode: det, category: 'bottle',
+      line_hz: isMock ? 20 : 6, queue: 4, infer_ms: 40, inflate_ms: 0, tau: 0.5,
     }).catch(e => ({ ok: false, error: String(e) }))
     if (r?.ok) setRunning(true); else setErr(r?.error || '시작 실패')
   }

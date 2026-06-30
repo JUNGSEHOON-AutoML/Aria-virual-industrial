@@ -1,6 +1,6 @@
-// MaintenanceController — Observe→Think→Act 루프(규칙기반). 명세 §3·§8. 비시각(null 렌더).
-// Observe: 실 신호(kpi/scan)에서 결함 설비 도출. Think: 규칙(asset→tool) — ★실 LLM 교체 지점.
-// Act: 아바타 가상 시연(move→repair) → 실 액션은 승인 게이트 경유(Simulate-then-Approve).
+// MaintenanceController — Observe→Think→Act 루프(규칙기반). 비시각(null 렌더).
+// 변경: 자동 승인 모달 금지(경보 피로). 발견사항을 ★보고서에 누적 → 운영자가 보고서에서 필요할 때만 조치.
+// 아바타는 가상 점검 시연만 수행(시각). 실 액션 승인은 운영자가 보고서/카드에서 시작.
 import { useEffect, useRef } from 'react'
 import { useSignalStore } from '../signalStore'
 import { selectKpi, selectScan } from '../signalReducer'
@@ -18,7 +18,7 @@ export default function MaintenanceController() {
   const scan = useSignalStore(selectScan)
   const agent = useSignalStore(s => s.agent)
   const setAgent = useSignalStore(s => s.setAgent)
-  const addApproval = useSignalStore(s => s.addApproval)
+  const addReport = useSignalStore(s => s.addReport)
   const logEpisode = useSignalStore(s => s.logEpisode)
 
   const busy = useRef(false)          // 시연 진행 중 재진입 방지
@@ -49,20 +49,21 @@ export default function MaintenanceController() {
 
     const t1 = setTimeout(() => setAgent({ task: 'REPAIRING', targetAssetId: target.id }), 2400)
     const t2 = setTimeout(() => {
-      // 수리 시연 완료 → 실 액션은 승인 게이트로(자동 실행 금지)
-      const apprId = `ap_${seqRef.current}_${target.id}`
-      addApproval({
-        id: apprId, assetId: decision.assetId, assetName: decision.assetName,
-        action: decision.action, actionLabel: decision.actionLabel,
-        status: 'pending', ts: Date.now(),
+      // 점검 시연 완료 → ★승인 모달 대신 보고서에 누적(자동 모달 금지)
+      addReport({
+        key: `maint:${target.id}`, kind: 'maintenance', ts: Date.now(),
+        asset: decision.assetId, assetName: decision.assetName,
+        title: `${decision.assetName} ${target.status}`,
+        observation: `${decision.assetName} 상태 ${target.status} — 가상 점검 시연 완료`,
+        recommendedAction: decision.actionLabel, action: decision.action,
       })
       logEpisode({
-        ts: Date.now(), event: `${target.name} ${target.status}`, assetId: target.id,
-        action: decision.action, approval: 'pending', result: 'sim_done',
+        ts: Date.now(), event: `report ${target.name} ${target.status}`, assetId: target.id,
+        action: decision.action, approval: 'reported', result: 'sim_done',
       })
       setAgent({ task: 'IDLE', targetAssetId: null })
       busy.current = false
-      cooldownUntil.current = Date.now() + 12000   // 12s 쿨다운(반복 억제)
+      cooldownUntil.current = Date.now() + 30000   // 30s 쿨다운(보고 누적 억제)
     }, 4800)
 
     timers.current.push(t1, t2)

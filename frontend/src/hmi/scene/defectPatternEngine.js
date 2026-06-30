@@ -63,11 +63,14 @@ export function createDefectPatternEngine(cfg = {}) {
     const isNG = v === 'NG'
 
     let rec = cells.get(cellId)
-    if (!rec) { rec = { ng: 0, total: 0, streak: 0, window: [], row, col, g, cls }; cells.set(cellId, rec) }
+    if (!rec) { rec = { ng: 0, total: 0, streak: 0, window: [], dclass: {}, row, col, g, cls }; cells.set(cellId, rec) }
 
     // 해당 cell에만 갱신(다른 cell 이벤트는 이 cell streak/window 불변)
     rec.total += 1
-    if (isNG) { rec.ng += 1; rec.streak += 1 } else { rec.streak = 0 }
+    if (isNG) {
+      rec.ng += 1; rec.streak += 1
+      if (scan.defect_class) rec.dclass[scan.defect_class] = (rec.dclass[scan.defect_class] || 0) + 1  // 실 YOLO 분류 집계
+    } else { rec.streak = 0 }
     rec.window = [...rec.window, isNG].slice(-C.window)
 
     const ngInWin = rec.window.filter(Boolean).length
@@ -82,10 +85,15 @@ export function createDefectPatternEngine(cfg = {}) {
 
     const stat = statConfidence(rec.ng, rec.total, C)   // 위치 집중(통계, 누적 표본)
     const cause = causalHypothesis(row, g)
+    // 실 YOLO 우세 결함종류(있으면) — 가설을 실 데이터로 접지(LLM 없이)
+    const dom = Object.entries(rec.dclass).sort((a, b) => b[1] - a[1])[0]
+    const defectClass = dom ? dom[0] : null
+    const defectClassN = dom ? dom[1] : 0
     return {
       cell: cellId, class: cls, row, col, grid: g,
       count: ngInWin, window: `${ngInWin}/${rec.window.length}`,
       streak: rec.streak, ngTotal: rec.ng, total: rec.total,
+      defectClass, defectClassN,                         // 실 결함종류(YOLO) — 우세 클래스
       statConfidence: stat,                              // 숫자 — "위치 집중 신뢰도"
       causal: { ...cause, verified: false },             // 인과 — 가설·미검증(숫자 신뢰도 없음)
       recommendedAction: '해당 셀 점검 · 재교정(승인 후)',

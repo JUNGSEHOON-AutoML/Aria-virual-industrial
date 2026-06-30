@@ -22,6 +22,18 @@ export const initialState = {
   episodes: [],                // {ts, event, assetId, action, approval, result}
   detections: [],              // yolo_detection — 순찰 로봇 YOLO 동적 탐지(실 WS만)
   predictions: [],             // T1-B 예지 가설 — 상태기계(pending|approved|dismissed|resolved)
+  report: [],                  // 에이전트 점검 보고서 — 자동 승인 모달 대신 누적(경보 피로 방지)
+}
+
+// ── 에이전트 보고서: 자동 모달 대신 발견사항을 누적. 동일 key 병합(occurrences++). ──
+export function upsertReport(list, entry) {
+  if (!entry || !entry.key) return list
+  const i = list.findIndex(r => r.key === entry.key && r.status === 'open')
+  if (i < 0) return [{ ...entry, id: `${entry.key}:${entry.ts}`, status: 'open', occurrences: 1 }, ...list].slice(0, 60)
+  const prev = list[i]
+  const next = list.slice()
+  next[i] = { ...prev, ...entry, id: prev.id, status: 'open', occurrences: prev.occurrences + 1 }
+  return next
 }
 
 // ── T1-B 예지 가설 상태기계 (순수, 헤드리스 검증) ──────────────────────
@@ -31,6 +43,7 @@ export function upsertPrediction(list, hyp) {
   const base = {
     id: hyp.cell, cell: hyp.cell, class: hyp.class, row: hyp.row, col: hyp.col, grid: hyp.grid,
     causal: hyp.causal, statConfidence: hyp.statConfidence,
+    defectClass: hyp.defectClass, defectClassN: hyp.defectClassN,
     ngTotal: hyp.ngTotal, total: hyp.total, window: hyp.window,
     recommendedAction: hyp.recommendedAction, lastNgTs: hyp.ts,
   }

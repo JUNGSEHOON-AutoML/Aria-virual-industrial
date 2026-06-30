@@ -42,6 +42,30 @@ export function texFromDataURI(uri) {
   return tex
 }
 
+// heatmap_b64(alpha=이상도) → 그레이스케일 높이맵 텍스처(R채널=높이). displacementMap용.
+// 결함 점수 높은(붉은=alpha 큰) 영역 → 밝음 → 정점 돌출. 실데이터 기반(난수 아님).
+export function heightTexFromDataURI(uri) {
+  if (!uri) return null
+  const tex = new THREE.Texture()
+  const img = new Image()
+  img.onload = () => {
+    try {
+      const c = document.createElement('canvas'); c.width = img.width; c.height = img.height
+      const ctx = c.getContext('2d'); ctx.drawImage(img, 0, 0)
+      const d = ctx.getImageData(0, 0, c.width, c.height)
+      const px = d.data
+      for (let i = 0; i < px.length; i += 4) {
+        const a = px[i + 3]              // alpha = 이상도
+        px[i] = a; px[i + 1] = a; px[i + 2] = a; px[i + 3] = 255
+      }
+      ctx.putImageData(d, 0, 0)
+      tex.image = c; tex.needsUpdate = true
+    } catch { /* 무시 */ }
+  }
+  img.src = uri
+  return tex
+}
+
 // (u,v)→(x,y,z) 변환(coordinateTransform 단일 모듈) → 표면 교점에 적색 emissive Decal.
 // peakXY = [nx, ny] (0..1, heatmap 좌표) · boothCam = PerspectiveCamera · target = 부품 mesh
 // opts = { mode:'sim'|'real', calib } (real 캘리브 없으면 sim 폴백)

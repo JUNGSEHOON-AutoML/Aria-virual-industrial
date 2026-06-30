@@ -6,9 +6,25 @@ import { useThree, useFrame } from '@react-three/fiber'
 import * as THREE from 'three'
 import { useSignalStore } from '../signalStore'
 import { selectScan } from '../signalReducer'
-import { injectScanShader, setScanY, buildDecal, texFromDataURI } from './inspectVfx'
+import { injectScanShader, setScanY, buildDecal, texFromDataURI, heightTexFromDataURI } from './inspectVfx'
 import { classShape, halfHeight } from './partShapes'
 import LaserMarker from './LaserMarker'
+
+// 2D heatmap → 3D 표면 요철(displacement). 세분화 평면을 부품 윗면에 얹어 결함을 돌출.
+// 높이맵 R채널=이상도. score↑ → 돌출량↑. 실데이터 기반(난수 아님).
+function ReliefPatch({ heightTex, size, y, score }) {
+  const scale = Math.min(0.12, Math.max(0.02, (score ?? 0.5) * 0.14))
+  return (
+    <mesh position={[0, y, 0]} rotation={[-Math.PI / 2, 0, 0]} castShadow>
+      <planeGeometry args={[size, size, 96, 96]} />
+      <meshStandardMaterial
+        color="#b8c2d2"
+        emissive="#ff2a2a" emissiveMap={heightTex} emissiveIntensity={1.3}
+        displacementMap={heightTex} displacementScale={scale} displacementBias={0}
+        metalness={0.25} roughness={0.65} />
+    </mesh>
+  )
+}
 
 export default function InspectionSpecimen({ position = [0, 0.78, 0], onTrigger }) {
   const scan = useSignalStore(selectScan)
@@ -20,7 +36,8 @@ export default function InspectionSpecimen({ position = [0, 0.78, 0], onTrigger 
   const vfxRef = useRef()
   const phase = useRef('idle')
   const tScan = useRef(0)
-  const [laser, setLaser] = useState(null)   // {point, normal} — LaserMarker 선언적 렌더
+  const [laser, setLaser] = useState(null)    // {point, normal} — LaserMarker 선언적 렌더
+  const [relief, setRelief] = useState(null)  // {heightTex, size, y, score} — displacement 입체화
 
   // 현재 클래스: 선택 라인 > 가동 카테고리 > 첫 클래스 > bottle
   const className = useMemo(() => {
@@ -62,6 +79,7 @@ export default function InspectionSpecimen({ position = [0, 0.78, 0], onTrigger 
     if (g) while (g.children.length) { const c = g.children.pop(); c.geometry?.dispose?.(); c.material?.dispose?.(); g.remove(c) }
     setScanY(mat, -9999)
     setLaser(null)
+    setRelief(null)
   }
   function reset() { phase.current = 'idle'; clearVfx() }
 
@@ -107,6 +125,12 @@ export default function InspectionSpecimen({ position = [0, 0.78, 0], onTrigger 
         // 레이저 마커(선언적) — 결함 지시 투영
         setLaser({ point: built.point.clone(), normal: built.normal.clone() })
       }
+      // 2D→3D 입체화: heatmap → displacement 요철 (부품 윗면)
+      const heightTex = heightTexFromDataURI(scan.heatmap_b64)
+      if (heightTex) {
+        const sc = scan?.score != null && scan.score >= 0 ? scan.score : 0.5
+        setRelief({ heightTex, size: Math.max(half, 0.12) * 2.4, y: position[1] + half + 0.005, score: sc })
+      }
     }
     onTrigger?.(null)   // PiP는 실 store.scan만 표시(합성 override 없음)
   }
@@ -132,6 +156,7 @@ export default function InspectionSpecimen({ position = [0, 0.78, 0], onTrigger 
       </mesh>
       <group ref={vfxRef} />
       {laser && <LaserMarker point={laser.point} normal={laser.normal} />}
+      {relief && <ReliefPatch heightTex={relief.heightTex} size={relief.size} y={relief.y} score={relief.score} />}
     </group>
   )
 }

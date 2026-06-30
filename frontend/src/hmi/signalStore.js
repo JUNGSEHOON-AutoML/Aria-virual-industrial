@@ -1,7 +1,7 @@
 // signalStore (zustand) — 단일 WS·단일 ingest = "모든 신호의 유일한 지점".
 // reducer 기반 구조화 상태 + (구 twinStore 호환) raw 타입 팬아웃을 동시에 제공한다.
 import { create } from 'zustand'
-import { initialState, applyMessage, upsertPrediction, sweepPredictions } from './signalReducer'
+import { initialState, applyMessage, upsertPrediction, sweepPredictions, upsertReport } from './signalReducer'
 import { DATA_ROOT } from './sceneModel'
 import { pushType, subscribeType, getLatestType } from './signalFanout'
 import {
@@ -52,6 +52,9 @@ export const useSignalStore = create((set, get) => ({
   resolveApproval: (id, status) => set((s) => ({
     approvals: s.approvals.map((a) => (a.id === id ? { ...a, status } : a)) })),
   logEpisode: (ep) => set((s) => ({ episodes: [ep, ...s.episodes].slice(0, 200) })),
+  addReport: (entry) => set((s) => ({ report: upsertReport(s.report, entry) })),
+  setReportStatus: (id, status) => set((s) => ({
+    report: s.report.map((r) => (r.id === id ? { ...r, status } : r)) })),
 
   // ── API 액션 (apiClient 래핑 — UI는 이것만 호출) ──
   startNode: (opts) => { if (opts?.category) set({ liveCategory: opts.category }); return inspectorStart(opts) },
