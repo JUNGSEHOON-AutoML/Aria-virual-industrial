@@ -3,8 +3,9 @@ import { Text } from '@react-three/drei'
 const CHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789 :·'
 
 export default function SortBin({ position = [0, 0, 0], kind = 'OK', count = 0 }) {
-  const isOK = kind === 'OK'
-  const accent = isOK ? '#34d399' : '#f87171'
+  // 색 의미 고정: OK=녹 / NG=적 / DEFER(보류)=황
+  const accent = kind === 'OK' ? '#34d399' : kind === 'NG' ? '#f87171' : '#facc15'
+  const label = kind === 'DEFER' ? 'HOLD' : kind   // 보류(미검사) — CHARS 한글 미포함
   const frame = '#16191f'
   const w = 1.05, h = 0.7, d = 0.88
 
@@ -44,7 +45,7 @@ export default function SortBin({ position = [0, 0, 0], kind = 'OK', count = 0 }
 
       {/* 카운터 레이블 */}
       <Text position={[0, h + 0.22, 0]} fontSize={0.2} color={accent} anchorX="center" characters={CHARS}>
-        {`${kind} · ${count}`}
+        {`${label} · ${count}`}
       </Text>
     </group>
   )

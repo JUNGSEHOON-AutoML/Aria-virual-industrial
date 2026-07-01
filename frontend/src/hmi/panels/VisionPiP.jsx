@@ -4,7 +4,6 @@
 import { useState, useEffect } from 'react'
 import { useSignalStore } from '../signalStore'
 import { selectScan } from '../signalReducer'
-import { buildVlmReport } from '../scene/vlmReport'
 
 const wrap = {
   position: 'absolute', top: 0, right: 0, height: '100%', width: 330, zIndex: 8,
@@ -27,8 +26,9 @@ export default function VisionPiP({ open, onClose, data }) {
     return () => window.removeEventListener('keydown', onKey)
   }, [onClose])
 
-  // F1: 클릭된 부품(data) 우선 — 헤더·이미지·VLM 전부 그 부품 record 기준. 없으면 최신 scan.
-  const r = (data && data.part_id) ? data : scan
+  // 일관성: 클릭 부품(data) > 주목 부품(focus) > 최신 scan. 전 화면 동일 부품.
+  const focus = useSignalStore(s => s.focus)
+  const r = (data && data.part_id) ? data : (focus && focus.part_id) ? focus : scan
   const verdict = r?.verdict
   const vColor = verdict === 'NG' ? '#f87171' : verdict === 'OK' ? '#34d399' : '#9aa0aa'
 
@@ -36,7 +36,6 @@ export default function VisionPiP({ open, onClose, data }) {
   const heat = r?.heatmap_b64
   const isMock = !!data?._mock
 
-  const report = buildVlmReport(r, isMock)
 
   return (
     <div style={{ ...wrap, transform: open ? 'translateX(0)' : 'translateX(100%)' }}>
@@ -90,35 +89,9 @@ export default function VisionPiP({ open, onClose, data }) {
         </div>
       )}
 
-      {/* VLM 구조화 분석 */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-        <span style={{ ...secHead, marginTop: 0 }}>VLM 분석</span>
-        {report.placeholder && <span style={{ ...chip, fontSize: 9, color: '#a78b4b', padding: '1px 6px' }}>
-          placeholder(합성)
-        </span>}
-      </div>
-
-      <div style={{ fontSize: 11, color: '#cbd5e1', lineHeight: 1.5 }}>
-        <div style={{ marginBottom: 6 }}>
-          <span style={{ color: '#6b7280' }}>관측 · </span>{report.observation}
-        </div>
-        {report.cause ? (
-          <div style={{ marginBottom: 6 }}>
-            <span style={{ color: '#6b7280' }}>추정 원인 · </span>
-            <span style={{ color: '#facc15' }}>{report.cause.text}</span>
-            <span style={{ color: '#9aa0aa' }}> (신뢰도 {report.cause.confidence.toFixed(2)} · {report.cause.note})</span>
-          </div>
-        ) : (
-          <div style={{ marginBottom: 6, color: '#34d399' }}>추정 원인 · 해당 없음(정상)</div>
-        )}
-        <div>
-          <span style={{ color: '#6b7280' }}>권장 조치 · </span>{report.action}
-        </div>
-      </div>
-
+      {/* VLM 상세 분석은 우측 "검사" 패널 한 곳에만(중복 제거). PiP는 2D 이미지 검수에 집중. */}
       <div style={{ fontSize: 10, color: '#5b6677', marginTop: 'auto' }}>
-        원인은 가설(확인 요망) — 단정 아님. 판정은 PatchCore τ가 결정.<br />
-        실 분석은 vision_agent/VLM 연결 시 이미지 근거로 대체.
+        2D 원본·heatmap 검수 · 상세 판정/근거는 우측 검사 패널.
       </div>
     </div>
   )

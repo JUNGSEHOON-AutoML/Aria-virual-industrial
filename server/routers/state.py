@@ -9,10 +9,9 @@ from fastapi import APIRouter, Body
 
 from server.config import ROOT
 from server.ws import manager
+from aria.planes.twin_state import get_twin as _get_twin
 
 router = APIRouter(prefix="/api", tags=["state"])
-
-_agent = {"status": "idle", "is_running": True, "last_action": None, "score": 0.0, "threshold": 0.5}
 
 
 def _mcp_servers():
@@ -25,7 +24,7 @@ def _mcp_servers():
 
 @router.get("/state")
 async def get_state():
-    return {"agent": dict(_agent), "mcp_servers": _mcp_servers(),
+    return {"agent": _get_twin().get_agent(), "mcp_servers": _mcp_servers(),
             "session": "", "memory": "", "timestamp": datetime.now().isoformat()}
 
 
@@ -46,26 +45,19 @@ async def agents_status():
 
 @router.post("/action")
 async def action(payload: dict = Body(...)):
+    twin = _get_twin()
     act = payload.get("action", "unknown")
     now = datetime.now().isoformat()
-    _agent["last_action"] = act
+    twin.update_agent(last_action=act)
     if act == "emergency_stop":
-        _agent.update({"is_running": False, "status": "stopped"})
-        try:  # 검사 노드도 함께 정지
-            from server.routers import inspector
-            if inspector._run.get("running"):
-                inspector._run["running"] = False
-                if inspector._run.get("pipe"):
-                    inspector._run["pipe"].stop()
-                if inspector._run.get("bridge"):
-                    inspector._run["bridge"].stop()
-        except Exception:
-            pass
+        # TwinState.emergency_stop() 이 _agent 갱신 + 검사 노드 정지를 함께 처리.
+        # state.py → inspector._run reach-in 완전 제거.
+        twin.emergency_stop()
         await manager.broadcast({"type": "agent_status", "agent": "SYSTEM", "state": "idle", "detail": "긴급 정지"})
         return {"result": "emergency_stop_executed", "time": now}
     if act == "approve":
         return {"result": "approved", "time": now}
     if act == "resume":
-        _agent.update({"is_running": True, "status": "idle"})
+        twin.update_agent(is_running=True, status="idle")
         return {"result": "resumed", "time": now}
     return {"result": "unknown_action", "action": act}

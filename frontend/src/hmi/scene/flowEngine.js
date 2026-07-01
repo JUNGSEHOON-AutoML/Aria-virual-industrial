@@ -10,19 +10,19 @@ export function createQCFlowEngine(cfg = {}) {
 
   let nextId = 0
   const parts = []
-  const counts = { ok: 0, ng: 0, total: 0 }
+  // 우아한 강등 사다리: 검사완료(ok/ng) + 보류(deferred=SKIPPED). 드롭이 조용히 사라지지 않음.
+  const counts = { ok: 0, ng: 0, deferred: 0, total: 0 }
   const seen = new Set()   // part_id 중복 스폰 방지
 
-  // 실 검사 결과 1건 → 부품 1개(실 verdict 보유). 랜덤 없음.
+  // 실 검사 결과 1건 → 부품 1개. OK/NG=검사완료, SKIPPED=보류(모든 부품이 알려진 상태로 끝남).
   function spawnFromResult(scan) {
     if (!scan || !scan.part_id) return
     const v = scan.verdict
-    if (v !== 'OK' && v !== 'NG') return          // SKIPPED/ERROR 등은 라인에 안 띄움
+    if (v !== 'OK' && v !== 'NG' && v !== 'SKIPPED') return   // ERROR만 제외
     if (seen.has(scan.part_id)) return
     seen.add(scan.part_id)
-    if (seen.size > 256) seen.clear()             // 메모리 가드
+    if (seen.size > 256) seen.clear()
     if (activeParts() >= C.maxActiveParts) return
-    // F1: 부품마다 검사 레코드 전체 보관 → 분류함에서 클릭 시 그 부품 결함 조회
     const record = {
       part_id: scan.part_id, verdict: v, score: scan.score, tau: scan.tau,
       defect_class: scan.defect_class, defect_xy: scan.defect_xy, defect_blob: scan.defect_blob,
@@ -30,7 +30,9 @@ export function createQCFlowEngine(cfg = {}) {
     }
     parts.push({ id: ++nextId, partId: scan.part_id, phase: 'conveyor', t: 0, dwellT: 0, verdict: v, record })
     counts.total++
-    if (v === 'OK') counts.ok++; else counts.ng++
+    if (v === 'OK') counts.ok++
+    else if (v === 'NG') counts.ng++
+    else counts.deferred++      // 보류(백프레셔로 미검사)
   }
 
   function activeParts() { return parts.filter(p => p.phase !== 'done').length }
@@ -42,7 +44,11 @@ export function createQCFlowEngine(cfg = {}) {
       switch (p.phase) {
         case 'conveyor':
           p.t = Math.min(1, p.t + dtMs / C.conveyorMs)
-          if (p.t >= 1) { p.phase = 'dwell'; p.t = 0; p.dwellT = 0 }
+          // 보류(SKIPPED)는 검사(dwell) 건너뛰고 곧장 보류 레인으로 — 미검사 명시
+          if (p.t >= 1) {
+            if (p.verdict === 'SKIPPED') { p.phase = 'defer_lane'; p.t = 0 }
+            else { p.phase = 'dwell'; p.t = 0; p.dwellT = 0 }
+          }
           break
         case 'dwell':
           p.dwellT += dtMs
@@ -54,6 +60,7 @@ export function createQCFlowEngine(cfg = {}) {
           break
         case 'ok_lane':
         case 'ng_lane':
+        case 'defer_lane':
           p.t = Math.min(1, p.t + dtMs / C.laneMs)
           if (p.t >= 1) { p.phase = 'done'; p.t = 1 }
           break

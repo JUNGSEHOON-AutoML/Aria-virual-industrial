@@ -4,11 +4,13 @@
 """
 import time
 from pathlib import Path
+from typing import Optional
 
 import numpy as np
 from fastapi import APIRouter, UploadFile, File, Form, Body
 
 from server.config import UPLOAD_DIR, BANKS_DIR, ROOT, DATA_ROOT
+from aria.core.config import inference as _cfg
 
 router = APIRouter(prefix="/api", tags=["analyze"])
 
@@ -18,7 +20,7 @@ async def analyze_path(payload: dict = Body(...)):
     """서버 측 이미지 경로 분석 → score/verdict + image_b64/heatmap_b64/defect_xy(결함 3D 뷰어용)."""
     category = payload.get("category", "bottle")
     path = payload.get("path")
-    tau = float(payload.get("tau", 0.5))
+    tau = float(payload.get("tau", _cfg.tau(category)))
     bank = BANKS_DIR / f"{category}.npy"
     if not bank.exists():
         return {"ok": False, "error": f"bank 없음 — 먼저 학습: {category}"}
@@ -37,8 +39,9 @@ async def analyze_path(payload: dict = Body(...)):
 
 
 @router.post("/analyze")
-async def analyze(file: UploadFile = File(...), category: str = Form("bottle"), tau: float = Form(0.5)):
+async def analyze(file: UploadFile = File(...), category: str = Form("bottle"), tau: Optional[float] = Form(None)):
     from aria.inspection.detectors import PatchCoreDetector
+    tau = tau if tau is not None else _cfg.tau(category)
     bank = BANKS_DIR / f"{category}.npy"
     if not bank.exists():
         return {"ok": False, "error": f"bank 없음: banks/{category}.npy — 먼저 학습"}

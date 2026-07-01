@@ -2,7 +2,7 @@
 # docker-compose.yml — ARIA 컨테이너 오케스트레이션
 #
 # 서비스 구성:
-#   backend   — FastAPI + WebSocket 서버 (포트 8080)
+#   backend   — FastAPI + WebSocket 서버 (포트 8200, server/app.py)  [B5 컷오버 2026-07-01]
 #   ml_worker — ML 분석 워커 (CMDIAD / PatchCore / YOLO)
 #   frontend  — React/Vite 개발 서버 (--profile dev 시에만 활성화)
 #
@@ -56,11 +56,11 @@ services:
       ANOMALY_THRESHOLD: "10.16"
       VLM_MODEL: qwen2.5vl:7b
     ports:
-      - "8080:8080"
+      - "8200:8200"
     command: >
-      uvicorn app:app
+      uvicorn server.app:app
         --host 0.0.0.0
-        --port 8080
+        --port 8200
         --workers 1
         --timeout-keep-alive 120
     restart: unless-stopped
@@ -75,7 +75,7 @@ services:
     extra_hosts:
       - "host.docker.internal:host-gateway"
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8080/api/state"]
+      test: ["CMD", "curl", "-f", "http://localhost:8200/api/health"]
       interval: 30s
       timeout: 10s
       retries: 3

@@ -1,0 +1,185 @@
+{
+  "version": "s1-post",
+  "config": {
+    "seed": 7,
+    "n_frames": 30,
+    "tau": 0.5,
+    "trigger_interval_s": 0.1,
+    "queue_depth": 4,
+    "n_workers": 1,
+    "asset_id": "robot_arm",
+    "health_intervals": 12,
+    "infer_p95_ms": 50.0,
+    "drop_rate": 0.01
+  },
+  "parts": [
+    {
+      "part_id": "P000",
+      "verdict": "OK",
+      "score": 0.3238
+    },
+    {
+      "part_id": "P001",
+      "verdict": "OK",
+      "score": 0.1508
+    },
+    {
+      "part_id": "P002",
+      "verdict": "NG",
+      "score": 0.6509
+    },
+    {
+      "part_id": "P003",
+      "verdict": "OK",
+      "score": 0.0724
+    },
+    {
+      "part_id": "P004",
+      "verdict": "NG",
+      "score": 0.5359
+    },
+    {
+      "part_id": "P005",
+      "verdict": "OK",
+      "score": 0.3657
+    },
+    {
+      "part_id": "P006",
+      "verdict": "OK",
+      "score": 0.058
+    },
+    {
+      "part_id": "P007",
+      "verdict": "NG",
+      "score": 0.5074
+    },
+    {
+      "part_id": "P008",
+      "verdict": "OK",
+      "score": 0.0375
+    },
+    {
+      "part_id": "P009",
+      "verdict": "OK",
+      "score": 0.4336
+    },
+    {
+      "part_id": "P010",
+      "verdict": "OK",
+      "score": 0.0699
+    },
+    {
+      "part_id": "P011",
+      "verdict": "OK",
+      "score": 0.0907
+    },
+    {
+      "part_id": "P012",
+      "verdict": "OK",
+      "score": 0.4245
+    },
+    {
+      "part_id": "P013",
+      "verdict": "NG",
+      "score": 0.8269
+    },
+    {
+      "part_id": "P014",
+      "verdict": "OK",
+      "score": 0.1238
+    },
+    {
+      "part_id": "P015",
+      "verdict": "OK",
+      "score": 0.2232
+    },
+    {
+      "part_id": "P016",
+      "verdict": "NG",
+      "score": 0.6274
+    },
+    {
+      "part_id": "P017",
+      "verdict": "NG",
+      "score": 0.9477
+    },
+    {
+      "part_id": "P018",
+      "verdict": "NG",
+      "score": 0.5771
+    },
+    {
+      "part_id": "P019",
+      "verdict": "OK",
+      "score": 0.3967
+    },
+    {
+      "part_id": "P020",
+      "verdict": "NG",
+      "score": 0.9763
+    },
+    {
+      "part_id": "P021",
+      "verdict": "OK",
+      "score": 0.0466
+    },
+    {
+      "part_id": "P022",
+      "verdict": "NG",
+      "score": 0.8585
+    },
+    {
+      "part_id": "P023",
+      "verdict": "OK",
+      "score": 0.2896
+    },
+    {
+      "part_id": "P024",
+      "verdict": "OK",
+      "score": 0.1443
+    },
+    {
+      "part_id": "P025",
+      "verdict": "OK",
+      "score": 0.1178
+    },
+    {
+      "part_id": "P026",
+      "verdict": "OK",
+      "score": 0.3085
+    },
+    {
+      "part_id": "P027",
+      "verdict": "NG",
+      "score": 0.8161
+    },
+    {
+      "part_id": "P028",
+      "verdict": "OK",
+      "score": 0.1807
+    },
+    {
+      "part_id": "P029",
+      "verdict": "NG",
+      "score": 0.5816
+    }
+  ],
+  "aggregate": {
+    "n_ok": 19,
+    "n_ng": 11,
+    "n_skipped": 0,
+    "hold_count": 0,
+    "oee": 0.6333,
+    "availability": 1.0,
+    "quality": 0.6333,
+    "yield_rate": 0.6333
+  },
+  "pdm": {
+    "health_index": 0.676,
+    "rul_est": 120.8,
+    "rul_lo": 105.6,
+    "rul_hi": 136.0,
+    "model": "linear",
+    "confidence": 0.6
+  }
+}

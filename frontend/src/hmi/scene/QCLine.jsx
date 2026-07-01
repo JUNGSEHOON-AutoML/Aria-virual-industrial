@@ -43,6 +43,7 @@ const WP = {
   divert:     [ 3.6, H, 0],
   okEnd:      [ 8.8, H, 1.0],
   ngEnd:      [ 8.8, H, -1.0],
+  deferEnd:   [ 8.8, H, 0.0],   // 보류함(미검사) — 가운데
 }
 
 function partPos(p) {
@@ -61,13 +62,15 @@ function partPos(p) {
       const z = WP.ngEnd[2] * Math.min(1, p.t / 0.25)
       return [x, H, z]
     }
-    case 'done':     return p.verdict === 'NG' ? WP.ngEnd : WP.okEnd
+    case 'defer_lane': return lerp3(WP.boothIn, WP.deferEnd, p.t)   // 보류: 검사 없이 곧장 보류함
+    case 'done':     return p.verdict === 'NG' ? WP.ngEnd : p.verdict === 'SKIPPED' ? WP.deferEnd : WP.okEnd
     default:         return WP.booth
   }
 }
 
 function partColor(p) {
   if (p.phase === 'dwell') return '#1FB8CD'
+  if (p.verdict === 'SKIPPED') return '#facc15'   // 보류=주의색(황)
   if (!p.verdict) return '#9aa3b2'
   return p.verdict === 'OK' ? '#34d399' : '#f87171'
 }
@@ -155,6 +158,7 @@ function LaneAssembly({ z, laneIdx, interactive = false, onOpenPiP }) {
   const acc = useRef(0)
   const [, force] = useState(0)
   const [selId, setSelId] = useState(null)
+  const setFocus = useSignalStore(s => s.setFocus)
 
   useEffect(() => {
     if (replayActive) return
@@ -199,6 +203,10 @@ function LaneAssembly({ z, laneIdx, interactive = false, onOpenPiP }) {
       <RollerConveyor length={4.5} width={0.75} position={[6.0, H - 0.06, z - 1.0]} running={running} speed={0.5} />
       <SortBin position={[8.8, 0, z + 1.0]} kind="OK" count={counts.ok} />
       <SortBin position={[8.8, 0, z - 1.0]} kind="NG" count={counts.ng} />
+      {/* 보류함(미검사=백프레셔) — 드롭이 조용히 사라지지 않고 알려진 상태로 집계 */}
+      <SortBin position={[8.8, 0, z]} kind="DEFER" count={counts.deferred} />
+      {/* 보류 레인 컨베이어(가운데) */}
+      <RollerConveyor length={4.5} width={0.6} position={[6.0, H - 0.06, z]} running={running} speed={0.5} />
 
       {interactive && (
         <>
@@ -219,7 +227,7 @@ function LaneAssembly({ z, laneIdx, interactive = false, onOpenPiP }) {
         const emissI = p.phase === 'dwell' ? 0.55 : ng ? 0.85 * blinkRef.current : p.verdict === 'OK' ? 0.28 : 0.06
         return (
           <mesh key={p.id} position={q} rotation={[Math.PI / 2, 0, 0]} castShadow
-            onClick={(e) => { e.stopPropagation(); setSelId(p.id); onOpenPiP?.(p.record || null) }}
+            onClick={(e) => { e.stopPropagation(); setSelId(p.id); setFocus(p.record || null); onOpenPiP?.(p.record || null) }}
             onPointerOver={() => (document.body.style.cursor = 'pointer')}
             onPointerOut={() => (document.body.style.cursor = 'default')}>
             <cylinderGeometry args={[0.10, 0.10, 0.20, 16]} />
@@ -290,32 +298,39 @@ function BottleneckIndicator({ dev, position = [0, 1.0, 0] }) {
   )
 }
 
-// T1-B: 의심 스테이션(셀=설비) 강조 — 흐르는 부품 아님(오해 적음). 펄스 링 + Html.
-function SuspectStation({ assetId, hypothesis, conf }) {
+// T1-B: 의심 스테이션 위치 힌트 — 3D엔 은은한 황색 링만(텍스트 라벨은 우측 "예지" 리스트로 강등).
+// 색 의미 고정: 황(#facc15)=주의·예지.
+// T1-C: 건전성 링(H로 색: 녹→황→적) + RUL 라벨. pred 없으면 T1-B 황색 펄스.
+const _healthColor = (h) => (h == null ? '#facc15' : h >= 0.7 ? '#34d399' : h >= 0.45 ? '#facc15' : '#f87171')
+function SuspectStation({ assetId, pred }) {
   const ground = ASSET_GROUND[assetId]
   const ringRef = useRef()
   useFrame(({ clock }) => {
     if (!ringRef.current) return
-    const s = 1 + Math.sin(clock.getElapsedTime() * 3) * 0.18
+    const s = 1 + Math.sin(clock.getElapsedTime() * 3) * 0.15
     ringRef.current.scale.setScalar(s)
-    ringRef.current.material.opacity = 0.4 + Math.abs(Math.sin(clock.getElapsedTime() * 3)) * 0.4
+    ringRef.current.material.opacity = 0.3 + Math.abs(Math.sin(clock.getElapsedTime() * 3)) * 0.35
   })
   if (!ground) return null
+  const color = _healthColor(pred?.health)
+  const rul = pred?.rul
   return (
-    <group position={[ground[0], 0.04, ground[2]]}>
-      <mesh ref={ringRef} rotation={[-Math.PI / 2, 0, 0]}>
-        <ringGeometry args={[0.5, 0.7, 32]} />
-        <meshStandardMaterial color="#f0a35a" emissive="#f0a35a" emissiveIntensity={1.0}
-          transparent opacity={0.6} side={2} depthWrite={false} />
+    <group>
+      <mesh ref={ringRef} position={[ground[0], 0.04, ground[2]]} rotation={[-Math.PI / 2, 0, 0]}>
+        <ringGeometry args={[0.5, 0.68, 32]} />
+        <meshStandardMaterial color={color} emissive={color} emissiveIntensity={0.9}
+          transparent opacity={0.5} side={2} depthWrite={false} />
       </mesh>
-      <Html position={[0, 1.7, 0]} center distanceFactor={16} style={{ pointerEvents: 'none' }}>
-        <div style={{ fontFamily: "'Courier New',monospace", fontSize: 11, whiteSpace: 'nowrap',
-          padding: '3px 9px', borderRadius: 6, background: 'rgba(28,18,8,0.9)',
-          border: '1px solid #f0a35a', color: '#f0a35a', textAlign: 'center' }}>
-          ⚠ 예지: {hypothesis}<br />
-          <span style={{ fontSize: 9, color: '#cbd5e1' }}>위치 집중 {conf.toFixed(2)} (가설·미검증)</span>
-        </div>
-      </Html>
+      {rul && (
+        <Html position={[ground[0], 1.15, ground[2]]} center distanceFactor={13} style={{ pointerEvents: 'none' }}>
+          <div style={{ background: 'rgba(10,12,16,0.82)', border: `1px solid ${color}`, borderRadius: 6,
+            padding: '2px 7px', color, fontSize: 11, fontFamily: 'Courier New, monospace', whiteSpace: 'nowrap' }}>
+            {pred.corroborated && <span style={{ color: '#34d399' }}>✓ </span>}
+            {rul.est_hours != null ? `RUL ~${rul.est_hours}h (${rul.lo}–${rul.hi})` : '건전성 주의'}
+            {pred.health != null && <span style={{ color: '#9aa0aa' }}> · H {Math.round(pred.health * 100)}%</span>}
+          </div>
+        </Html>
+      )}
     </group>
   )
 }
@@ -517,11 +532,16 @@ export default function QCLine({ environment = 'control_room', onOpenPiP }) {
     : [0]
   const LANE_Z = { 0: 0, 1: -6, 2: -11, 3: -16 }
 
-  // T1-B: 의심 스테이션 강조
+  // T1-B/T1-C: 의심 스테이션 강조 — 자산 베이스명(레인접미사 제거)으로 지면 매핑
   const suspectByAsset = {}
   predictions.filter(p => p.status === 'pending' || p.status === 'approved').forEach(p => {
-    const a = p.causal?.assetHint
-    if (a && (!suspectByAsset[a] || p.statConfidence > suspectByAsset[a].statConfidence)) suspectByAsset[a] = p
+    const a = (p.asset || p.causal?.assetHint || '').replace(/_\d+$/, '')
+    if (!a) return
+    // 우선순위: 더 낮은 건전성(H) 또는 더 높은 신뢰도
+    const worse = !suspectByAsset[a] ||
+      ((p.health ?? 1) < (suspectByAsset[a].health ?? 1)) ||
+      ((p.statConfidence ?? 0) > (suspectByAsset[a].statConfidence ?? 0))
+    if (worse) suspectByAsset[a] = p
   })
 
   return (
@@ -550,8 +570,8 @@ export default function QCLine({ environment = 'control_room', onOpenPiP }) {
 
       {/* 유지보수 에이전트 + 예지 의심 강조 + 순찰 로봇 */}
       <WorkerAgent />
-      {Object.entries(suspectByAsset).map(([a, p]) => (
-        <SuspectStation key={a} assetId={a} hypothesis={p.causal.hypothesis} conf={p.statConfidence} />
+      {Object.keys(suspectByAsset).map(a => (
+        <SuspectStation key={a} assetId={a} pred={suspectByAsset[a]} />
       ))}
       <PatrolRobot />
 

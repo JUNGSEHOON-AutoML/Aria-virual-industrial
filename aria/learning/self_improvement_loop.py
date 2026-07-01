@@ -389,7 +389,7 @@ class SelfImprovementLoop:
             conda_uvicorn = "/userHome/userhome4/sehoon/miniconda3/envs/patchcore/bin/uvicorn"
             log_path = BASE_DIR / "uvicorn_restart.log"
             
-            cmd = f"nohup {conda_uvicorn} app:app --host 0.0.0.0 --port 8080 > {log_path} 2>&1 &"
+            cmd = f"nohup {conda_uvicorn} server.app:app --host 0.0.0.0 --port 8200 > {log_path} 2>&1 &"
             
             subprocess.Popen(cmd, shell=True, cwd=str(BASE_DIR))
             

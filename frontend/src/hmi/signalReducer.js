@@ -26,6 +26,9 @@ export const initialState = {
   trained: {},                 // F2: classId -> {ready, n_patches, ts} 학습 완료(검사 준비) 상태
   lanes: {},                   // 멀티레인: laneIdx -> {category, kpi, scan} (각 레인 다른 클래스)
   activeMode: null,            // 현재 가동 모델(mock|patchcore|combined) — 공정 투명성
+  focus: null,                 // 운영자가 클릭한 "주목 부품" record — 전 화면 일관
+  lastNG: null,                // 최근 NG 결과(안정적 — NG 때만 갱신)
+  trend: { score: [], yield: [] },  // 추세 스파크라인 히스토리
   replay: { active: false, frames: [], t: 0, t0: 0, t1: 0, playing: false, speed: 1, markers: [] },  // ① 3D 리플레이
 }
 
@@ -55,15 +58,19 @@ export function upsertReport(list, entry) {
 // ── T1-B 예지 가설 상태기계 (순수, 헤드리스 검증) ──────────────────────
 // 동일 cell 재발 → 새 카드 X, 기존 카드 count/표본 갱신(+occurrences). 상태 'resolved'/'dismissed'면 재개.
 export function upsertPrediction(list, hyp) {
-  if (!hyp || !hyp.cell) return list
+  const key = hyp && (hyp.cell || hyp.asset)
+  if (!key) return list
   const base = {
-    id: hyp.cell, cell: hyp.cell, class: hyp.class, row: hyp.row, col: hyp.col, grid: hyp.grid,
+    id: key, cell: hyp.cell, asset: hyp.asset, class: hyp.class, row: hyp.row, col: hyp.col, grid: hyp.grid,
     causal: hyp.causal, statConfidence: hyp.statConfidence,
     defectClass: hyp.defectClass, defectClassN: hyp.defectClassN,
     ngTotal: hyp.ngTotal, total: hyp.total, window: hyp.window,
     recommendedAction: hyp.recommendedAction, lastNgTs: hyp.ts,
+    // T1-C PdM 융합: 건전성·RUL·교차확증
+    health: hyp.health, rul: hyp.rul, corroborated: hyp.corroborated,
+    leadingSignals: hyp.leadingSignals, ngEvidence: hyp.ngEvidence, note: hyp.note,
   }
-  const i = list.findIndex(p => p.id === hyp.cell)
+  const i = list.findIndex(p => p.id === key)
   if (i < 0) return [{ ...base, status: 'pending', occurrences: 1, ts: hyp.ts }, ...list].slice(0, 30)
   const prev = list[i]
   const status = (prev.status === 'resolved' || prev.status === 'dismissed') ? 'pending' : prev.status
@@ -89,10 +96,14 @@ export function applyMessage(state, msg) {
   const t = msg && msg.type
   if (!t) return null
   switch (t) {
-    case 'inspector_state':
+    case 'inspector_state': {
+      const trend = msg.yield_rate != null
+        ? { ...state.trend, yield: [...state.trend.yield, msg.yield_rate].slice(-80) }
+        : state.trend
       if (msg.lane != null)   // 멀티레인: 레인별 kpi + 전역 kpi(메인 패널)도 갱신
-        return { kpi: { ...msg }, lanes: { ...state.lanes, [msg.lane]: { ...(state.lanes[msg.lane] || {}), category: msg.category, kpi: msg } } }
-      return { kpi: { ...msg } }
+        return { kpi: { ...msg }, trend, lanes: { ...state.lanes, [msg.lane]: { ...(state.lanes[msg.lane] || {}), category: msg.category, kpi: msg } } }
+      return { kpi: { ...msg }, trend }
+    }
 
     case 'inspector_done': {   // 검사 1바퀴 완료 → 완료 메시지(멀티레인은 다음 클래스로 자동 전환)
       const yld = msg.yield_rate != null ? `${(msg.yield_rate * 100).toFixed(0)}%` : '—'
@@ -106,11 +117,15 @@ export function applyMessage(state, msg) {
 
     case 'inspector_result': {
       const patch = { scan: msg }
+      if (msg.verdict === 'NG') patch.lastNG = msg              // 최근 NG 안정 보관
+      if (msg.score != null && msg.score >= 0)                  // 추세 스파크라인
+        patch.trend = { ...state.trend, score: [...state.trend.score, msg.score].slice(-80) }
       if (msg.lane != null)   // 멀티레인: 레인별 최신 결과 라우팅
         patch.lanes = { ...state.lanes, [msg.lane]: { ...(state.lanes[msg.lane] || {}), category: msg.category, scan: msg } }
       const det = { ...state.detectors }
       if (msg.score != null && msg.score >= 0) det.patchcore = { score: msg.score, verdict: msg.verdict, tau: msg.tau }
-      if (msg.defect_class || msg.bbox) det.yolo = { defect_class: msg.defect_class, bbox: msg.bbox }
+      // YOLO는 NG(이상 게이트 통과) 때만 유효 — defect_class 없으면 이전값 stale 제거(OK인데 결함라벨 모순 방지)
+      det.yolo = (msg.defect_class || msg.bbox) ? { defect_class: msg.defect_class, bbox: msg.bbox } : null
       patch.detectors = det
       if (msg.verdict === 'NG')
         patch.alarms = [{ ts: msg.ts, level: 'error', tag: 'ALARM', text: `${msg.part_id} NG ${msg.defect_class || ''}`.trim() }, ...state.alarms].slice(0, 100)
@@ -152,6 +167,16 @@ export function applyMessage(state, msg) {
           causal: { hypothesis: msg.hypothesis, assetHint: msg.asset_hint, verified: false },
           statConfidence: msg.confidence, ngTotal: msg.ngTotal, total: msg.total,
           window: msg.window, recommendedAction: msg.recommended_action, ts: msg.ts || Date.now(),
+        })
+      } else if (msg.kind === 'predictive' && msg.asset) {
+        // T1-C PdM 융합 가설(선행 물리 RUL × 후행 NG) — 자산 키로 누적
+        m.predictions = upsertPrediction(state.predictions, {
+          asset: msg.asset, health: msg.health_index, rul: msg.rul,
+          corroborated: msg.corroborated, leadingSignals: msg.leading_signals,
+          ngEvidence: msg.ng_evidence, note: msg.note, statConfidence: msg.confidence,
+          causal: { hypothesis: msg.note, assetHint: msg.asset, verified: !!msg.corroborated },
+          recommendedAction: msg.recommended_action,
+          ts: (msg.ts ? msg.ts * 1000 : Date.now()),
         })
       }
       return m

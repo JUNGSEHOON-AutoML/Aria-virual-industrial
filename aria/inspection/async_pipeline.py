@@ -182,7 +182,14 @@ class Metrics:
     def snapshot(self, queue_depth: int, drop_count: int) -> dict:
         with self._lock:
             judged = self.n_ok + self.n_ng
-            yield_rate = (self.n_ok / judged) if judged else 0.0
+            # ── OEE 분해(지표 온톨로지): SKIPPED/DROP=가용성, NG=품질 ──
+            # 품질(Quality): 검사된 부품 중 양품 비율 (SKIPPED 미혼입)
+            quality = (self.n_ok / judged) if judged else 0.0
+            # 가용성(Availability): 트리거 대비 실제 검사 비율 (드롭/스킵이 깎음)
+            availability = (judged / self.n_trigger) if self.n_trigger else 0.0
+            # 성능(Performance): 평균 tact 대비 목표(공칭) — 데이터 없으면 1.0
+            perf = 1.0  # 트리거 인터벌 대비 tact는 라우터에서 주입 가능(현재 보수적 1.0)
+            oee = availability * perf * quality
             return {
                 "state": self.state,
                 "tact_time_ms": round(self._avg(self._tact_ms), 2),
@@ -196,7 +203,12 @@ class Metrics:
                 "n_ng": self.n_ng,
                 "n_skipped": self.n_skipped,
                 "n_error": self.n_error,
-                "yield_rate": round(yield_rate, 4),
+                # 품질만 = 기존 yield_rate(하위호환). + OEE 분해
+                "yield_rate": round(quality, 4),
+                "quality": round(quality, 4),
+                "availability": round(availability, 4),
+                "performance": round(perf, 4),
+                "oee": round(oee, 4),
             }
 
 

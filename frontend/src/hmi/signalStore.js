@@ -9,6 +9,7 @@ import {
   getWebSocketUrl,
   inspectorStart, inspectorStop, inspectorSetLatency, inspectorStartLanes, inspectorStopLanes,
   classTrain, classValidate, analyzeImage, mvtecScan, intakeDataset, sendAction, classesStatus,
+  inspectorHistory,
 } from '../api/apiClient'
 
 let ws = null
@@ -22,7 +23,7 @@ export const useSignalStore = create((set, get) => ({
     try {
       set({ wsStatus: 'connecting' })
       ws = new WebSocket(getWebSocketUrl())
-      ws.onopen = () => { set({ wsStatus: 'open' }); get().loadTrained() }
+      ws.onopen = () => { set({ wsStatus: 'open' }); get().loadTrained(); get().loadHistory() }
       ws.onclose = () => { set({ wsStatus: 'closed' }); ws = null; setTimeout(() => get().connect(), 3000) }
       ws.onerror = () => { try { ws && ws.close() } catch {} }
       ws.onmessage = (e) => { let d; try { d = JSON.parse(e.data) } catch { return } get().ingest(d) }
@@ -57,6 +58,7 @@ export const useSignalStore = create((set, get) => ({
 
   // ── 로컬 상태 ──
   select: (group, id) => set({ selection: { group, id } }),
+  setFocus: (record) => set({ focus: record || null }),   // 운영자 주목 부품(전 화면 일관)
   setMode: (mode) => set({ mode }),
   clearAlarms: () => set({ alarms: [] }),
   loadClasses: async () => {
@@ -69,6 +71,17 @@ export const useSignalStore = create((set, get) => ({
       if (r?.ok) {
         const t = {}; (r.classes || []).forEach(c => { t[c.classId] = { ready: true, ts: c.mtime } })
         set({ trained: t })
+      }
+    } catch {}
+  },
+  // ② 시계열 척추 — 저장된 추세를 연결 시 복원(인메모리 링버퍼 대신 영속). 재시작 후에도 유지.
+  loadHistory: async () => {
+    try {
+      const r = await inspectorHistory(60, 200)
+      const series = r?.series || []
+      if (series.length) {
+        const yieldSeries = series.map(p => p.quality).filter(v => v != null)
+        set((s) => ({ trend: { ...s.trend, yield: yieldSeries.slice(-120), history: series } }))
       }
     } catch {}
   },

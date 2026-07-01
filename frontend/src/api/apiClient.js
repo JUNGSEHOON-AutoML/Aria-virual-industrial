@@ -236,6 +236,11 @@ export async function inspectorState() {
   const { data } = await api.get('/api/inspector/state')
   return data
 }
+// 시계열 척추 — 저장된 추세(재시작 후 복원). minutes/max_points 조회.
+export async function inspectorHistory(minutes = 60, maxPoints = 200) {
+  const { data } = await api.get('/api/inspector/history', { params: { minutes, max_points: maxPoints } })
+  return data
+}
 
 export default api
 

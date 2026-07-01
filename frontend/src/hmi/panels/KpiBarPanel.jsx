@@ -4,6 +4,33 @@ import { Box, Paper, Typography } from '@mui/material'
 import { useSignalStore } from '../signalStore'
 import { useUiMode } from '../uiMode'
 
+// 경량 스파크라인(SVG, 라이브러리 없음) — 추세(시간축) 표시.
+function Sparkline({ data, color = '#34d399', tau, height = 22, width = 96 }) {
+  if (!data || data.length < 2) return (
+    <svg width={width} height={height}><text x="2" y={height - 6} fontSize="8" fill="#4b5563">데이터 누적 중…</text></svg>
+  )
+  const n = data.length
+  const min = Math.min(...data), max = Math.max(...data)
+  const span = max - min || 1
+  const pts = data.map((v, i) => {
+    const x = (i / (n - 1)) * (width - 2) + 1
+    const y = height - 2 - ((v - min) / span) * (height - 4)
+    return `${x.toFixed(1)},${y.toFixed(1)}`
+  }).join(' ')
+  // τ 기준선(이상점수용)
+  const tauY = tau != null ? height - 2 - ((tau - min) / span) * (height - 4) : null
+  const last = data[n - 1]
+  const lastColor = tau != null ? (last >= tau ? '#f87171' : last >= tau * 0.85 ? '#facc15' : '#34d399') : color
+  return (
+    <svg width={width} height={height} style={{ display: 'block' }}>
+      {tauY != null && tauY > 0 && tauY < height &&
+        <line x1="0" y1={tauY} x2={width} y2={tauY} stroke="#f87171" strokeWidth="0.6" strokeDasharray="2 2" opacity="0.5" />}
+      <polyline points={pts} fill="none" stroke={lastColor} strokeWidth="1.4" />
+      <circle cx={(width - 2) + 1} cy={height - 2 - ((last - min) / span) * (height - 4)} r="1.8" fill={lastColor} />
+    </svg>
+  )
+}
+
 function Card({ label, value, color, big }) {
   return (
     <Paper elevation={0} sx={{
@@ -30,29 +57,56 @@ const stateColor = s => {
   return '#9aa0aa'
 }
 
-// G2: 수율 최우선 — 가장 크게 + 목표 대비 맥락 라인 (한국어)
-function YieldCard({ yieldRate }) {
-  const pct = Math.round((yieldRate ?? 0) * 100)
-  const delta = pct - 90
-  const color = pct >= 90 ? '#34d399' : pct >= 80 ? '#facc15' : '#f87171'
-  // 명세 G2: "목표 90% 대비 -40%p (경고)" 형식 — delta 수치 항상 표기
-  const ctxLabel = delta >= 0
-    ? `목표 90% 대비 +${delta}%p`
-    : `목표 90% 대비 ${delta}%p (${delta < -10 ? '위험' : '경고'})`
+// 지표 온톨로지: OEE = 가용성×성능×품질로 분해. SKIPPED/DROP=가용성, NG=품질.
+// 단일 "수율"이 병목(가용성 손실)을 가리지 않게, OEE + 품질/가용성을 분리 표기.
+function OeeCard({ kpi }) {
+  const q = Math.round((kpi.quality ?? kpi.yield_rate ?? 0) * 100)   // 품질: OK/(OK+NG)
+  const a = Math.round((kpi.availability ?? 1) * 100)                // 가용성: 검사/트리거
+  const oee = Math.round((kpi.oee ?? (kpi.quality ?? 0)) * 100)
+  const deferred = kpi.n_skipped ?? 0     // 보류(미검사=백프레셔) — 조용히 드롭 아님
+  const color = oee >= 85 ? '#34d399' : oee >= 60 ? '#facc15' : '#f87171'
+  // 진짜 원인 표면화: 가용성이 품질보다 낮으면 드롭/병목이 주범(품질 문제 아님)
+  const ctx = (a < q && a < 90)
+    ? `가용성 ${a}% ↓ — 병목/보류 (품질 ${q}%)`
+    : q < 80
+      ? `품질 ${q}% ↓ — 불량 多 (가용성 ${a}%)`
+      : `품질 ${q}% · 가용성 ${a}%`
+  const ctxColor = (a < q && a < 90) ? '#facc15' : q < 80 ? '#f87171' : '#4b9e6f'
   return (
-    <Paper elevation={0} sx={{ flex: '0 0 auto', minWidth: 130, px: 2, py: 1,
+    <Paper elevation={0} sx={{ flex: '0 0 auto', minWidth: 150, px: 2, py: 1,
       bgcolor: 'rgba(255,255,255,0.04)', borderRadius: 2 }}>
-      <Typography sx={{ fontSize: 42, fontWeight: 900, color, lineHeight: 1,
+      <Typography sx={{ fontSize: 38, fontWeight: 900, color, lineHeight: 1,
         fontFamily: "'Courier New', monospace" }}>
-        {pct}%
+        {oee}%
       </Typography>
       <Typography sx={{ fontSize: 9, color: 'text.secondary', letterSpacing: 1, mt: 0.2 }}>
-        수율
+        OEE (가용성×성능×품질)
       </Typography>
-      <Typography sx={{ fontSize: 9, color: delta < 0 ? color : '#4b9e6f', mt: 0.2 }}>
-        {ctxLabel}
+      <Typography sx={{ fontSize: 9, color: ctxColor, mt: 0.2 }}>
+        {ctx}{deferred ? ` · 보류 ${deferred}` : ''}
       </Typography>
     </Paper>
+  )
+}
+
+// 추세 카드 — 수율·이상점수 스파크라인(시간축). 트윈 가치: 순간이 아닌 추세.
+function TrendCard() {
+  const trend = useSignalStore(s => s.trend) || { score: [], yield: [] }
+  const scan = useSignalStore(s => s.scan)
+  const tau = scan?.tau ?? 0.5
+  const yPct = (trend.yield || []).map(v => v * 100)
+  return (
+    <Box sx={{ flex: '0 0 auto', minWidth: 122, px: 1.2, py: 0.6, bgcolor: 'rgba(255,255,255,0.04)',
+      borderRadius: 2, display: 'flex', flexDirection: 'column', justifyContent: 'center', gap: 0.3 }}>
+      <Box>
+        <Typography sx={{ fontSize: 8, color: 'text.secondary', letterSpacing: 0.5 }}>수율 추세</Typography>
+        <Sparkline data={yPct} color="#34d399" width={108} height={20} />
+      </Box>
+      <Box>
+        <Typography sx={{ fontSize: 8, color: 'text.secondary', letterSpacing: 0.5 }}>이상점수(τ선)</Typography>
+        <Sparkline data={trend.score || []} tau={tau} width={108} height={20} />
+      </Box>
+    </Box>
   )
 }
 
@@ -130,12 +184,13 @@ export default function KpiBarPanel() {
 
   const ngCount = k.n_ng ?? 0
 
-  // ── Operator: G2 위계 — 수율 > 양품/불량 > 최종판정 > 가동상태 (한국어) ──
+  // ── Operator: G2 위계 — 수율 > 양품/불량 > 추세 > 최종판정 > 가동상태 ──
   if (uiMode === 'operator') {
     return (
       <Box sx={{ display: 'flex', gap: 1, alignItems: 'stretch', height: '100%' }}>
-        <YieldCard yieldRate={k.yield_rate ?? 0} />
+        <OeeCard kpi={k} />
         <OkNgBar nOk={k.n_ok ?? 0} nNg={ngCount} />
+        <TrendCard />
         <Card label="최종 판정" value={verdict} color={verdictColor} big />
         <StateCard state={k.state} />
       </Box>

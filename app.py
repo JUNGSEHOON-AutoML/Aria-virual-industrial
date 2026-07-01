@@ -1,5 +1,14 @@
 """
-app.py — ARIA (Anomaly Reasoning Intelligence Agent) 실시간 모니터링 대시보드 (FastAPI 백엔드)
+⚠️ [DEPRECATED 2026-07-01 — B5 컷오버 완료]
+이 파일은 레거시 진입점(:8080)입니다. 더 이상 uvicorn 기동 대상이 아닙니다.
+  - 현재 진입점: server/app.py (:8200)
+  - 기동 스크립트: start_aria.sh (server.app:app --port 8200)
+
+파일이 남아있는 이유: aria/agents/*.py · aria/mcp/*.py 가 내부에서 lazy import
+(try/except 감싸진 get_engine 등)를 사용하므로 삭제 시 에러 방지 목적.
+이 임포트들도 T2B/에이전트 트랙에서 server/ 기반으로 이관될 때 이 파일을 최종 삭제합니다.
+
+app.py — ARIA (Anomaly Reasoning Intelligence Agent) 실시간 모니터링 대시보드 (FastAPI 백엔드) [구버전]
 
 역할:
   1. /video_feed — MJPEG 스트리밍 (웹캠 + Anomaly Score 오버레이)

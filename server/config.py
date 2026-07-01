@@ -1,4 +1,4 @@
-"""서버 설정 — 경로·포트·CORS. 8080 탈피 → API :8200, 프론트 dev :5173."""
+"""서버 설정 — 경로·포트·CORS. API :8200, 프론트 dev :5173."""
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent     # 레포 루트

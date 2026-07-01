@@ -7,9 +7,13 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
 
+import asyncio
+import time
+
 from server.config import CORS_ORIGINS, DIST_DIR, API_HOST, API_PORT
 from server.ws import manager
-from server.routers import inspector, sim, classes, dataset, analyze, state
+from server.routers import inspector, sim, classes, dataset, analyze, state, internal
+from server.routers.internal import get_producer_last_seen
 
 
 def create_app() -> FastAPI:
@@ -19,13 +23,35 @@ def create_app() -> FastAPI:
         allow_credentials=True, allow_methods=["*"], allow_headers=["*"],
     )
 
-    for r in (inspector, sim, classes, dataset, analyze, state):
+    for r in (inspector, sim, classes, dataset, analyze, state, internal):
         app.include_router(r.router)
+
+    @app.on_event("startup")
+    async def _startup():
+        """P-core 시작 시 pdm_fusion 서비스 기동 (P-producer의 NG IPC 수신 준비)."""
+        try:
+            from aria.inspection.pdm_fusion import get_fusion
+            from aria.core.config import pdm as _pdm_cfg
+            loop = asyncio.get_running_loop()
+            from server.ws import broadcast_threadsafe
+            f = get_fusion(publish=lambda d: broadcast_threadsafe(loop, d))
+            f.start_service(interval=_pdm_cfg.fusion_interval_s)
+        except Exception:
+            pass
 
     @app.get("/api/health")
     async def health():
-        return {"ok": True, "service": "aria-api", "port": API_PORT,
-                "routers": ["inspector", "sim", "class", "dataset", "analyze", "state"]}
+        last_seen = get_producer_last_seen()
+        age_s = (time.monotonic() - last_seen) if last_seen > 0 else None
+        from aria.core.config import inference as _cfg
+        stale_threshold = getattr(_cfg, "stale_threshold_s", 10.0)
+        connected = age_s is not None and age_s < stale_threshold
+        return {
+            "ok": True, "service": "aria-api", "port": API_PORT,
+            "routers": ["inspector", "sim", "class", "dataset", "analyze", "state"],
+            "producer_connected": connected,
+            "producer_last_seen_s": round(age_s, 2) if age_s is not None else None,
+        }
 
     # 단일 WS 신호 채널 (프론트 signalStore 구독). 경로는 기존과 동일 /ws/chat.
     @app.websocket("/ws/chat")
