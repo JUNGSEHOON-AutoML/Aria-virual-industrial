@@ -113,6 +113,29 @@ class TwinState:
         with self._lock:
             self._agent.update(kwargs)
 
+    # ── 재기동 복원 ────────────────────────────────────────────────
+
+    def restore(self) -> dict:
+        """P-core 재기동 시 호출 — 안전측 상태 명시 + 복원 가능 필드 재적용.
+
+        _run·_lanes: 안전측 = False (실행 중 가정 금지 — 물리 라인 무단 재기동 방지).
+        _agent.threshold: config 복원 (env 오버라이드 반영).
+        OEE·건전성·예지: timeseries에서 복원 — 이 메서드 밖 (pdm_fusion.restore_from_timeseries).
+        """
+        from aria.core.config import inference as _cfg
+        with self._lock:
+            self._run["running"] = False
+            self._lanes["running"] = False
+            self._agent["threshold"] = _cfg.tau_default
+            self._agent["status"] = "idle"
+            self._agent["is_running"] = True
+        return {
+            "run_running": False,
+            "lanes_running": False,
+            "agent_threshold": _cfg.tau_default,
+            "note": "안전측 복원 — OEE/건전성은 timeseries, 쿨다운은 pdm_fusion.restore",
+        }
+
     # ── 복합 제어: emergency_stop ──────────────────────────────────
 
     def emergency_stop(self) -> dict:

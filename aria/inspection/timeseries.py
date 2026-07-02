@@ -149,6 +149,22 @@ def recent_episodes(minutes: int = 1440, max_points: int = 200) -> list:
         return []
 
 
+def last_health_ts_per_asset(minutes: int = 60) -> dict:
+    """자산별 마지막 신호 시각(wallclock) → {asset_id: ts}.
+    S3b-3 Layer-2 stale: producer는 연결됐는데 개별 자산 신호가 늦을 때 사용."""
+    try:
+        with _lock:
+            c = _c()
+            since = time.time() - minutes * 60
+            rows = c.execute(
+                "SELECT asset_id, MAX(ts) FROM asset_health_ts "
+                "WHERE ts>=? AND asset_id IS NOT NULL GROUP BY asset_id",
+                (since,)).fetchall()
+        return {r[0]: r[1] for r in rows}
+    except Exception:
+        return {}
+
+
 def health_assets(minutes: int = 60) -> list:
     """최근 창에서 신호가 있는 자산 id 목록(융합 서비스가 순회용)."""
     try:

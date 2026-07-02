@@ -7,6 +7,9 @@ export const initialState = {
   classes: [],                 // mvtecScan 클래스 목록(계층/뷰포트 단일 소스)
   lines: {},                   // classId -> class_result (fat_verdict, escape_rate, ...)
   kpi: {},                     // inspector_state (state/yield/tact/ack/queue/drop/n_ok/n_ng/...)
+  // S3b-3 두 층 stale 배지 — 값은 절대 0 리셋·보간·N/A 치환 안 함. 마지막 실측값 + 배지.
+  // stale_reason: null | 'producer_disconnected' | 'signal_delay'
+  staleStatus: { stale: false, stale_reason: null, age_s: null, producer_connected: true, assets_stale: {} },
   scan: null,                  // 최신 inspector_result
   detectors: { patchcore: null, yolo: null },
   alarms: [],                  // {ts, level, tag, text}
@@ -100,9 +103,19 @@ export function applyMessage(state, msg) {
       const trend = msg.yield_rate != null
         ? { ...state.trend, yield: [...state.trend.yield, msg.yield_rate].slice(-80) }
         : state.trend
-      if (msg.lane != null)   // 멀티레인: 레인별 kpi + 전역 kpi(메인 패널)도 갱신
-        return { kpi: { ...msg }, trend, lanes: { ...state.lanes, [msg.lane]: { ...(state.lanes[msg.lane] || {}), category: msg.category, kpi: msg } } }
-      return { kpi: { ...msg }, trend }
+      // S3b-3: stale 필드 추출 (optional — 없으면 현재 staleStatus 유지)
+      const staleStatus = (msg.stale != null) ? {
+        stale: !!msg.stale,
+        stale_reason: msg.stale_reason ?? null,
+        age_s: msg.age_s ?? null,
+        producer_connected: msg.producer_connected ?? !msg.stale,
+        assets_stale: msg.assets_stale ?? state.staleStatus.assets_stale,
+      } : state.staleStatus
+      // kpi에서 stale 메타필드 제거 — 값 슬롯이 오염되지 않도록
+      const { stale: _s, stale_reason: _sr, age_s: _a, producer_connected: _pc, assets_stale: _as, ...kpiPayload } = msg
+      if (msg.lane != null)
+        return { kpi: { ...kpiPayload }, trend, staleStatus, lanes: { ...state.lanes, [msg.lane]: { ...(state.lanes[msg.lane] || {}), category: msg.category, kpi: kpiPayload } } }
+      return { kpi: { ...kpiPayload }, trend, staleStatus }
     }
 
     case 'inspector_done': {   // 검사 1바퀴 완료 → 완료 메시지(멀티레인은 다음 클래스로 자동 전환)
@@ -197,6 +210,8 @@ export const selectAlarms = (s) => s.alarms || []
 export const selectScan = (s) => s.scan
 export const selectDetectors = (s) => s.detectors
 export const selectJoints = (s) => s.joints
+// S3b-3: stale 배지 선택자
+export const selectStaleStatus = (s) => s.staleStatus || initialState.staleStatus
 // 선택 컨텍스트: line 선택 시 해당 라인 결과, node 선택 시 kpi
 export function selectContext(s) {
   if (!s.selection) return { kind: 'none' }

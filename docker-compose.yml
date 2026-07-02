@@ -1,60 +1,76 @@
 ###############################################################################
-# docker-compose.yml — ARIA 컨테이너 오케스트레이션
+# docker-compose.yml — ARIA 2-프로세스 오케스트레이션 (S3b-4 2026-07-02)
 #
-# 서비스 구성:
-#   backend   — FastAPI + WebSocket 서버 (포트 8200, server/app.py)  [B5 컷오버 2026-07-01]
-#   ml_worker — ML 분석 워커 (CMDIAD / PatchCore / YOLO)
-#   frontend  — React/Vite 개발 서버 (--profile dev 시에만 활성화)
+# 프로세스 경계:
+#   p-core     (:8200) — TwinState·Gateway·PdMFusion·WS·/api/*
+#   p-producer (:8201) — PatchCore·YOLO·취득루프·IPC bus → p-core
+#   frontend           — React/Vite 개발 서버 (--profile dev 시에만)
 #
-# 볼륨 마운트 전략:
-#   ① 모델/체크포인트/데이터셋 → :ro (읽기 전용, 호스트 원본 보호)
-#   ② outputs / uploads       → 쓰기 가능 (분석 결과 저장)
+# healthcheck 설계:
+#   p-core:     /api/health  — HTTP 200 (FastAPI 응답 기준)
+#   p-producer: /internal/health + tick_age_s 기준
+#               → 소켓 오픈 여부가 아닌 취득 루프 tick 기반
+#               → 취득 스레드 hang(좀비) 시 unhealthy → compose restart
 #
-# 호스트 데이터 경로 (워크스테이션 실제 경로):
-#   - Patchcore FAISS 모델  : /userHome/userhome4/sehoon/patchcore/models
-#   - CMDIAD 체크포인트      : /userHome/userhome4/sehoon/CMDIAD-main/checkpoints
-#   - CMDIAD MVTec-3D 데이터 : /userHome/userhome4/sehoon/CMDIAD-main/datasets
-#   - CC-IFPS 메모리 뱅크    : /userHome/userhome4/sehoon/Agentic-CCIFPS-main/memory_bank.npy
+# IPC 흐름:
+#   p-producer --[POST /internal/ingest]--> p-core
+#   환경변수 ARIA_CORE_URL=http://p-core:8200 으로 서비스 디스커버리
 #
-# NOTE: /userHome/userhome4/sehoon/datasets 경로는 존재하지 않으므로
-#       CMDIAD-main/datasets를 DATASET_BASE_PATH로 사용합니다.
+# 볼륨:
+#   models/checkpoints/datasets → :ro (호스트 원본 보호)
+#   outputs/uploads             → 쓰기 가능
+#   aria-db                     → SQLite 영속 (p-core 단독 write 규칙)
 ###############################################################################
 
 version: "3.9"
 
+x-gpu-deploy: &gpu-deploy
+  resources:
+    reservations:
+      devices:
+        - driver: nvidia
+          count: all
+          capabilities: [gpu]
+
+x-model-volumes: &model-volumes
+  - /userHome/userhome4/sehoon/patchcore/models:/app/models
+  - /userHome/userhome4/sehoon/CMDIAD-main/checkpoints:/app/checkpoints:ro
+  - /userHome/userhome4/sehoon/CMDIAD-main/datasets:/app/datasets:ro
+  - /userHome/userhome4/sehoon/Agentic-CCIFPS-main/memory_bank.npy:/app/memory_bank.npy:ro
+  - /userHome/userhome4/sehoon/Agentic-CCIFPS-main/outputs:/app/outputs
+  - /userHome/userhome4/sehoon/Agentic-CCIFPS-main/uploads:/app/uploads
+
+x-model-env: &model-env
+  MODEL_BASE_PATH: /app/models
+  DATASET_BASE_PATH: /app/datasets
+  CHECKPOINT_BASE_PATH: /app/checkpoints
+  MEMORY_BANK_PATH: /app/memory_bank.npy
+  CMDIAD_DIR: /app
+  OUTPUT_DIR: /app/outputs
+  OLLAMA_HOST: http://host.docker.internal:11434
+  OLLAMA_ORIGINS: "*"
+  OLLAMA_API_BASE: http://172.17.0.1:11434
+  CCIFPS_THRESHOLD: "10.16"
+  ANOMALY_THRESHOLD: "10.16"
+  VLM_MODEL: qwen2.5vl:7b
+
 services:
-  # ── backend: FastAPI REST API + WebSocket + 대시보드 ─────────────────────
-  backend:
+
+  # ── P-core: TwinState·Gateway·PdMFusion·WS (:8200) ──────────────────────
+  p-core:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: aria-backend
+    container_name: aria-p-core
     volumes:
-      # ① Patchcore FAISS 모델 (YOLO 가중치 다운로드를 위해 쓰기 가능)
-      - /userHome/userhome4/sehoon/patchcore/models:/app/models
-      # ② CMDIAD 학습 체크포인트 (DINO ViT-B/8 등, 읽기 전용)
-      - /userHome/userhome4/sehoon/CMDIAD-main/checkpoints:/app/checkpoints:ro
-      # ③ MVTec-3D 데이터셋 (CMDIAD 추론용, 읽기 전용)
-      - /userHome/userhome4/sehoon/CMDIAD-main/datasets:/app/datasets:ro
-      # ④ CC-IFPS 메모리 뱅크 단일 파일 (읽기 전용)
-      - /userHome/userhome4/sehoon/Agentic-CCIFPS-main/memory_bank.npy:/app/memory_bank.npy:ro
-      # ⑤ 분석 결과 이미지 출력 (쓰기 가능)
-      - /userHome/userhome4/sehoon/Agentic-CCIFPS-main/outputs:/app/outputs
-      # ⑥ 업로드 이미지 임시 저장 (쓰기 가능)
-      - /userHome/userhome4/sehoon/Agentic-CCIFPS-main/uploads:/app/uploads
+      *model-volumes
+      - aria-db:/app/data          # SQLite 영속 — p-core 단독 write
     environment:
-      MODEL_BASE_PATH: /app/models
-      DATASET_BASE_PATH: /app/datasets
-      CHECKPOINT_BASE_PATH: /app/checkpoints
-      MEMORY_BANK_PATH: /app/memory_bank.npy
-      CMDIAD_DIR: /app
-      OUTPUT_DIR: /app/outputs
-      OLLAMA_HOST: http://host.docker.internal:11434
-      OLLAMA_ORIGINS: "*"
-      OLLAMA_API_BASE: http://172.17.0.1:11434
-      CCIFPS_THRESHOLD: "10.16"
-      ANOMALY_THRESHOLD: "10.16"
-      VLM_MODEL: qwen2.5vl:7b
+      <<: *model-env
+      ARIA_ROLE: core
+      CUDA_VISIBLE_DEVICES: ""     # P-core는 GPU 불필요
+      # stale 임계값 (기본 10s — 컨테이너 간 네트워크 레이턴시 여유)
+      ARIA_STALE_THRESHOLD: "10.0"
     ports:
       - "8200:8200"
     command: >
@@ -64,98 +80,91 @@ services:
         --workers 1
         --timeout-keep-alive 120
     restart: unless-stopped
-    # NVIDIA GPU 사용 시 아래 주석 해제
-    # deploy:
-    #   resources:
-    #     reservations:
-    #       devices:
-    #         - driver: nvidia
-    #           count: all
-    #           capabilities: [gpu]
     extra_hosts:
       - "host.docker.internal:host-gateway"
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8200/api/health"]
-      interval: 30s
-      timeout: 10s
+      # p-core 자신의 응답성 확인 (producer_connected 값은 무관)
+      test: ["CMD", "curl", "-sf", "http://localhost:8200/api/health"]
+      interval: 15s
+      timeout: 5s
       retries: 3
-      start_period: 15s
+      start_period: 20s
 
-  # ── ml_worker: 이미지 분석 전용 워커 ────────────────────────────────────
-  ml_worker:
+  # ── P-producer: PatchCore·YOLO·취득루프·IPC bus (:8201) ─────────────────
+  p-producer:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: aria-ml-worker
+    container_name: aria-p-producer
     volumes:
-      - /userHome/userhome4/sehoon/patchcore/models:/app/models
-      - /userHome/userhome4/sehoon/CMDIAD-main/checkpoints:/app/checkpoints:ro
-      - /userHome/userhome4/sehoon/CMDIAD-main/datasets:/app/datasets:ro
-      - /userHome/userhome4/sehoon/Agentic-CCIFPS-main/memory_bank.npy:/app/memory_bank.npy:ro
-      - /userHome/userhome4/sehoon/Agentic-CCIFPS-main/outputs:/app/outputs
-      - /userHome/userhome4/sehoon/Agentic-CCIFPS-main/uploads:/app/uploads
+      *model-volumes
     environment:
-      # ml_worker 전용 환경 변수
-      MODEL_BASE_PATH: /app/models
-      DATASET_BASE_PATH: /app/datasets
-      CHECKPOINT_BASE_PATH: /app/checkpoints
-      MEMORY_BANK_PATH: /app/memory_bank.npy
-      CMDIAD_DIR: /app
-      OUTPUT_DIR: /app/outputs
-      OLLAMA_HOST: http://host.docker.internal:11434
-      OLLAMA_ORIGINS: "*"
-      OLLAMA_API_BASE: http://172.17.0.1:11434
-      CCIFPS_THRESHOLD: "10.16"
-      ANOMALY_THRESHOLD: "10.16"
-      VLM_MODEL: qwen2.5vl:7b
-      # ml_worker는 GPU 2번 전용
-      CUDA_VISIBLE_DEVICES: "2"
-    # ml_worker: 환경변수/경로 확인 후 슬립 대기
-    command:
-      - sh
-      - -c
-      - |
-        python3 -c "
-        import time, os
-        from pathlib import Path
-        print('[ml_worker] Start OK')
-        for k in ['MODEL_BASE_PATH','DATASET_BASE_PATH','CHECKPOINT_BASE_PATH','MEMORY_BANK_PATH']:
-            v = os.environ.get(k, '')
-            print('  [' + ('OK' if Path(v).exists() else 'MISSING') + '] ' + k + ': ' + v)
-        " && while true; do sleep 3600; done
+      <<: *model-env
+      ARIA_ROLE: producer
+      CUDA_VISIBLE_DEVICES: "1,2"
+      # IPC: p-core 서비스 디스커버리 (compose 내부 DNS)
+      ARIA_CORE_URL: "http://p-core:8200"
+      ARIA_IPC_BUFFER_MAXLEN: "2000"
+      PRODUCER_PORT: "8201"
+    ports:
+      - "8201:8201"
+    command: >
+      uvicorn aria.planes.inspection_node:app
+        --host 0.0.0.0
+        --port 8201
+        --workers 1
     restart: unless-stopped
-    # NVIDIA GPU 사용 시 아래 주석 해제
-    # deploy:
-    #   resources:
-    #     reservations:
-    #       devices:
-    #         - driver: nvidia
-    #           device_ids: ['1']
-    #           capabilities: [gpu]
+    depends_on:
+      p-core:
+        condition: service_healthy   # p-core healthy 후 기동 (IPC 대상 준비)
     extra_hosts:
       - "host.docker.internal:host-gateway"
-    depends_on:
-      - backend
+    healthcheck:
+      # tick_age_s 기반 — 포트 오픈이 아닌 취득 루프 활성 확인
+      # alive=false(취득 스레드 hang) → unhealthy → compose restart
+      test:
+        - "CMD"
+        - "sh"
+        - "-c"
+        - |
+          curl -sf http://localhost:8201/internal/health |
+          python3 -c "
+          import sys, json
+          d = json.load(sys.stdin)
+          # 아직 검사를 한 번도 안 시작했으면 alive 기준 생략 (startup 허용)
+          if d.get('tick_age_s') is None:
+              sys.exit(0)
+          sys.exit(0 if d.get('alive') else 1)
+          "
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 30s    # 모델 로딩 시간 여유
 
-  # ── frontend: React/Vite 개발 서버 (개발 환경만) ─────────────────────────
+  # ── frontend: React/Vite 개발 서버 (--profile dev 시에만) ───────────────
   frontend:
     image: node:20-alpine
     container_name: aria-frontend
     working_dir: /app/frontend
     volumes:
       - ./frontend:/app/frontend
-      - /app/frontend/node_modules   # node_modules는 컨테이너 내부 사용
+      - /app/frontend/node_modules
     environment:
-      # VITE_API_URL을 빈값(상대경로)으로 설정하여 Vite 프록시를 강제 타도록 유도
-      VITE_API_URL: ""
+      VITE_API_URL: ""             # 상대경로 → Vite 프록시 경유
+      BACKEND_HOST: p-core
+      BACKEND_PORT: "8200"
     ports:
       - "5173:5173"
     command: sh -c "npm install && npm run dev -- --host 0.0.0.0"
     restart: unless-stopped
     depends_on:
-      - backend
+      - p-core
     profiles:
-      - dev   # `docker-compose --profile dev up`으로만 활성화
+      - dev   # docker compose --profile dev up
+
+volumes:
+  aria-db:
+    name: aria-db
 
 networks:
   default:

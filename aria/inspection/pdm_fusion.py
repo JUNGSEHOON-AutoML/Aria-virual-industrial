@@ -134,6 +134,30 @@ class PdMFusion:
             "ts": now,
         }
 
+    # ── 재기동 복원 ──────────────────────────────────────────────────────────
+    def restore_from_timeseries(self, minutes: int = 1440) -> dict:
+        """P-core 재기동 시 호출 — recent_episodes에서 자산별 마지막 emit 시각 복원.
+
+        쿨다운(_last_emit)을 복원해 재기동 직후 같은 가설이 중복 발화하지 않게 함.
+        _ng(NG 이벤트 큐)는 영속화 안 됨 → 재기동 후 새로 쌓기 시작(수용).
+        IPC 버퍼 재전송 레코드가 timeseries에 쌓인 뒤에 이 메서드가 불려도 안전
+        — last emit ts를 덮어쓸 뿐 가설을 생성하지 않음.
+        """
+        try:
+            from aria.inspection.timeseries import recent_episodes
+            episodes = recent_episodes(minutes=minutes)
+            restored: dict = {}
+            for ep in episodes:  # DESC 정렬이므로 첫 번째 = 최신
+                asset = ep.get("asset")
+                ts = ep.get("ts")
+                if asset and ts and asset not in restored:
+                    restored[asset] = ts
+            with self._lock:
+                self._last_emit.update(restored)
+            return {"restored_assets": list(restored.keys()), "count": len(restored)}
+        except Exception as e:
+            return {"error": str(e), "count": 0}
+
     # ── 백그라운드 서비스(선택) ──
     def start_service(self, interval: float = 5.0):
         if self._running:
