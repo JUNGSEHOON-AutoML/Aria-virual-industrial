@@ -4,9 +4,15 @@
 결정론 검사 파이프라인(DINO+PatchCore) 위에 **현실적 공장 거동 모델(ⓑ)**, **R3F 3D 트윈 HMI(ⓒ)**,
 **실측 GPU 텔레메트리 연동(ⓓ)** 을 얹었습니다. 아래 캡처는 실제 가동 화면입니다.
 
+![ARIA 디지털 트윈 라이브 — 3레인 실가동 영상](docs/images/hmi_live.gif)
+
+> **실제 가동 영상 31.5초** (MVTec AD 실데이터 · PatchCore 실추론 · RTX 3090×3 · 헤드리스 크롬 GPU 렌더 녹화)
+> — 부품이 컨베이어를 흐르며 OK(녹)/NG(적) 분류되고, 병목 진단·순찰로봇·수리 에이전트가 동작합니다.
+> 고화질 MP4: [docs/images/hmi_live.mp4](docs/images/hmi_live.mp4)
+
 ![ARIA 디지털 트윈 — 3레인 멀티레인 실가동](docs/images/hmi_capture_gpu.png)
 
-> **실제 가동 캡처** (MVTec AD 실데이터 · PatchCore 실추론 · RTX 3090×3)
+> **정지 캡처 상세** (같은 화면)
 > - **상단 KPI**: OEE 37% · 양품/불량 19:31 · 수율 추세 · 최종 판정 `NG` · 설비 상태 `품질 경보 · 0.5m/s · 209/min`
 > - **3D 뷰포트**: 3개 검사 라인 동시 가동(레인0 bottle · 레인1 cable · 레인2 screw), 부품 흐름(녹=OK/적=NG),
 >   `⚠ BOTTLENECK` 진단, 설비 상태 라벨, 순찰로봇, 예지 링 `RUL ~2.9h · H 84%`
