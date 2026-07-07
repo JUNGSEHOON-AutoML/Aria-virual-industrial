@@ -81,3 +81,7 @@ Desktop/
 .claude/
 files (1)/
 
+
+# 런타임 시계열 DB
+*.db
+*.db-journal
