@@ -1,0 +1,83 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+dist/
+build/
+*.egg
+
+# Model weights & large files
+*.pt
+*.pth
+*.onnx
+*.safetensors
+*.bin
+*.h5
+
+# Data & downloads
+data/
+downloads/
+datasets/
+heatmaps/
+outputs/
+results/
+uploads/
+*.png
+*.jpg
+*.jpeg
+# 로고/UI 에셋·문서 이미지는 추적 허용
+!static/images/*.png
+!docs/images/*.png
+
+# 레거시 아카이브·런타임 산출물 (저장소 미포함)
+archive/
+logs/
+.pytest_cache/
+.claude/
+!static/images/*.jpg
+
+
+# Env
+.env
+*.log
+.vscode/
+.idea/
+
+# Conda/venv
+venv/
+.conda/
+
+# MCP servers (keep code, exclude cache)
+aria/mcp/servers/__pycache__/
+
+# Agent bridge (runtime)
+agent_bridge/*.json
+
+# Chat histories (runtime)
+chat_histories/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Memory banks (large)
+ccifps_banks/
+banks/
+*.npy
+skills/ccifps_vision/memory_bank.npy
+
+# Dataset archives (large)
+*.tar.xz
+*.tar.gz
+
+# Scratch directories
+scratch/
+Desktop/
+~/
+*.db
+
+# Claude/Agent configs
+.claude/
+files (1)/
+

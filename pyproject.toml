@@ -1,0 +1,22 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "aria"
+version = "0.2.0"
+description = "ARIA — Anomaly Reasoning Intelligence Agent (autonomous industrial vision orchestration)"
+readme = "README.md"
+requires-python = ">=3.10"
+dynamic = ["dependencies"]
+
+[tool.setuptools.dynamic]
+dependencies = { file = ["requirements.txt"] }
+
+# Application code lives in the `aria` package (src-layout vendored algorithm
+# `patchcore` remains under ./src and is added to the path at runtime).
+[tool.setuptools.packages.find]
+include = ["aria*"]
+
+[tool.setuptools.package-dir]
+"" = "."

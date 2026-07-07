@@ -1,0 +1,96 @@
+<!--
+  ARIA 듀얼암 검사공장 — 최소 MJCF 골격 (R-1).
+
+  목적: FactoryEnv의 reset/step/관측/행동 API가 실제로 도는지 증명하는 *최소* 씬.
+  실제 SO-100/101 모델은 공식 MJCF를 받아 FactoryEnv(model_path=...)로 교체한다.
+  레이아웃은 factory.jsx(검사대 z≈0, 컨베이어/검사 게이트)에서 차용한 분위기.
+
+  구성: 바닥 + 검사대(table) + 부품(part, free joint) + 좌/우 4-DOF 팔(각 3힌지+1그리퍼).
+-->
+<mujoco model="aria_dual_arm_factory">
+  <compiler angle="radian" autolimits="true"/>
+  <option timestep="0.002" gravity="0 0 -9.81" integrator="implicitfast"/>
+
+  <default>
+    <joint damping="1.0" armature="0.05"/>
+    <geom friction="1 0.05 0.001" density="800"/>
+    <motor ctrllimited="true" ctrlrange="-1 1" gear="8"/>
+  </default>
+
+  <asset>
+    <material name="floor_mat" rgba="0.12 0.13 0.16 1"/>
+    <material name="table_mat" rgba="0.18 0.20 0.26 1"/>
+    <material name="arm_mat"   rgba="0.23 0.26 0.31 1"/>
+    <material name="grip_mat"  rgba="0.12 0.72 0.80 1"/>
+    <material name="part_mat"  rgba="0.60 0.64 0.70 1"/>
+  </asset>
+
+  <worldbody>
+    <light name="ceiling" pos="0 0 2.2" dir="0 0 -1" diffuse="0.8 0.8 0.8" specular="0.2 0.2 0.2"/>
+    <geom name="floor" type="plane" size="3 3 0.1" material="floor_mat"/>
+
+    <!-- 검사대 (정적) -->
+    <body name="table" pos="0 0 0.40">
+      <geom name="table_top" type="box" size="0.60 0.40 0.02" material="table_mat"/>
+    </body>
+
+    <!-- 검사 대상 부품 (free joint — reset에서 도메인 랜덤화) -->
+    <body name="part" pos="0 0 0.50">
+      <freejoint name="part_free"/>
+      <geom name="part_geom" type="box" size="0.03 0.03 0.03" material="part_mat" mass="0.05"/>
+    </body>
+
+    <!-- 좌측 팔 -->
+    <body name="L_base" pos="-0.50 0 0.42">
+      <geom type="cylinder" size="0.05 0.04" material="arm_mat"/>
+      <body name="L_link1" pos="0 0 0.04">
+        <joint name="L_j1" type="hinge" axis="0 0 1" range="-3.1416 3.1416"/>
+        <geom type="capsule" fromto="0 0 0 0 0 0.20" size="0.03" material="arm_mat"/>
+        <body name="L_link2" pos="0 0 0.20">
+          <joint name="L_j2" type="hinge" axis="0 1 0" range="-2.0 2.0"/>
+          <geom type="capsule" fromto="0 0 0 0.20 0 0" size="0.025" material="arm_mat"/>
+          <body name="L_link3" pos="0.20 0 0">
+            <joint name="L_j3" type="hinge" axis="0 1 0" range="-2.0 2.0"/>
+            <geom type="capsule" fromto="0 0 0 0.12 0 0" size="0.02" material="arm_mat"/>
+            <body name="L_grip" pos="0.12 0 0">
+              <joint name="L_g" type="slide" axis="0 0 1" range="-0.02 0.02"/>
+              <geom type="box" size="0.012 0.03 0.02" material="grip_mat"/>
+            </body>
+          </body>
+        </body>
+      </body>
+    </body>
+
+    <!-- 우측 팔 -->
+    <body name="R_base" pos="0.50 0 0.42">
+      <geom type="cylinder" size="0.05 0.04" material="arm_mat"/>
+      <body name="R_link1" pos="0 0 0.04">
+        <joint name="R_j1" type="hinge" axis="0 0 1" range="-3.1416 3.1416"/>
+        <geom type="capsule" fromto="0 0 0 0 0 0.20" size="0.03" material="arm_mat"/>
+        <body name="R_link2" pos="0 0 0.20">
+          <joint name="R_j2" type="hinge" axis="0 1 0" range="-2.0 2.0"/>
+          <geom type="capsule" fromto="0 0 0 -0.20 0 0" size="0.025" material="arm_mat"/>
+          <body name="R_link3" pos="-0.20 0 0">
+            <joint name="R_j3" type="hinge" axis="0 1 0" range="-2.0 2.0"/>
+            <geom type="capsule" fromto="0 0 0 -0.12 0 0" size="0.02" material="arm_mat"/>
+            <body name="R_grip" pos="-0.12 0 0">
+              <joint name="R_g" type="slide" axis="0 0 1" range="-0.02 0.02"/>
+              <geom type="box" size="0.012 0.03 0.02" material="grip_mat"/>
+            </body>
+          </body>
+        </body>
+      </body>
+    </body>
+  </worldbody>
+
+  <actuator>
+    <motor name="L_j1" joint="L_j1"/>
+    <motor name="L_j2" joint="L_j2"/>
+    <motor name="L_j3" joint="L_j3"/>
+    <motor name="L_g"  joint="L_g" gear="20"/>
+    <motor name="R_j1" joint="R_j1"/>
+    <motor name="R_j2" joint="R_j2"/>
+    <motor name="R_j3" joint="R_j3"/>
+    <motor name="R_g"  joint="R_g" gear="20"/>
+  </actuator>
+</mujoco>

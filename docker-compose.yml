@@ -1,0 +1,171 @@
+###############################################################################
+# docker-compose.yml — ARIA 2-프로세스 오케스트레이션 (S3b-4 2026-07-02)
+#
+# 프로세스 경계:
+#   p-core     (:8200) — TwinState·Gateway·PdMFusion·WS·/api/*
+#   p-producer (:8201) — PatchCore·YOLO·취득루프·IPC bus → p-core
+#   frontend           — React/Vite 개발 서버 (--profile dev 시에만)
+#
+# healthcheck 설계:
+#   p-core:     /api/health  — HTTP 200 (FastAPI 응답 기준)
+#   p-producer: /internal/health + tick_age_s 기준
+#               → 소켓 오픈 여부가 아닌 취득 루프 tick 기반
+#               → 취득 스레드 hang(좀비) 시 unhealthy → compose restart
+#
+# IPC 흐름:
+#   p-producer --[POST /internal/ingest]--> p-core
+#   환경변수 ARIA_CORE_URL=http://p-core:8200 으로 서비스 디스커버리
+#
+# 볼륨:
+#   models/checkpoints/datasets → :ro (호스트 원본 보호)
+#   outputs/uploads             → 쓰기 가능
+#   aria-db                     → SQLite 영속 (p-core 단독 write 규칙)
+###############################################################################
+
+version: "3.9"
+
+x-gpu-deploy: &gpu-deploy
+  resources:
+    reservations:
+      devices:
+        - driver: nvidia
+          count: all
+          capabilities: [gpu]
+
+x-model-volumes: &model-volumes
+  - /userHome/userhome4/sehoon/patchcore/models:/app/models
+  - /userHome/userhome4/sehoon/CMDIAD-main/checkpoints:/app/checkpoints:ro
+  - /userHome/userhome4/sehoon/CMDIAD-main/datasets:/app/datasets:ro
+  - /userHome/userhome4/sehoon/Agentic-CCIFPS-main/memory_bank.npy:/app/memory_bank.npy:ro
+  - /userHome/userhome4/sehoon/Agentic-CCIFPS-main/outputs:/app/outputs
+  - /userHome/userhome4/sehoon/Agentic-CCIFPS-main/uploads:/app/uploads
+
+x-model-env: &model-env
+  MODEL_BASE_PATH: /app/models
+  DATASET_BASE_PATH: /app/datasets
+  CHECKPOINT_BASE_PATH: /app/checkpoints
+  MEMORY_BANK_PATH: /app/memory_bank.npy
+  CMDIAD_DIR: /app
+  OUTPUT_DIR: /app/outputs
+  OLLAMA_HOST: http://host.docker.internal:11434
+  OLLAMA_ORIGINS: "*"
+  OLLAMA_API_BASE: http://172.17.0.1:11434
+  CCIFPS_THRESHOLD: "10.16"
+  ANOMALY_THRESHOLD: "10.16"
+  VLM_MODEL: qwen2.5vl:7b
+
+services:
+
+  # ── P-core: TwinState·Gateway·PdMFusion·WS (:8200) ──────────────────────
+  p-core:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: aria-p-core
+    volumes:
+      *model-volumes
+      - aria-db:/app/data          # SQLite 영속 — p-core 단독 write
+    environment:
+      <<: *model-env
+      ARIA_ROLE: core
+      CUDA_VISIBLE_DEVICES: ""     # P-core는 GPU 불필요
+      # stale 임계값 (기본 10s — 컨테이너 간 네트워크 레이턴시 여유)
+      ARIA_STALE_THRESHOLD: "10.0"
+    ports:
+      - "8200:8200"
+    command: >
+      uvicorn server.app:app
+        --host 0.0.0.0
+        --port 8200
+        --workers 1
+        --timeout-keep-alive 120
+    restart: unless-stopped
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    healthcheck:
+      # p-core 자신의 응답성 확인 (producer_connected 값은 무관)
+      test: ["CMD", "curl", "-sf", "http://localhost:8200/api/health"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+      start_period: 20s
+
+  # ── P-producer: PatchCore·YOLO·취득루프·IPC bus (:8201) ─────────────────
+  p-producer:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: aria-p-producer
+    volumes:
+      *model-volumes
+    environment:
+      <<: *model-env
+      ARIA_ROLE: producer
+      CUDA_VISIBLE_DEVICES: "1,2"
+      # IPC: p-core 서비스 디스커버리 (compose 내부 DNS)
+      ARIA_CORE_URL: "http://p-core:8200"
+      ARIA_IPC_BUFFER_MAXLEN: "2000"
+      PRODUCER_PORT: "8201"
+    ports:
+      - "8201:8201"
+    command: >
+      uvicorn aria.planes.inspection_node:app
+        --host 0.0.0.0
+        --port 8201
+        --workers 1
+    restart: unless-stopped
+    depends_on:
+      p-core:
+        condition: service_healthy   # p-core healthy 후 기동 (IPC 대상 준비)
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    healthcheck:
+      # tick_age_s 기반 — 포트 오픈이 아닌 취득 루프 활성 확인
+      # alive=false(취득 스레드 hang) → unhealthy → compose restart
+      test:
+        - "CMD"
+        - "sh"
+        - "-c"
+        - |
+          curl -sf http://localhost:8201/internal/health |
+          python3 -c "
+          import sys, json
+          d = json.load(sys.stdin)
+          # 아직 검사를 한 번도 안 시작했으면 alive 기준 생략 (startup 허용)
+          if d.get('tick_age_s') is None:
+              sys.exit(0)
+          sys.exit(0 if d.get('alive') else 1)
+          "
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 30s    # 모델 로딩 시간 여유
+
+  # ── frontend: React/Vite 개발 서버 (--profile dev 시에만) ───────────────
+  frontend:
+    image: node:20-alpine
+    container_name: aria-frontend
+    working_dir: /app/frontend
+    volumes:
+      - ./frontend:/app/frontend
+      - /app/frontend/node_modules
+    environment:
+      VITE_API_URL: ""             # 상대경로 → Vite 프록시 경유
+      BACKEND_HOST: p-core
+      BACKEND_PORT: "8200"
+    ports:
+      - "5173:5173"
+    command: sh -c "npm install && npm run dev -- --host 0.0.0.0"
+    restart: unless-stopped
+    depends_on:
+      - p-core
+    profiles:
+      - dev   # docker compose --profile dev up
+
+volumes:
+  aria-db:
+    name: aria-db
+
+networks:
+  default:
+    name: aria-network

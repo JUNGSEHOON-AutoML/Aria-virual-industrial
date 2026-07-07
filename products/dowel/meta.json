@@ -1,0 +1,8 @@
+{
+  "product_id": "dowel",
+  "name": "dowel",
+  "good_images_dir": "/userHome/userhome4/sehoon/CMDIAD-main/datasets/mvtec_3d/dowel/train/good",
+  "n_images": 100,
+  "backbone": "dino_vit_b8",
+  "enrolled_at": "2026-06-05T00:58:00.980181"
+}
