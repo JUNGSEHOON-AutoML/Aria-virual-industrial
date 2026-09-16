@@ -14,6 +14,7 @@ import { useSignalStore } from './signalStore'
 import { getPanel } from './slots'
 import { UIModeContext } from './uiMode'
 import './registerPanels'
+import FactoryWorkspace from './factory/FactoryWorkspace'
 
 const theme = createTheme({
   palette: {
@@ -48,6 +49,7 @@ export default function AppShell() {
   const wsStatus = useSignalStore(s => s.wsStatus)
   const mode = useSignalStore(s => s.mode)
   const setMode = useSignalStore(s => s.setMode)
+  const [factoryView, setFactoryView] = useState(true)
   const [drawer, setDrawer] = useState(false)
   const [tab, setTab] = useState(0)
   const [uiMode, setUiMode] = useState('operator')
@@ -68,6 +70,11 @@ export default function AppShell() {
           ARIA · DIGITAL TWIN
         </Typography>
 
+        <ToggleButtonGroup size="small" exclusive value={factoryView ? 'factory' : 'qc'}
+          onChange={(_, value) => value && setFactoryView(value === 'factory')}>
+          <ToggleButton value="factory">Factory</ToggleButton>
+          <ToggleButton value="qc">QC Live</ToggleButton>
+        </ToggleButtonGroup>
         {/* Standalone / Live */}
         <ToggleButtonGroup size="small" exclusive value={mode}
           onChange={(_, v) => v && setMode(v)}>
@@ -132,7 +139,11 @@ export default function AppShell() {
       <UIModeContext.Provider value={uiMode}>
 
         {/* ── S4 모바일: flex-column ───────────────────────────────────── */}
-        {isMobile ? (
+        {factoryView ? (
+          <Box sx={{ height: '100%', display: 'flex', flexDirection: 'column', minHeight: 0 }}>
+            {Topbar}<FactoryWorkspace />
+          </Box>
+        ) : isMobile ? (
           <Box sx={{ height: '100%', display: 'flex', flexDirection: 'column',
             gap: 1, p: 1, boxSizing: 'border-box', bgcolor: 'background.default', overflow: 'hidden' }}>
             <Box sx={{ flexShrink: 0 }}>{Topbar}</Box>

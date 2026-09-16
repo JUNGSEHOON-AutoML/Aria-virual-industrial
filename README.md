@@ -156,3 +156,16 @@ python -m pytest tests/ -q     # 상태기계·발열 감속·텔레메트리 �
 ## 👤 Author
 
 정세훈 (JUNG SEHOON) — [JUNGSEHOON-AutoML](https://github.com/JUNGSEHOON-AutoML)
+
+
+## Industrial Factory Workspace (V1)
+
+기존 QC Live 화면 옆 **Factory** 워크스페이스에서 공장을 편집하고 DES를 실행할 수 있습니다.
+Source/Conveyor/Buffer/Machine/Inspection/Diverter/Sink, 실제 KPI, 병목 분석, 시나리오 비교와
+사용자 승인 기반 에이전트 개선안을 지원합니다. 기본 데모는 로컬 모델이나 API 키 없이 실행됩니다.
+
+- [구현·API·실행·검증 보고서](docs/INDUSTRIAL_V1_REPORT.md)
+- [설계 명세](docs/specs/INDUSTRIAL_SIM_AGENT_V1.md)
+- [작업 진행 기록](docs/CODEX_PROGRESS.md)
+
+![Industrial Factory Workspace](docs/images/industrial_v1_factory.png)

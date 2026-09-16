@@ -2,7 +2,7 @@
 
 실행: uvicorn server.app:app --host 0.0.0.0 --port 8200
 """
-from fastapi import FastAPI, WebSocket, WebSocketDisconnect
+from fastapi import FastAPI, WebSocket, WebSocketDisconnect, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
@@ -15,7 +15,7 @@ from server.config import CORS_ORIGINS, DIST_DIR, API_HOST, API_PORT
 
 _log = logging.getLogger("aria.server")
 from server.ws import manager
-from server.routers import inspector, sim, classes, dataset, analyze, state, internal, twin
+from server.routers import inspector, sim, classes, dataset, analyze, state, internal, twin, ccifps, factory
 from server.routers.internal import get_producer_last_seen
 
 
@@ -26,7 +26,7 @@ def create_app() -> FastAPI:
         allow_credentials=True, allow_methods=["*"], allow_headers=["*"],
     )
 
-    for r in (inspector, sim, classes, dataset, analyze, state, internal, twin):
+    for r in (inspector, sim, classes, dataset, analyze, state, internal, twin, ccifps, factory):
         app.include_router(r.router)
 
     @app.on_event("startup")
@@ -62,6 +62,17 @@ def create_app() -> FastAPI:
 
         # 4. 공장 트윈 라인 루프 — 현실 라인 지표 + GPU 텔레메트리 주기 방송
         asyncio.create_task(twin.line_loop())
+        app.state.factory_task = asyncio.create_task(factory.simulation_loop())
+
+    @app.on_event("shutdown")
+    async def _stop_factory():
+        task = getattr(app.state, "factory_task", None)
+        if task:
+            task.cancel()
+            try:
+                await task
+            except asyncio.CancelledError:
+                pass
 
     async def _stale_heartbeat(interval_s: float = 2.0) -> None:
         """P-producer가 침묵하는 동안 P-core가 주기적으로 stale 상태를 WS에 발행.
@@ -125,7 +136,15 @@ def create_app() -> FastAPI:
         await manager.connect(websocket)
         try:
             while True:
-                await websocket.receive_text()
+                raw = await websocket.receive_text()
+                # Preserve the signal channel; only explicitly scoped factory chat is routed.
+                import json
+                try:
+                    message = json.loads(raw)
+                    if isinstance(message, dict) and message.get("type") == "factory_chat":
+                        await factory.chat(factory.ChatRequest(message=message.get("message", "")))
+                except (ValueError, TypeError, HTTPException):
+                    await websocket.send_json({"type": "agent_result", "scope": "factory", "error": "Invalid chat request"})
         except WebSocketDisconnect:
             manager.disconnect(websocket)
         except Exception:

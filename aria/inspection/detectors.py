@@ -46,11 +46,9 @@ def _score_and_map(feats, bank: np.ndarray):
 
     cosine_score_features는 max만 반환하므로, 같은 정규화(_l2)·코사인으로 패치맵을 추가 노출.
     (수식 동일 — 재작성 아님, 패치값을 맵으로 드러낼 뿐)."""
-    from aria.perception.scorer.feature_bank import _l2, _np
+    from aria.perception.scorer.feature_bank import cosine_patch_scores
 
-    f = _l2(_np(feats))                 # [N, D] L2 정규화
-    sims = f @ bank.T                   # [N, M] 코사인 유사도
-    patch_anom = 1.0 - sims.max(axis=1)  # [N] 패치별 (1 − 최대유사도)
+    patch_anom = cosine_patch_scores(feats, bank)
     score = float(patch_anom.max())     # 이미지 점수 = 최악 패치
     n = patch_anom.shape[0]
     side = int(round(n ** 0.5))
@@ -271,3 +269,31 @@ def _prove_patchcore_nonblocking():
 if __name__ == "__main__":
     import sys
     sys.exit(0 if _prove_patchcore_nonblocking() else 1)
+
+
+class CCIFPSDetector(PatchCoreDetector):
+    """Actual source-selected bank with a pinned DINO feature contract."""
+    name = 'ccifps'
+
+    def __init__(self, run_id):
+        from aria.perception.ccifps_backend import load_bundle
+        bank, self.manifest = load_bundle(run_id)
+        super().__init__(str(bank), tau=self.manifest['threshold'])
+
+    def _extract(self, image_path):
+        if self._backbone is None:
+            import os,torch,timm
+            from safetensors.torch import load_file
+            from aria.perception.cmdiad_inference import DINOBackbone
+            from aria.perception.ccifps_backend import sha
+            weights=self.manifest['weight_path']
+            if sha(weights)!=self.manifest['weight_sha256']:
+                raise ValueError('CCIFPS feature weights hash mismatch')
+            engine=DINOBackbone.__new__(DINOBackbone)
+            engine.device='cuda:0' if os.environ.get('CUDA_VISIBLE_DEVICES','').startswith('GPU-') and torch.cuda.is_available() else 'cpu'
+            engine.model=timm.create_model('vit_base_patch8_224_dino',pretrained=False)
+            engine.model.load_state_dict(load_file(weights),strict=True)
+            engine.model.eval().to(engine.device)
+            self._backbone=engine
+        from aria.perception.cmdiad_inference import preprocess_image
+        return self._backbone.extract_features(preprocess_image(image_path))

@@ -124,22 +124,28 @@ async def start(payload: dict = Body(default={})):
     holder = {"infer_ms": float(payload.get("infer_ms", 40.0)),
               "extra_ms": float(payload.get("inflate_ms", 0.0))}
 
-    if mode in ("patchcore", "combined"):
-        from aria.inspection.detectors import PatchCoreDetector
-        bank = BANKS_DIR / f"{category}.npy"
-        if not bank.exists():
-            return {"ok": False, "error": f"뱅크 없음: banks/{category}.npy"}
-        detector = PatchCoreDetector(str(bank), tau=tau)
-        if mode == "combined":
-            from aria.inspection.detectors import YoloDetector, CombinedDetector
-            w = MODELS_DIR / "yolo" / f"{category}.pt"
-            if not w.exists():
+    if mode in ("patchcore", "combined", "ccifps"):
+        if mode == "ccifps":
+            from aria.inspection.detectors import CCIFPSDetector
+            try:
+                detector = CCIFPSDetector(payload.get("ccifps_run_id"))
+                if detector.manifest['category'] != category:
+                    return {"ok": False, "error": "CCIFPS bundle category mismatch"}
+                tau = detector.tau
+            except (ValueError, FileNotFoundError) as e:
+                return {"ok": False, "error": str(e)}
+        else:
+            if mode == "combined" and not (MODELS_DIR / "yolo" / f"{category}.pt").exists():
                 return {"ok": False, "error": f"YOLO weights 없음: models/yolo/{category}.pt"}
-            detector = CombinedDetector(detector, YoloDetector(str(w), conf=_cfg.yolo_conf), tau=tau)
+            try:
+                detector = _build_detector(mode, category, tau)
+            except FileNotFoundError as e:
+                return {"ok": False, "error": str(e)}
         images = _collect_images(category, limit=80)
         if not images:
             return {"ok": False, "error": f"이미지 없음: data/{category}/test"}
-        detector.infer(images[0])   # 웜업
+        from starlette.concurrency import run_in_threadpool
+        await run_in_threadpool(detector.infer, images[0])   # 웜업
 
         def infer_fn(image):
             out = detector.infer(image)
@@ -153,7 +159,8 @@ async def start(payload: dict = Body(default={})):
 
     def _ws(msg):
         t = msg.get("type")
-        _get_bus().publish("ws", {**msg, "type": f"inspector_{t}"})
+        evidence = {"model_run_id": payload.get("ccifps_run_id"), "selector": "ccifps"} if mode == "ccifps" else {}
+        _get_bus().publish("ws", {**msg, "type": f"inspector_{t}", **evidence})
         _note_ng_if(msg, lane=0)
 
     bridge = TwinBridge([WsFloorSink(_ws)])
@@ -165,7 +172,7 @@ async def start(payload: dict = Body(default={})):
     twin.start_run(pipe, bridge, mode, category, holder)
 
     # 유한 패스: 데이터셋 1바퀴(테스트 이미지 수)만큼 검사 후 자동 완료. payload.max_parts로 override.
-    if mode in ("patchcore", "combined"):
+    if mode in ("patchcore", "combined", "ccifps"):
         default_total = len(images)
     else:
         default_total = 150
@@ -244,6 +251,8 @@ async def start_lanes(payload: dict = Body(default={})):
     if twin.lanes_running():
         return {"ok": False, "error": "이미 멀티레인 가동 중 — 먼저 stop_lanes"}
     mode = payload.get("mode", "combined")
+    if mode == "ccifps":
+        return {"ok": False, "error": "CCIFPS는 검증된 bundle의 단일 레인을 사용하세요. 다중 클래스 bundle 연결은 아직 미검증입니다."}
     line_hz = float(payload.get("line_hz", _cfg.lane_hz))
     tau = float(payload.get("tau", _cfg.tau()))
     lane_count = int(payload.get("lane_count", 3))
@@ -266,7 +275,7 @@ async def start_lanes(payload: dict = Body(default={})):
                 images = _collect_images(category, limit=60)
                 if not images:
                     raise RuntimeError("no images")
-                detector.infer(images[0])   # 웜업(공유 백본 1회 로드)
+                detector.infer(images[0])   # dedicated lane thread warmup
             except Exception:
                 cls_idx = (cls_idx + lane_count) % len(rotation); time.sleep(0.5); continue
 

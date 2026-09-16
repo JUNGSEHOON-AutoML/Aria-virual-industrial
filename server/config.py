@@ -1,4 +1,5 @@
 """서버 설정 — 경로·포트·CORS. API :8200, 프론트 dev :5173."""
+import os
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent     # 레포 루트
@@ -10,7 +11,7 @@ BANKS_DIR = ROOT / "banks"
 MODELS_DIR = ROOT / "models"
 UPLOAD_DIR = ROOT / "uploads"
 OUTPUT_DIR = ROOT / "outputs"
-DIST_DIR = ROOT / "frontend" / "dist"
+DIST_DIR = Path(os.environ.get("ARIA_FRONTEND_DIST", str(ROOT / "frontend" / "dist")))
 
 IMG_EXT = (".png", ".jpg", ".jpeg", ".bmp")
 

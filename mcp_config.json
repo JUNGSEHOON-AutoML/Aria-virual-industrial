@@ -3,25 +3,40 @@
   "mcpServers": {
     "filesystem": {
       "command": "python",
-      "args": ["aria/mcp/servers/filesystem_mcp.py"],
+      "args": [
+        "aria/mcp/servers/filesystem_mcp.py"
+      ],
       "env": {}
     },
     "system": {
       "command": "python",
-      "args": ["aria/mcp/servers/system_mcp.py"],
+      "args": [
+        "aria/mcp/servers/system_mcp.py"
+      ],
       "env": {}
     },
     "database": {
       "command": "python",
-      "args": ["aria/mcp/servers/database_mcp.py"],
+      "args": [
+        "aria/mcp/servers/database_mcp.py"
+      ],
       "env": {}
     },
     "huggingface": {
       "command": "python",
-      "args": ["aria/mcp/servers/huggingface_mcp.py"],
+      "args": [
+        "aria/mcp/servers/huggingface_mcp.py"
+      ],
       "env": {
         "HUGGINGFACE_TOKEN": "${HUGGINGFACE_TOKEN}"
       }
+    },
+    "factory": {
+      "command": "python",
+      "args": [
+        "aria/mcp/servers/factory_mcp.py"
+      ],
+      "env": {}
     }
   },
   "_disabled_servers": {},
@@ -37,7 +52,8 @@
     "shell_policy": "whitelist-only commands via system-mcp",
     "web_policy": "localhost/127.0.0.1 only",
     "require_approval_for": [
-      "delete_file", "write_file"
+      "delete_file",
+      "write_file"
     ],
     "failsafe_enabled": true
   }

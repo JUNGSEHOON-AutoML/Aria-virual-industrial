@@ -19,11 +19,36 @@ def build_bank_from_features(feature_arrays, subsample=4000, seed=0):
         bank = bank[idx]
     return bank
 
+def cosine_patch_scores(feats, bank, query_chunk=256, bank_chunk=1024):
+    """Exact max-cosine scores with bounded similarity workspace.
+
+    Bank rows use the existing normalized-bank contract; no re-normalization,
+    clipping, approximate search or threshold change is introduced.
+    Float32 BLAS reduction order can differ from one full matrix multiply.
+    """
+    f = _np(feats)
+    bank = np.asarray(bank)
+    if f.ndim != 2 or bank.ndim != 2 or not len(f) or not len(bank):
+        raise ValueError("features and bank must be nonempty 2D arrays")
+    if f.shape[1] != bank.shape[1]:
+        raise ValueError("feature and bank dimensions differ")
+    if query_chunk <= 0 or bank_chunk <= 0:
+        raise ValueError("chunk sizes must be positive")
+    if not np.isfinite(f).all() or not np.isfinite(bank).all():
+        raise ValueError("features and bank must be finite")
+    f = _l2(f)
+    scores = np.empty(len(f), dtype=np.result_type(f.dtype, bank.dtype))
+    for qs in range(0, len(f), query_chunk):
+        q = f[qs:qs + query_chunk]
+        best = np.full(len(q), -np.inf, dtype=scores.dtype)
+        for bs in range(0, len(bank), bank_chunk):
+            best = np.maximum(best, (q @ bank[bs:bs + bank_chunk].T).max(axis=1))
+        scores[qs:qs + len(q)] = 1.0 - best
+    return scores
+
+
 def cosine_score_features(feats, bank):
-    f = _l2(_np(feats))               # [N, D]
-    sims = f @ bank.T                 # [N, M] 코사인 유사도(양쪽 정규화)
-    patch_anom = 1.0 - sims.max(axis=1)   # 패치별 (1 − 최대유사도)
-    return float(patch_anom.max())        # 이미지 점수 = 최악 패치
+    return float(cosine_patch_scores(feats, bank).max())
 
 # ── 이미지 경로 래퍼(실제 백본) ───────────────────────
 def _extract(path):
