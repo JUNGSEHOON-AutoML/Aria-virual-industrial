@@ -5,12 +5,14 @@ import os
 import threading
 from pathlib import Path
 from fastapi import APIRouter, Body, HTTPException
-from fastapi.responses import Response
+from fastapi.responses import Response, FileResponse
 from pydantic import BaseModel, Field
 from aria.simulation.des.service import FactoryService, TOOL_NAMES
 from aria.simulation.des.inspection import InspectionAdapter
 from aria.simulation.des.agent import IndustrialAgent
 from aria.simulation.des.patrol import PatrolSupervisor
+from aria.simulation.des.maintenance import MaintenanceHarness
+from typing import Literal
 from server.ws import manager
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -19,16 +21,17 @@ router = APIRouter(prefix='/api/factory', tags=['factory'])
 agent_lock = asyncio.Lock()
 patrol = PatrolSupervisor(service.directory)
 patrol_lock = threading.RLock()
+maintenance = MaintenanceHarness()
 
 def patrol_view():
     with patrol_lock:
         return patrol.snapshot()
 
 def patrol_tick(dt):
-    with service.lock:
-        snap = service.snapshot()
-    with patrol_lock:
-        return patrol.tick(snap, dt)
+    with service.lock, patrol_lock:
+        patrol.tick(service.snapshot(), dt)
+        maintenance.tick(service.engine, patrol, dt)
+        return patrol.snapshot()
 
 @router.get('/patrol')
 async def get_patrol():
@@ -77,6 +80,25 @@ async def virtual_fault(payload: FaultRequest):
     await manager.broadcast(dict(type='patrol_state', **result))
     return result
 
+
+class MaintenanceFaultRequest(BaseModel):
+    component: str
+    cause: Literal['gripper_jam', 'camera_disconnect', 'unknown'] = 'gripper_jam'
+
+@router.post('/maintenance/fault')
+async def maintenance_fault(payload: MaintenanceFaultRequest):
+    def inject():
+        with service.lock, patrol_lock:
+            task=maintenance.start(service.engine,payload.component,payload.cause)
+            patrol_tick(0)
+            return task
+    try:
+        result=await asyncio.to_thread(inject)
+    except ValueError as exc:
+        raise HTTPException(422,str(exc)) from exc
+    await publish()
+    await manager.broadcast(dict(type='patrol_state', **patrol_view()))
+    return result
 
 class ChatRequest(BaseModel):
     message: str = Field(min_length=1, max_length=4000)
@@ -219,5 +241,55 @@ async def simulation_loop():
         patrol_state = await asyncio.to_thread(patrol_tick, now - previous)
         await manager.broadcast(dict(type='patrol_state', **patrol_state))
         previous = now
-        if snap is not None:
-            await manager.broadcast(dict(type='simulation_state', **snap))
+        if snap is not None or patrol_state.get('maintenance'):
+            await publish()
+
+
+@router.get('/evidence/{key}/{name}')
+async def evidence_file(key: str,name: str):
+    from aria.simulation.des.evidence import EvidenceStore
+    try:
+        return FileResponse(EvidenceStore(ROOT).file(key,name))
+    except ValueError as exc:
+        raise HTTPException(404,str(exc)) from exc
+
+@router.get('/inspection/catalog')
+async def inspection_catalog():
+    import json
+    bundles=[]
+    for path in sorted((ROOT/'banks/ccifps').glob('*/manifest.json')):
+        try:
+            m=json.loads(path.read_text())
+            if m.get('status')=='completed':
+                bundles.append({k:m[k] for k in ('run_id','category','threshold')})
+        except (ValueError,KeyError):continue
+    images=[]
+    for b in bundles:
+        for group in sorted((ROOT/'data'/b['category']/'test').glob('*')):
+            for p in sorted(group.glob('*.png'))[:12]:
+                images.append(dict(path=str(p.relative_to(ROOT)),category=b['category'],label=group.name))
+    return dict(bundles=bundles,images=images[:200])
+
+class InspectionPreviewRequest(BaseModel):
+    image: str = Field(max_length=500)
+    run_id: str = Field(pattern=r'^ccifps_[a-f0-9]{32}$')
+
+preview_adapter = InspectionAdapter(ROOT)
+preview_lock = asyncio.Lock()
+
+@router.post('/inspection/preview')
+async def inspection_preview(payload: InspectionPreviewRequest):
+    from aria.simulation.des.model import Component
+    if preview_lock.locked():raise HTTPException(409,'Inspection preview already running')
+    async with preview_lock:
+        try:
+            component=Component(id='PREVIEW',kind='Inspection',inspection_mode='ccifps',run_id=payload.run_id,image_paths=[payload.image])
+            return await asyncio.to_thread(preview_adapter,component,{'serial':1})
+        except Exception as exc:
+            raise HTTPException(422,str(exc)[:300]) from exc
+
+
+@router.get('/robot/model')
+async def robot_model():
+    from aria.simulation.des.robot import model_info
+    return model_info()

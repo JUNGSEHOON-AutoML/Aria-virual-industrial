@@ -1,0 +1,52 @@
+{
+  "repository": "https://github.com/DoosanRobotics/doosan-robot2",
+  "commit": "6c5f3ba622bfa9d6f9cffebf21fa44f57db55b48",
+  "license": "BSD-3-Clause",
+  "model": "m0609",
+  "files": {
+    "dsr_description2/meshes/m0609_white/MF0609_0_0.dae": {
+      "sha256": "b5ea6d7c273067ad28648e27c9c0f5d634adf05ef0e4e9b9db6ca1af87f699fc",
+      "bytes": 728761
+    },
+    "dsr_description2/meshes/m0609_white/MF0609_1_0.dae": {
+      "sha256": "02f51c7dabacc1318ca197d453236258c4e6381ed8012958a09ce1020f274a0c",
+      "bytes": 195829
+    },
+    "dsr_description2/meshes/m0609_white/MF0609_2_0.dae": {
+      "sha256": "8705cfe468a652efff54fa7795bb1c3c96112d2e37af87775e47ac113f6071ff",
+      "bytes": 218957
+    },
+    "dsr_description2/meshes/m0609_white/MF0609_3_0.dae": {
+      "sha256": "576b23dd703eb92558e1ecf78b63f5a7cb0e9f0495f8d2651f8ba1b9b2c99c8a",
+      "bytes": 205762
+    },
+    "dsr_description2/meshes/m0609_white/MF0609_4_0.dae": {
+      "sha256": "5acc53898d28f6b3760779b9db9ddbb32090e41df182410073dacab407ac04d6",
+      "bytes": 157104
+    },
+    "dsr_description2/meshes/m0609_white/MF0609_5_0.dae": {
+      "sha256": "421b1cde607c5f0c1324af093ddda094d5b39e9f5386bf998058a50e37e269db",
+      "bytes": 203558
+    },
+    "dsr_description2/meshes/m0609_white/MF0609_6_0.dae": {
+      "sha256": "c5cdb0d284055524b99fc3ee5f0e1b7ce73d0cc39f831f651ecb24b72f69925a",
+      "bytes": 188493
+    },
+    "dsr_description2/urdf/m0609.urdf": {
+      "sha256": "05fa5a1ae173e1bf7a19a3bdaf2365b7c3d87b3e6289885b6e7eadb65c0d6b1b",
+      "bytes": 8352
+    },
+    "dsr_description2/meshes/m0609_white/MF0609_2_1.dae": {
+      "sha256": "dd8a53685a4ba713cd49f612dde3a4f26dfbf9b39e249726f1c2ddf6a64c55e8",
+      "bytes": 1838978
+    },
+    "dsr_description2/meshes/m0609_white/MF0609_2_2.dae": {
+      "sha256": "41fe327cb4f28beccb3c43f184c18417efafe95b4df62b5d3d0c121b57186a20",
+      "bytes": 218893
+    },
+    "dsr_description2/meshes/m0609_white/MF0609_4_1.dae": {
+      "sha256": "e6897ff6778d712ba305c406056d0dadd02ad65fa01753c245a3c4b652ecaa06",
+      "bytes": 195091
+    }
+  }
+}

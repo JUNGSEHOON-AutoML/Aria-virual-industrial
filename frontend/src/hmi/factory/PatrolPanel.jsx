@@ -13,8 +13,9 @@ export default function PatrolPanel() {
     </div></header>
     <small>생산 정지 중에도 순찰합니다. 보고서 근거는 가상 공장의 실제 DES 신호입니다.</small>
     <div className="patrol-team">{patrol.robots.map(r=><button key={r.id} onClick={()=>r.target&&select(r.target)}><strong>{r.id}</strong><span>{r.state}</span><small>{r.target} · {r.visits} inspections</small></button>)}</div>
-    {target&&<button className="patrol-fault" disabled={busy} onClick={()=>action('/patrol/fault',{component:target.id,duration:60})}>고장 시나리오 실행 · {target.id} (60s)</button>}
-    <small>고장 시나리오는 시뮬레이션을 시작합니다. 로봇이 임의 수리하거나 공장 설정을 바꾸지 않습니다.</small>
+    {target&&<button className="patrol-fault" disabled={busy} onClick={()=>action('/maintenance/fault',{component:target.id,cause:target.kind==='Inspection'?'camera_disconnect':'gripper_jam'})}>자율 수리 시나리오 · {target.id}</button>}
+    <small>가상 고장 주입 → 로봇 현장 도착 → 진단 → 허용 도구 → 재검사. 설비는 검증 통과 후 재가동 가능하며, 생산 Run은 별도입니다.</small>
+    {patrol.maintenance?.slice(0,3).map(t=><article key={t.id} className="maintenance-card"><b>{t.component} · {t.state}</b><span>{t.robot||'출동 대기'} · {t.elapsed.toFixed(1)}s</span><ol className="maintenance-trace">{t.trace.map((x,i)=><li key={i}><b>{x.state}</b><small>{x.tool}</small></li>)}</ol><details><summary>실행·검증 근거</summary><pre>{JSON.stringify(t.trace,null,2)}</pre></details></article>)}
     {patrol.storage_error&&<p role="alert">보고서 저장 오류: {patrol.storage_error}</p>}
     {!patrol.reports.length&&<p className="factory-empty">현재까지 관찰된 이상이 없습니다. 설비 상태가 변하면 보고 에이전트가 근거와 대응 상태를 기록합니다.</p>}
     {patrol.reports.map(r=><article key={r.id} className={`patrol-incident ${r.severity}`}>

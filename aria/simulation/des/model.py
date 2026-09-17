@@ -34,10 +34,13 @@ class Component(Contract):
     image_paths: list[str] = Field(default_factory=list, max_length=1000)
     threshold: float = Field(default=.5, ge=0)
     bank: str = ''
+    robot_model: Literal['', 'm0609'] = ''
     cad_asset: str = Field(default='', pattern=r'^(|[0-9a-f]{24})$')
 
     @model_validator(mode='after')
     def check(self):
+        if self.robot_model and (self.kind not in ('Machine','Inspection') or self.capacity != 1):
+            raise ValueError('Robot-controlled cell requires Machine/Inspection capacity=1')
         if self.kind == 'Source' and self.batch_size > self.capacity:
             raise ValueError('Source capacity must accommodate its batch_size')
         if self.mtbf and self.mtbf < .05:

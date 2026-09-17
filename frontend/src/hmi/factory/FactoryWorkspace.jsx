@@ -3,6 +3,8 @@ import { useFactory, factoryApi, subscribeFactory } from './factoryStore'
 import FactoryScene from './FactoryScene'
 import PatrolPanel from './PatrolPanel'
 import CADPanel from './CADPanel'
+import EvidenceWorkbench from './EvidenceWorkbench'
+import RobotWorkbench from './RobotWorkbench'
 import SceneErrorBoundary from '../panels/SceneErrorBoundary'
 import './factory.css'
 
@@ -86,6 +88,7 @@ function Experiment({ result }) {
 export default function FactoryWorkspace() {
   const store = useFactory()
   const { snapshot: snap, selected, select, action, error, busy, messages, chat, experiment, scenarios } = store
+  const [workbench,setWorkbench]=useState(null)
   const [view, setView] = useState('overview'), [labels, setLabels] = useState(false), [paths, setPaths] = useState(false)
   const [speed, setSpeed] = useState('5'), [editMode, setEditMode] = useState(false), [tab, setTab] = useState('Patrol'), [input, setInput] = useState('')
   useEffect(() => {
@@ -127,6 +130,8 @@ export default function FactoryWorkspace() {
         <button disabled={busy} onClick={() => action('/tools/undo_factory_change')}>Undo change…</button>
       </aside>
       <div className="factory-viewport"><div className="factory-scene-caption"><span>3D PROCESS ENGINEERING</span><div className="factory-view-tools">
+          <button onClick={()=>setWorkbench('evidence')}>입체 검사</button>
+          <button disabled={!component || !['Machine','Inspection'].includes(component.kind)} onClick={()=>setWorkbench('robot')}>로봇 구동 모듈</button>
           <button className={view === 'overview' ? 'active' : ''} onClick={() => setView('overview')}>Factory view</button>
           <button className={view === 'top' ? 'active' : ''} onClick={() => setView('top')}>Top</button>
           <button className={view === 'cell' ? 'active' : ''} onClick={() => setView('cell')}>Cell close-up</button>
@@ -134,7 +139,7 @@ export default function FactoryWorkspace() {
           <button className={paths ? 'active' : ''} onClick={() => setPaths(!paths)}>Flow paths</button>
         </div><button className={editMode ? 'active' : ''} onClick={() => setEditMode(!editMode)}>{editMode ? 'Move on XZ ✓' : 'Move on XZ'}</button></div>
         <SceneErrorBoundary><FactoryScene view={view} labels={labels} paths={paths} snapshot={snap} selected={selected} onSelect={select} editMode={editMode} onMove={(id, position) => action(`/components/${id}`, { position }, 'PATCH')} /></SceneErrorBoundary>
-        <div className="factory-legend">● Processing <span>● Blocked</span><em>● Down</em> · Orbit / Pan / Zoom · Robot pose follows DES processing; no collision solver</div>
+        <div className="factory-legend">● Processing <span>● Blocked</span><em>● Down</em> · Orbit / Pan / Zoom · M0609: joint controller / other arms: schematic animation</div>
       </div>
       <aside className="factory-inspector"><h4>PROPERTY INSPECTOR</h4>{component ? <Properties c={component} revision={snap.revision} /> : <p className="factory-empty">Select an object in the factory to inspect and edit its properties.</p>}</aside>
     </div>
@@ -151,6 +156,8 @@ export default function FactoryWorkspace() {
         <div className="factory-prompts"><button disabled={busy} onClick={() => { chat('순찰 문제 보고서를 요약해줘'); setTab('Patrol') }}>문제 보고서</button><button disabled={busy} onClick={() => chat('현재 병목을 분석해줘')}>현재 병목은?</button><button disabled={busy} onClick={() => { chat('throughput을 최소 10% 개선해줘'); setTab('Experiments') }}>처리량 10% 개선</button></div>
         <form onSubmit={e => { e.preventDefault(); if (input.trim()) { chat(input.trim()); setInput('') } }}><input aria-label="Agent message" placeholder="ARIA에게 공장 분석·설계를 요청하세요…" value={input} onChange={e => setInput(e.target.value)} /><button className="primary" disabled={busy || !input.trim()}>Send</button></form>
       </section></div>
+    {workbench==='evidence'&&<EvidenceWorkbench onClose={()=>setWorkbench(null)}/>}
+    {workbench==='robot'&&component&&<RobotWorkbench component={component} onClose={()=>setWorkbench(null)}/>}
     <Approval />
   </div>
 }

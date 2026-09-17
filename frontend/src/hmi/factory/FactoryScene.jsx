@@ -15,6 +15,7 @@ function Unit({ component: c, resource, selected, onSelect, part, time, labels }
     {c.kind === 'Conveyor'
       ? <RollerConveyor length={c.length} width={1.1} position={[0, .86, 0]} running={false} />
       : <Equipment component={c} resource={resource} part={part} time={time} />}
+    {resource?.fault && <group position={resource.fault.location}><mesh><sphereGeometry args={[.16,16,16]}/><meshBasicMaterial color="#ff3055" wireframe/></mesh><Html position={[0,.3,0]} center><span className="fault-pin">가상 고장 · {resource.fault.label}</span></Html></group>}
     {selected && <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, .04, 0]}><ringGeometry args={[1.5, 1.56, 48]} /><meshBasicMaterial color="#1385bc" /></mesh>}
     {(labels || selected) && <Html position={[0, ['Machine', 'Inspection'].includes(c.kind) ? 3.8 : 1.8, 0]} center zIndexRange={[20, 0]}>
       <button className={`factory-label ${selected ? 'selected' : ''}`} onClick={() => onSelect(c.id)}>
@@ -63,6 +64,11 @@ function Parts({ snapshot }) {
         const progress = Math.min(1, Math.max(0, (snapshot.time - p.entered) / Math.max(p.due - p.entered, .01)))
         target.x += (progress - .5) * c.length
       }
+      if(p.robot?.attached){
+        const tcp=p.robot.tcp;const base=c.kind==='Machine'?[.45,.65,2.05]:[-.6,.99,-.35];
+        const local=new THREE.Vector3(tcp[0],tcp[2],-tcp[1]);if(c.kind==='Machine')local.applyAxisAngle(new THREE.Vector3(0,1,0),Math.PI);
+        target.copy(new THREE.Vector3(...c.position).add(new THREE.Vector3(...base)).add(local));
+      }
       target.sub(new THREE.Vector3(...c.position)).applyAxisAngle(new THREE.Vector3(0, 1, 0), c.rotation).add(new THREE.Vector3(...c.position))
       let position = positions.current.get(p.id)
       if (!position) {
@@ -108,7 +114,7 @@ export default function FactoryScene({ snapshot, selected, onSelect, editMode, o
     })}
     {visibleComponents.map(c => <EditableUnit key={`${snapshot.revision}-${c.id}`} component={c} resource={snapshot.metrics.resources[c.id]} selected={selected === c.id} editMode={editMode} onSelect={onSelect} onMove={onMove} part={snapshot.parts.find(p => p.component === c.id)} time={snapshot.time} labels={labels} />)}
     <Parts snapshot={visibleSnapshot} />
-    <PatrolHumanoids visible={view !== 'cell'} />
+    <PatrolHumanoids focus={view==='cell'?focus.id:null} />
     <OrbitControls makeDefault target={target} minDistance={3} maxDistance={100} maxPolarAngle={Math.PI / 2.05} />
   </Canvas>
 }

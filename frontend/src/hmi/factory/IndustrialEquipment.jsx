@@ -1,3 +1,4 @@
+import RobotArm from './RobotArm'
 // Parametric industrial equipment. Robot/spindle pose is a visualization of the
 // actual DES processing phase, not a collision-checked robot motion program.
 import { useMemo } from 'react'
@@ -106,7 +107,7 @@ export function Equipment({ component: c, resource, part, time }) {
   const phase = part ? Math.min(1, Math.max(0, (time - part.entered) / Math.max(.01, part.due - part.entered))) : 0
   if (c.kind === 'Machine') return <>
     {c.cad_asset ? <CADBody asset={c.cad_asset} fallback={<CNC state={resource?.state} phase={phase} />} /> : <CNC state={resource?.state} phase={phase} />}
-    <group position={[.45, 0, 2.05]} rotation={[0, Math.PI, 0]}><Robot active={active} phase={phase} /></group>
+    {resource?.robot ? <group position={[.45,.65,2.05]} rotation={[0,Math.PI,0]}><Solid at={[0,-.32,0]} size={[.32,.64,.32]} color="#637680"/><RobotArm state={resource.robot}/></group> : <group position={[.45, 0, 2.05]} rotation={[0, Math.PI, 0]}><Robot active={active} phase={phase} /></group>}
     <Fence at={[0, 0, 3.05]} length={3} /><Fence at={[-1.55, 0, 2]} length={2.1} rotation={Math.PI / 2} />
     <Pendant at={[1.55, 0, 2.7]} />
     {c.capacity > 1 && <Sign at={[0, 3.45, 0]}>{c.capacity} PARALLEL PROCESS SLOTS</Sign>}
@@ -114,7 +115,7 @@ export function Equipment({ component: c, resource, part, time }) {
   if (c.kind === 'Inspection') return <>
     <Solid at={[0, .46, 0]} size={[2.4, .92, 1.9]} color="#c8d2d4" />
     <Solid at={[0, .96, 0]} size={[2.5, .08, 2]} color="#596970" />
-    <group position={[-.6, .99, -.35]} scale={.7}><Robot active={active} phase={phase} /></group>
+    <group position={[-.6, .99, -.35]}>{resource?.robot?<RobotArm state={resource.robot}/>:<group scale={.7}><Robot active={active} phase={phase}/></group>}</group>
     <Solid at={[.55, 1, .35]} size={[.72, .05, .65]} color="#c7d1cf" />
     {[-1.2, 1.2].map(x => <Solid key={x} at={[x, 2, -.8]} size={[.12, 2.2, .13]} color="#adbcc0" />)}
     <Solid at={[0, 3.1, -.8]} size={[2.52, .18, .28]} color="#dce3e3" />

@@ -30,7 +30,7 @@ function Humanoid({ robot, enabled }) {
     previous.current = robot.position
   })
   const moving = enabled && ['PATROLLING','RESPONDING'].includes(robot.state)
-  const inspecting = robot.state === 'INSPECTING'
+  const inspecting = ['INSPECTING','DIAGNOSING','REPAIRING','VERIFYING'].includes(robot.state)
   const accent = robot.id === 'ARIA-01' ? '#1cb4cf' : '#ec9e30'
   return <group ref={ref} position={robot.position}>
     <Solid at={[0, 1.28, 0]} size={[.48, .57, .28]} color="#d8e3e7" />
@@ -47,10 +47,10 @@ function Humanoid({ robot, enabled }) {
     <Html position={[0,2.2,0]} center zIndexRange={[18,0]}><div className="patrol-robot-label" style={{borderColor:accent}}><b>{robot.id}</b><span>{enabled ? robot.state : 'PAUSED'}</span><small>{robot.target || 'Patrol route'}</small></div></Html>
   </group>
 }
-export default function PatrolHumanoids({ visible = true }) {
+export default function PatrolHumanoids({ visible = true, focus = null }) {
   const patrol=useFactory(s=>s.patrol)
   if (!visible || !patrol) return null
-  return <>{patrol.robots.map(robot => <group key={robot.id}>
+  return <>{patrol.robots.filter(robot=>!focus||robot.target===focus).map(robot => <group key={robot.id}>
     <Humanoid robot={robot} enabled={patrol.enabled} />
     {robot.state==='RESPONDING' && robot.path.length>1 && <Line points={[robot.position,...robot.path].map(p=>[p[0],.05,p[2]])} color="#ee9d31" lineWidth={1.2} dashed dashSize={.2} gapSize={.15} />}
   </group>)}</>

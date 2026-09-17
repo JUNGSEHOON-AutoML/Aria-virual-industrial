@@ -1,0 +1,884 @@
+{
+  "scope": "Deterministic virtual controller/harness checks; not physical robot validation",
+  "trials": [
+    {
+      "seed": 0,
+      "state": "RESTORED",
+      "active_wall_tick_seconds": 21.0,
+      "robot": "ARIA-01",
+      "production_resumed": true,
+      "trace": [
+        {
+          "state": "DISPATCHED",
+          "tool": "observe",
+          "elapsed": 0.0,
+          "sim_time": 12.0,
+          "evidence": {
+            "id": "a6d2631b545042f79d0a3631c4d5c6bb",
+            "cause": "gripper_jam",
+            "label": "Gripper obstruction",
+            "location": [
+              0.45,
+              1.4,
+              2.05
+            ],
+            "sensors": {
+              "gripper_open": false,
+              "drive_alarm": true
+            },
+            "isolated": true,
+            "source": "injected virtual sensor scenario"
+          }
+        },
+        {
+          "state": "DIAGNOSING",
+          "tool": "read_virtual_sensors",
+          "elapsed": 11.0,
+          "sim_time": 23.0,
+          "evidence": {
+            "gripper_open": false,
+            "drive_alarm": true
+          }
+        },
+        {
+          "state": "REPAIRING",
+          "tool": "clear_virtual_gripper",
+          "elapsed": 13.0,
+          "sim_time": 25.0,
+          "evidence": {
+            "preconditions": {
+              "isolated": true,
+              "on_site": true
+            },
+            "cause": "Gripper obstruction"
+          }
+        },
+        {
+          "state": "VERIFYING",
+          "tool": "virtual_function_test",
+          "elapsed": 17.0,
+          "sim_time": 29.0,
+          "evidence": {
+            "expected": {
+              "gripper_open": true,
+              "drive_alarm": false
+            },
+            "observed": {
+              "gripper_open": true,
+              "drive_alarm": false
+            }
+          }
+        },
+        {
+          "state": "RESTORED",
+          "tool": "release_virtual_interlock",
+          "elapsed": 21.0,
+          "sim_time": 33.0,
+          "evidence": {
+            "passed": true,
+            "joint_return_error_rad": 1.1998078261294861e-33,
+            "sensor_checks": {
+              "gripper_open": true,
+              "drive_alarm": false
+            },
+            "state": "PROCESSING",
+            "completed_at_release": 0,
+            "scope": "simulated sensor self-test; production output tracked separately"
+          }
+        }
+      ]
+    },
+    {
+      "seed": 1,
+      "state": "RESTORED",
+      "active_wall_tick_seconds": 21.0,
+      "robot": "ARIA-01",
+      "production_resumed": true,
+      "trace": [
+        {
+          "state": "DISPATCHED",
+          "tool": "observe",
+          "elapsed": 0.0,
+          "sim_time": 12.11,
+          "evidence": {
+            "id": "7126864ecd8c4a00bd00f37ec410ad6b",
+            "cause": "gripper_jam",
+            "label": "Gripper obstruction",
+            "location": [
+              0.45,
+              1.4,
+              2.05
+            ],
+            "sensors": {
+              "gripper_open": false,
+              "drive_alarm": true
+            },
+            "isolated": true,
+            "source": "injected virtual sensor scenario"
+          }
+        },
+        {
+          "state": "DIAGNOSING",
+          "tool": "read_virtual_sensors",
+          "elapsed": 11.0,
+          "sim_time": 23.11,
+          "evidence": {
+            "gripper_open": false,
+            "drive_alarm": true
+          }
+        },
+        {
+          "state": "REPAIRING",
+          "tool": "clear_virtual_gripper",
+          "elapsed": 13.0,
+          "sim_time": 25.11,
+          "evidence": {
+            "preconditions": {
+              "isolated": true,
+              "on_site": true
+            },
+            "cause": "Gripper obstruction"
+          }
+        },
+        {
+          "state": "VERIFYING",
+          "tool": "virtual_function_test",
+          "elapsed": 17.0,
+          "sim_time": 29.11,
+          "evidence": {
+            "expected": {
+              "gripper_open": true,
+              "drive_alarm": false
+            },
+            "observed": {
+              "gripper_open": true,
+              "drive_alarm": false
+            }
+          }
+        },
+        {
+          "state": "RESTORED",
+          "tool": "release_virtual_interlock",
+          "elapsed": 21.0,
+          "sim_time": 33.11,
+          "evidence": {
+            "passed": true,
+            "joint_return_error_rad": 1.1998078261294861e-33,
+            "sensor_checks": {
+              "gripper_open": true,
+              "drive_alarm": false
+            },
+            "state": "PROCESSING",
+            "completed_at_release": 0,
+            "scope": "simulated sensor self-test; production output tracked separately"
+          }
+        }
+      ]
+    },
+    {
+      "seed": 2,
+      "state": "RESTORED",
+      "active_wall_tick_seconds": 21.0,
+      "robot": "ARIA-01",
+      "production_resumed": true,
+      "trace": [
+        {
+          "state": "DISPATCHED",
+          "tool": "observe",
+          "elapsed": 0.0,
+          "sim_time": 12.22,
+          "evidence": {
+            "id": "6d04140e1608468cbf9f850b6424eb13",
+            "cause": "gripper_jam",
+            "label": "Gripper obstruction",
+            "location": [
+              0.45,
+              1.4,
+              2.05
+            ],
+            "sensors": {
+              "gripper_open": false,
+              "drive_alarm": true
+            },
+            "isolated": true,
+            "source": "injected virtual sensor scenario"
+          }
+        },
+        {
+          "state": "DIAGNOSING",
+          "tool": "read_virtual_sensors",
+          "elapsed": 11.0,
+          "sim_time": 23.22,
+          "evidence": {
+            "gripper_open": false,
+            "drive_alarm": true
+          }
+        },
+        {
+          "state": "REPAIRING",
+          "tool": "clear_virtual_gripper",
+          "elapsed": 13.0,
+          "sim_time": 25.22,
+          "evidence": {
+            "preconditions": {
+              "isolated": true,
+              "on_site": true
+            },
+            "cause": "Gripper obstruction"
+          }
+        },
+        {
+          "state": "VERIFYING",
+          "tool": "virtual_function_test",
+          "elapsed": 17.0,
+          "sim_time": 29.22,
+          "evidence": {
+            "expected": {
+              "gripper_open": true,
+              "drive_alarm": false
+            },
+            "observed": {
+              "gripper_open": true,
+              "drive_alarm": false
+            }
+          }
+        },
+        {
+          "state": "RESTORED",
+          "tool": "release_virtual_interlock",
+          "elapsed": 21.0,
+          "sim_time": 33.22,
+          "evidence": {
+            "passed": true,
+            "joint_return_error_rad": 1.1998078261294861e-33,
+            "sensor_checks": {
+              "gripper_open": true,
+              "drive_alarm": false
+            },
+            "state": "PROCESSING",
+            "completed_at_release": 0,
+            "scope": "simulated sensor self-test; production output tracked separately"
+          }
+        }
+      ]
+    },
+    {
+      "seed": 3,
+      "state": "RESTORED",
+      "active_wall_tick_seconds": 21.0,
+      "robot": "ARIA-01",
+      "production_resumed": true,
+      "trace": [
+        {
+          "state": "DISPATCHED",
+          "tool": "observe",
+          "elapsed": 0.0,
+          "sim_time": 12.33,
+          "evidence": {
+            "id": "a80d0975a3f84dea908367828c37e73f",
+            "cause": "gripper_jam",
+            "label": "Gripper obstruction",
+            "location": [
+              0.45,
+              1.4,
+              2.05
+            ],
+            "sensors": {
+              "gripper_open": false,
+              "drive_alarm": true
+            },
+            "isolated": true,
+            "source": "injected virtual sensor scenario"
+          }
+        },
+        {
+          "state": "DIAGNOSING",
+          "tool": "read_virtual_sensors",
+          "elapsed": 11.0,
+          "sim_time": 23.33,
+          "evidence": {
+            "gripper_open": false,
+            "drive_alarm": true
+          }
+        },
+        {
+          "state": "REPAIRING",
+          "tool": "clear_virtual_gripper",
+          "elapsed": 13.0,
+          "sim_time": 25.33,
+          "evidence": {
+            "preconditions": {
+              "isolated": true,
+              "on_site": true
+            },
+            "cause": "Gripper obstruction"
+          }
+        },
+        {
+          "state": "VERIFYING",
+          "tool": "virtual_function_test",
+          "elapsed": 17.0,
+          "sim_time": 29.33,
+          "evidence": {
+            "expected": {
+              "gripper_open": true,
+              "drive_alarm": false
+            },
+            "observed": {
+              "gripper_open": true,
+              "drive_alarm": false
+            }
+          }
+        },
+        {
+          "state": "RESTORED",
+          "tool": "release_virtual_interlock",
+          "elapsed": 21.0,
+          "sim_time": 33.33,
+          "evidence": {
+            "passed": true,
+            "joint_return_error_rad": 1.1998078261294861e-33,
+            "sensor_checks": {
+              "gripper_open": true,
+              "drive_alarm": false
+            },
+            "state": "PROCESSING",
+            "completed_at_release": 0,
+            "scope": "simulated sensor self-test; production output tracked separately"
+          }
+        }
+      ]
+    },
+    {
+      "seed": 4,
+      "state": "RESTORED",
+      "active_wall_tick_seconds": 21.0,
+      "robot": "ARIA-01",
+      "production_resumed": true,
+      "trace": [
+        {
+          "state": "DISPATCHED",
+          "tool": "observe",
+          "elapsed": 0.0,
+          "sim_time": 12.44,
+          "evidence": {
+            "id": "d6117868c8514973ad49a425c9a3a14c",
+            "cause": "gripper_jam",
+            "label": "Gripper obstruction",
+            "location": [
+              0.45,
+              1.4,
+              2.05
+            ],
+            "sensors": {
+              "gripper_open": false,
+              "drive_alarm": true
+            },
+            "isolated": true,
+            "source": "injected virtual sensor scenario"
+          }
+        },
+        {
+          "state": "DIAGNOSING",
+          "tool": "read_virtual_sensors",
+          "elapsed": 11.0,
+          "sim_time": 23.439999999999998,
+          "evidence": {
+            "gripper_open": false,
+            "drive_alarm": true
+          }
+        },
+        {
+          "state": "REPAIRING",
+          "tool": "clear_virtual_gripper",
+          "elapsed": 13.0,
+          "sim_time": 25.439999999999998,
+          "evidence": {
+            "preconditions": {
+              "isolated": true,
+              "on_site": true
+            },
+            "cause": "Gripper obstruction"
+          }
+        },
+        {
+          "state": "VERIFYING",
+          "tool": "virtual_function_test",
+          "elapsed": 17.0,
+          "sim_time": 29.439999999999998,
+          "evidence": {
+            "expected": {
+              "gripper_open": true,
+              "drive_alarm": false
+            },
+            "observed": {
+              "gripper_open": true,
+              "drive_alarm": false
+            }
+          }
+        },
+        {
+          "state": "RESTORED",
+          "tool": "release_virtual_interlock",
+          "elapsed": 21.0,
+          "sim_time": 33.44,
+          "evidence": {
+            "passed": true,
+            "joint_return_error_rad": 1.1998078261294861e-33,
+            "sensor_checks": {
+              "gripper_open": true,
+              "drive_alarm": false
+            },
+            "state": "PROCESSING",
+            "completed_at_release": 0,
+            "scope": "simulated sensor self-test; production output tracked separately"
+          }
+        }
+      ]
+    },
+    {
+      "seed": 5,
+      "state": "RESTORED",
+      "active_wall_tick_seconds": 21.0,
+      "robot": "ARIA-01",
+      "production_resumed": true,
+      "trace": [
+        {
+          "state": "DISPATCHED",
+          "tool": "observe",
+          "elapsed": 0.0,
+          "sim_time": 12.55,
+          "evidence": {
+            "id": "6a08f3a3138042449b2fa454b1c1b7e9",
+            "cause": "gripper_jam",
+            "label": "Gripper obstruction",
+            "location": [
+              0.45,
+              1.4,
+              2.05
+            ],
+            "sensors": {
+              "gripper_open": false,
+              "drive_alarm": true
+            },
+            "isolated": true,
+            "source": "injected virtual sensor scenario"
+          }
+        },
+        {
+          "state": "DIAGNOSING",
+          "tool": "read_virtual_sensors",
+          "elapsed": 11.0,
+          "sim_time": 23.55,
+          "evidence": {
+            "gripper_open": false,
+            "drive_alarm": true
+          }
+        },
+        {
+          "state": "REPAIRING",
+          "tool": "clear_virtual_gripper",
+          "elapsed": 13.0,
+          "sim_time": 25.55,
+          "evidence": {
+            "preconditions": {
+              "isolated": true,
+              "on_site": true
+            },
+            "cause": "Gripper obstruction"
+          }
+        },
+        {
+          "state": "VERIFYING",
+          "tool": "virtual_function_test",
+          "elapsed": 17.0,
+          "sim_time": 29.55,
+          "evidence": {
+            "expected": {
+              "gripper_open": true,
+              "drive_alarm": false
+            },
+            "observed": {
+              "gripper_open": true,
+              "drive_alarm": false
+            }
+          }
+        },
+        {
+          "state": "RESTORED",
+          "tool": "release_virtual_interlock",
+          "elapsed": 21.0,
+          "sim_time": 33.55,
+          "evidence": {
+            "passed": true,
+            "joint_return_error_rad": 1.1998078261294861e-33,
+            "sensor_checks": {
+              "gripper_open": true,
+              "drive_alarm": false
+            },
+            "state": "PROCESSING",
+            "completed_at_release": 0,
+            "scope": "simulated sensor self-test; production output tracked separately"
+          }
+        }
+      ]
+    },
+    {
+      "seed": 6,
+      "state": "RESTORED",
+      "active_wall_tick_seconds": 21.0,
+      "robot": "ARIA-01",
+      "production_resumed": true,
+      "trace": [
+        {
+          "state": "DISPATCHED",
+          "tool": "observe",
+          "elapsed": 0.0,
+          "sim_time": 12.66,
+          "evidence": {
+            "id": "817a82da91034260b5a4c031ea8cee66",
+            "cause": "gripper_jam",
+            "label": "Gripper obstruction",
+            "location": [
+              0.45,
+              1.4,
+              2.05
+            ],
+            "sensors": {
+              "gripper_open": false,
+              "drive_alarm": true
+            },
+            "isolated": true,
+            "source": "injected virtual sensor scenario"
+          }
+        },
+        {
+          "state": "DIAGNOSING",
+          "tool": "read_virtual_sensors",
+          "elapsed": 11.0,
+          "sim_time": 23.66,
+          "evidence": {
+            "gripper_open": false,
+            "drive_alarm": true
+          }
+        },
+        {
+          "state": "REPAIRING",
+          "tool": "clear_virtual_gripper",
+          "elapsed": 13.0,
+          "sim_time": 25.66,
+          "evidence": {
+            "preconditions": {
+              "isolated": true,
+              "on_site": true
+            },
+            "cause": "Gripper obstruction"
+          }
+        },
+        {
+          "state": "VERIFYING",
+          "tool": "virtual_function_test",
+          "elapsed": 17.0,
+          "sim_time": 29.66,
+          "evidence": {
+            "expected": {
+              "gripper_open": true,
+              "drive_alarm": false
+            },
+            "observed": {
+              "gripper_open": true,
+              "drive_alarm": false
+            }
+          }
+        },
+        {
+          "state": "RESTORED",
+          "tool": "release_virtual_interlock",
+          "elapsed": 21.0,
+          "sim_time": 33.66,
+          "evidence": {
+            "passed": true,
+            "joint_return_error_rad": 1.1998078261294861e-33,
+            "sensor_checks": {
+              "gripper_open": true,
+              "drive_alarm": false
+            },
+            "state": "PROCESSING",
+            "completed_at_release": 0,
+            "scope": "simulated sensor self-test; production output tracked separately"
+          }
+        }
+      ]
+    },
+    {
+      "seed": 7,
+      "state": "RESTORED",
+      "active_wall_tick_seconds": 21.0,
+      "robot": "ARIA-01",
+      "production_resumed": true,
+      "trace": [
+        {
+          "state": "DISPATCHED",
+          "tool": "observe",
+          "elapsed": 0.0,
+          "sim_time": 12.77,
+          "evidence": {
+            "id": "c030e1879a5843ebbe93df8d8bf69dbf",
+            "cause": "gripper_jam",
+            "label": "Gripper obstruction",
+            "location": [
+              0.45,
+              1.4,
+              2.05
+            ],
+            "sensors": {
+              "gripper_open": false,
+              "drive_alarm": true
+            },
+            "isolated": true,
+            "source": "injected virtual sensor scenario"
+          }
+        },
+        {
+          "state": "DIAGNOSING",
+          "tool": "read_virtual_sensors",
+          "elapsed": 11.0,
+          "sim_time": 23.77,
+          "evidence": {
+            "gripper_open": false,
+            "drive_alarm": true
+          }
+        },
+        {
+          "state": "REPAIRING",
+          "tool": "clear_virtual_gripper",
+          "elapsed": 13.0,
+          "sim_time": 25.77,
+          "evidence": {
+            "preconditions": {
+              "isolated": true,
+              "on_site": true
+            },
+            "cause": "Gripper obstruction"
+          }
+        },
+        {
+          "state": "VERIFYING",
+          "tool": "virtual_function_test",
+          "elapsed": 17.0,
+          "sim_time": 29.77,
+          "evidence": {
+            "expected": {
+              "gripper_open": true,
+              "drive_alarm": false
+            },
+            "observed": {
+              "gripper_open": true,
+              "drive_alarm": false
+            }
+          }
+        },
+        {
+          "state": "RESTORED",
+          "tool": "release_virtual_interlock",
+          "elapsed": 21.0,
+          "sim_time": 33.769999999999996,
+          "evidence": {
+            "passed": true,
+            "joint_return_error_rad": 1.1998078261294861e-33,
+            "sensor_checks": {
+              "gripper_open": true,
+              "drive_alarm": false
+            },
+            "state": "PROCESSING",
+            "completed_at_release": 0,
+            "scope": "simulated sensor self-test; production output tracked separately"
+          }
+        }
+      ]
+    },
+    {
+      "seed": 8,
+      "state": "RESTORED",
+      "active_wall_tick_seconds": 21.0,
+      "robot": "ARIA-01",
+      "production_resumed": true,
+      "trace": [
+        {
+          "state": "DISPATCHED",
+          "tool": "observe",
+          "elapsed": 0.0,
+          "sim_time": 12.88,
+          "evidence": {
+            "id": "56269398e1b84620971c4f8d51c598af",
+            "cause": "gripper_jam",
+            "label": "Gripper obstruction",
+            "location": [
+              0.45,
+              1.4,
+              2.05
+            ],
+            "sensors": {
+              "gripper_open": false,
+              "drive_alarm": true
+            },
+            "isolated": true,
+            "source": "injected virtual sensor scenario"
+          }
+        },
+        {
+          "state": "DIAGNOSING",
+          "tool": "read_virtual_sensors",
+          "elapsed": 11.0,
+          "sim_time": 23.880000000000003,
+          "evidence": {
+            "gripper_open": false,
+            "drive_alarm": true
+          }
+        },
+        {
+          "state": "REPAIRING",
+          "tool": "clear_virtual_gripper",
+          "elapsed": 13.0,
+          "sim_time": 25.880000000000003,
+          "evidence": {
+            "preconditions": {
+              "isolated": true,
+              "on_site": true
+            },
+            "cause": "Gripper obstruction"
+          }
+        },
+        {
+          "state": "VERIFYING",
+          "tool": "virtual_function_test",
+          "elapsed": 17.0,
+          "sim_time": 29.880000000000003,
+          "evidence": {
+            "expected": {
+              "gripper_open": true,
+              "drive_alarm": false
+            },
+            "observed": {
+              "gripper_open": true,
+              "drive_alarm": false
+            }
+          }
+        },
+        {
+          "state": "RESTORED",
+          "tool": "release_virtual_interlock",
+          "elapsed": 21.0,
+          "sim_time": 33.88,
+          "evidence": {
+            "passed": true,
+            "joint_return_error_rad": 1.1998078261294861e-33,
+            "sensor_checks": {
+              "gripper_open": true,
+              "drive_alarm": false
+            },
+            "state": "PROCESSING",
+            "completed_at_release": 0,
+            "scope": "simulated sensor self-test; production output tracked separately"
+          }
+        }
+      ]
+    },
+    {
+      "seed": 9,
+      "state": "RESTORED",
+      "active_wall_tick_seconds": 21.0,
+      "robot": "ARIA-01",
+      "production_resumed": true,
+      "trace": [
+        {
+          "state": "DISPATCHED",
+          "tool": "observe",
+          "elapsed": 0.0,
+          "sim_time": 12.99,
+          "evidence": {
+            "id": "d8799d07654b4f6c80424a584ef272a7",
+            "cause": "gripper_jam",
+            "label": "Gripper obstruction",
+            "location": [
+              0.45,
+              1.4,
+              2.05
+            ],
+            "sensors": {
+              "gripper_open": false,
+              "drive_alarm": true
+            },
+            "isolated": true,
+            "source": "injected virtual sensor scenario"
+          }
+        },
+        {
+          "state": "DIAGNOSING",
+          "tool": "read_virtual_sensors",
+          "elapsed": 11.0,
+          "sim_time": 23.990000000000002,
+          "evidence": {
+            "gripper_open": false,
+            "drive_alarm": true
+          }
+        },
+        {
+          "state": "REPAIRING",
+          "tool": "clear_virtual_gripper",
+          "elapsed": 13.0,
+          "sim_time": 25.990000000000002,
+          "evidence": {
+            "preconditions": {
+              "isolated": true,
+              "on_site": true
+            },
+            "cause": "Gripper obstruction"
+          }
+        },
+        {
+          "state": "VERIFYING",
+          "tool": "virtual_function_test",
+          "elapsed": 17.0,
+          "sim_time": 29.990000000000002,
+          "evidence": {
+            "expected": {
+              "gripper_open": true,
+              "drive_alarm": false
+            },
+            "observed": {
+              "gripper_open": true,
+              "drive_alarm": false
+            }
+          }
+        },
+        {
+          "state": "RESTORED",
+          "tool": "release_virtual_interlock",
+          "elapsed": 21.0,
+          "sim_time": 33.99,
+          "evidence": {
+            "passed": true,
+            "joint_return_error_rad": 1.1998078261294861e-33,
+            "sensor_checks": {
+              "gripper_open": true,
+              "drive_alarm": false
+            },
+            "state": "PROCESSING",
+            "completed_at_release": 0,
+            "scope": "simulated sensor self-test; production output tracked separately"
+          }
+        }
+      ]
+    }
+  ],
+  "summary": {
+    "n": 10,
+    "restored": 10,
+    "production_resumed": 10,
+    "median_active_tick_seconds": 21.0,
+    "program_duration_seconds": 10.2,
+    "max_sampled_velocity_fraction_of_urdf": 0.374999003089217,
+    "sampled_joint_states": 2001
+  }
+}

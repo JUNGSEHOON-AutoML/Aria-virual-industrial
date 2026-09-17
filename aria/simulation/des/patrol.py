@@ -82,7 +82,7 @@ class FloorPlanner:
 class PatrolSupervisor:
     def __init__(self, directory):
         self.directory=Path(directory)
-        self.reports=[];self.active={};self.robots=[];self.enabled=True
+        self.maintenance=[];self.reports=[];self.active={};self.robots=[];self.enabled=True
         self.planner=None;self.revision=None;self.last_sim=0.;self.run=0;self.elapsed=0.
         self.persist_error=None;self.sequence=0;self.seen=set()
         p=self.directory/'patrol_reports.json'
@@ -167,13 +167,17 @@ class PatrolSupervisor:
         if changed:self.save()
 
     def tick(self, snap, dt):
-        if self.planner is None or self.revision!=snap['revision'] or snap['time']<self.last_sim:
+        if self.planner is None or self.revision!=snap['revision'] or snap['time']<self.last_sim or getattr(self,'run_token',None)!=snap.get('run_token'):
             self.configure(snap)
+            self.run_token=snap.get("run_token")
         self.last_sim=snap['time'];self.observe(snap)
         dt=max(0.,min(float(dt),.5));self.elapsed+=dt
         if self.enabled:
             reserved=set()
             for robot in self.robots:
+                if robot.get('maintenance_hold'):
+                    reserved.add(robot['target'])
+                    continue
                 if robot['dwell']>0:
                     robot['dwell']=max(0.,robot['dwell']-dt)
                     if robot['state']!='ROUTE_BLOCKED':robot['state']='INSPECTING'
@@ -210,18 +214,18 @@ class PatrolSupervisor:
         return self.snapshot()
 
     def snapshot(self):
-        return copy.deepcopy(dict(enabled=self.enabled,elapsed=self.elapsed,robots=self.robots,
+        return copy.deepcopy(dict(maintenance=self.maintenance, enabled=self.enabled,elapsed=self.elapsed,robots=self.robots,
             open_incidents=sum(r['status']=='open' for r in self.reports),reports=list(reversed(self.reports)),
             storage_error=self.persist_error,source='virtual factory telemetry; patrol uses wall time'))
 
     def markdown(self):
         lines=['# ARIA autonomous factory incident report',f'Generated: {utc()}',
-               'Evidence source: virtual DES telemetry. No physical hardware diagnosis or autonomous repair is claimed.','']
+               'Evidence source: virtual DES telemetry. Repairs, when recorded, are virtual harness actions only; no physical hardware repair is claimed.','']
         for r in reversed(self.reports):
             lines += [f"## {r['id']} — {r['component']} / {r['kind']}",
                 f"Status: {r['status']} | Severity: {r['severity']} | Simulation time: {r['detected_sim_time']:.2f}s",
                 f"Detected: {r['detected_at']} | Verified by: {r['verified_by'] or 'pending'}",
                 'Evidence: '+json.dumps(r['evidence'],ensure_ascii=False),
-                'Recommendation: '+r['recommendation'],'Outcome: '+r['outcome'],'']
+                'Recommendation: '+r['recommendation'],'Outcome: '+r['outcome'], 'Maintenance trace: '+json.dumps(r.get('maintenance',{}),ensure_ascii=False),'']
         if not self.reports:lines+=['No incidents observed.']
         return '\n'.join(lines)

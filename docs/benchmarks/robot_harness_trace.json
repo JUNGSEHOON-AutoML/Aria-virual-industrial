@@ -1,0 +1,94 @@
+{
+  "id": "8252421063f54ecbb62cb626cfeaae7a",
+  "run": "7015989f8b084105ac2e80876f9d6393",
+  "component": "MACHINE-01",
+  "cause": "gripper_jam",
+  "state": "RESTORED",
+  "robot": "ARIA-01",
+  "elapsed": 17.525782973039895,
+  "stage_elapsed": 0,
+  "attempts": 1,
+  "max_attempts": 1,
+  "trace": [
+    {
+      "state": "DISPATCHED",
+      "tool": "observe",
+      "elapsed": 0,
+      "sim_time": 17.46927031298401,
+      "evidence": {
+        "id": "8252421063f54ecbb62cb626cfeaae7a",
+        "cause": "gripper_jam",
+        "label": "Gripper obstruction",
+        "location": [
+          0.07610459651768153,
+          0.9077812410491511,
+          2.073266145794624
+        ],
+        "sensors": {
+          "gripper_open": false,
+          "drive_alarm": true
+        },
+        "isolated": true,
+        "source": "injected virtual sensor scenario"
+      }
+    },
+    {
+      "state": "DIAGNOSING",
+      "tool": "read_virtual_sensors",
+      "elapsed": 7.24,
+      "sim_time": 24.70932788902428,
+      "evidence": {
+        "gripper_open": false,
+        "drive_alarm": true
+      }
+    },
+    {
+      "state": "REPAIRING",
+      "tool": "clear_virtual_gripper",
+      "elapsed": 9.29,
+      "sim_time": 26.759548371017445,
+      "evidence": {
+        "preconditions": {
+          "isolated": true,
+          "on_site": true
+        },
+        "cause": "Gripper obstruction"
+      }
+    },
+    {
+      "state": "VERIFYING",
+      "tool": "virtual_function_test",
+      "elapsed": 13.35,
+      "sim_time": 30.819428506016266,
+      "evidence": {
+        "expected": {
+          "gripper_open": true,
+          "drive_alarm": false
+        },
+        "observed": {
+          "gripper_open": true,
+          "drive_alarm": false
+        }
+      }
+    },
+    {
+      "state": "RESTORED",
+      "tool": "release_virtual_interlock",
+      "elapsed": 17.526,
+      "sim_time": 34.995053286023904,
+      "evidence": {
+        "passed": true,
+        "joint_return_error_rad": 1.1998078261294861e-33,
+        "sensor_checks": {
+          "gripper_open": true,
+          "drive_alarm": false
+        },
+        "state": "PROCESSING",
+        "completed_at_release": 1,
+        "scope": "simulated sensor self-test; production output tracked separately"
+      }
+    }
+  ],
+  "source": "simulation only",
+  "started_sim_time": 17.46927031298401
+}

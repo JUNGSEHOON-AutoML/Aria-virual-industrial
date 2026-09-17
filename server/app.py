@@ -156,6 +156,10 @@ def create_app() -> FastAPI:
         if assets.exists():
             app.mount("/assets", StaticFiles(directory=str(assets)), name="assets")
 
+        robots = DIST_DIR / "robots"
+        if robots.exists():
+            app.mount("/robots", StaticFiles(directory=str(robots)), name="robot-assets")
+
         @app.get("/")
         async def root():
             return FileResponse(str(DIST_DIR / "index.html"))
