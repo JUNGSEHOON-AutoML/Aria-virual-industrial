@@ -15,7 +15,7 @@ from server.config import CORS_ORIGINS, DIST_DIR, API_HOST, API_PORT
 
 _log = logging.getLogger("aria.server")
 from server.ws import manager
-from server.routers import inspector, sim, classes, dataset, analyze, state, internal, twin, ccifps, factory
+from server.routers import inspector, sim, classes, dataset, analyze, state, internal, twin, ccifps, factory, cad
 from server.routers.internal import get_producer_last_seen
 
 
@@ -26,7 +26,7 @@ def create_app() -> FastAPI:
         allow_credentials=True, allow_methods=["*"], allow_headers=["*"],
     )
 
-    for r in (inspector, sim, classes, dataset, analyze, state, internal, twin, ccifps, factory):
+    for r in (inspector, sim, classes, dataset, analyze, state, internal, twin, ccifps, factory, cad):
         app.include_router(r.router)
 
     @app.on_event("startup")

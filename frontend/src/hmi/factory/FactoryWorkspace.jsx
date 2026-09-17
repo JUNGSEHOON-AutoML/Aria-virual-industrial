@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { useFactory, factoryApi, subscribeFactory } from './factoryStore'
 import FactoryScene from './FactoryScene'
 import PatrolPanel from './PatrolPanel'
+import CADPanel from './CADPanel'
 import SceneErrorBoundary from '../panels/SceneErrorBoundary'
 import './factory.css'
 
@@ -41,6 +42,7 @@ function Properties({ c, revision }) {
       const changes = Object.fromEntries(Object.entries(draft).filter(([k, v]) => k !== 'id' && JSON.stringify(v) !== JSON.stringify(c[k])))
       action(`/components/${c.id}`, changes, 'PATCH')
     }}>Review changes</button>
+    {c.kind === 'Machine' && <CADPanel component={c} />}
     <h4>CONNECTION</h4>
     <select aria-label="Connection target" value={target} onChange={e => setTarget(e.target.value)}><option value="">Choose target</option>{snapshot.model.components.filter(n => n.id !== c.id && n.kind !== 'Source').map(n => <option key={n.id}>{n.id}</option>)}</select>
     <select aria-label="Routing condition" value={condition} onChange={e => setCondition(e.target.value)}>{['always', 'OK', 'NG', 'SKIPPED'].map(x => <option key={x}>{x}</option>)}</select>

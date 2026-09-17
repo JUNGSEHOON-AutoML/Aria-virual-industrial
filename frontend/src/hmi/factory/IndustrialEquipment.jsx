@@ -1,6 +1,7 @@
 // Parametric industrial equipment. Robot/spindle pose is a visualization of the
 // actual DES processing phase, not a collision-checked robot motion program.
 import { useMemo } from 'react'
+import CADBody from './CADBody'
 import { Html, Line } from '@react-three/drei'
 
 export function Solid({ at = [0, 0, 0], size, color = '#d7dcde', rotation, metal = .25, ...props }) {
@@ -104,7 +105,7 @@ export function Equipment({ component: c, resource, part, time }) {
   const active = resource?.state === 'PROCESSING'
   const phase = part ? Math.min(1, Math.max(0, (time - part.entered) / Math.max(.01, part.due - part.entered))) : 0
   if (c.kind === 'Machine') return <>
-    <CNC state={resource?.state} phase={phase} />
+    {c.cad_asset ? <CADBody asset={c.cad_asset} fallback={<CNC state={resource?.state} phase={phase} />} /> : <CNC state={resource?.state} phase={phase} />}
     <group position={[.45, 0, 2.05]} rotation={[0, Math.PI, 0]}><Robot active={active} phase={phase} /></group>
     <Fence at={[0, 0, 3.05]} length={3} /><Fence at={[-1.55, 0, 2]} length={2.1} rotation={Math.PI / 2} />
     <Pendant at={[1.55, 0, 2.7]} />

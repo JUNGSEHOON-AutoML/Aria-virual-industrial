@@ -37,6 +37,15 @@
         "aria/mcp/servers/factory_mcp.py"
       ],
       "env": {}
+    },
+    "cad": {
+      "command": "python",
+      "args": [
+        "aria/mcp/servers/cad_mcp.py"
+      ],
+      "env": {
+        "ARIA_FACTORY_API": "http://127.0.0.1:8230"
+      }
     }
   },
   "_disabled_servers": {},

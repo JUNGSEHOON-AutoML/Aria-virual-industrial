@@ -34,6 +34,7 @@ class Component(Contract):
     image_paths: list[str] = Field(default_factory=list, max_length=1000)
     threshold: float = Field(default=.5, ge=0)
     bank: str = ''
+    cad_asset: str = Field(default='', pattern=r'^(|[0-9a-f]{24})$')
 
     @model_validator(mode='after')
     def check(self):

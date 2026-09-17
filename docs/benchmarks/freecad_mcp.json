@@ -1,0 +1,138 @@
+{
+  "tools": [
+    "get_cad_status",
+    "build_cnc_cad",
+    "get_cad_asset"
+  ],
+  "asset": {
+    "id": "10dab9aa3446091ac31836d8",
+    "report": {
+      "engine": "FreeCAD",
+      "version": "1.1.3",
+      "parameters": {
+        "width_mm": 2600.0,
+        "depth_mm": 1900.0,
+        "height_mm": 2600.0
+      },
+      "units": "mm",
+      "cad_up_axis": "Z",
+      "web_up_axis": "Y",
+      "parts": 16,
+      "triangles": 2732,
+      "all_solids_valid": true,
+      "validation": [
+        {
+          "name": "Base",
+          "valid": true,
+          "solids": 1,
+          "volume_mm3": 1235000000.0
+        },
+        {
+          "name": "RearWall",
+          "valid": true,
+          "solids": 1,
+          "volume_mm3": 855400000.0
+        },
+        {
+          "name": "LeftWall",
+          "valid": true,
+          "solids": 1,
+          "volume_mm3": 579040000.0
+        },
+        {
+          "name": "RightWall",
+          "valid": true,
+          "solids": 1,
+          "volume_mm3": 579040000.0
+        },
+        {
+          "name": "Roof",
+          "valid": true,
+          "solids": 1,
+          "volume_mm3": 571648000.0
+        },
+        {
+          "name": "FrontFrame",
+          "valid": true,
+          "solids": 1,
+          "volume_mm3": 181336999.99999997
+        },
+        {
+          "name": "Bed",
+          "valid": true,
+          "solids": 1,
+          "volume_mm3": 319756320.0
+        },
+        {
+          "name": "SlottedTable",
+          "valid": true,
+          "solids": 1,
+          "volume_mm3": 108600960.0
+        },
+        {
+          "name": "SpindleHousing",
+          "valid": true,
+          "solids": 1,
+          "volume_mm3": 49500000.0
+        },
+        {
+          "name": "Spindle",
+          "valid": true,
+          "solids": 1,
+          "volume_mm3": 3540574.920595698
+        },
+        {
+          "name": "Tool",
+          "valid": true,
+          "solids": 1,
+          "volume_mm3": 182463.70132049517
+        },
+        {
+          "name": "Console",
+          "valid": true,
+          "solids": 1,
+          "volume_mm3": 16061759.999999994
+        },
+        {
+          "name": "Display",
+          "valid": true,
+          "solids": 1,
+          "volume_mm3": 270399.99999999994
+        },
+        {
+          "name": "Button0",
+          "valid": true,
+          "solids": 1,
+          "volume_mm3": 8143.0081581047525
+        },
+        {
+          "name": "Button1",
+          "valid": true,
+          "solids": 1,
+          "volume_mm3": 8143.0081581047525
+        },
+        {
+          "name": "Button2",
+          "valid": true,
+          "solids": 1,
+          "volume_mm3": 8143.0081581047525
+        }
+      ],
+      "static_interferences": [],
+      "envelope_mm": {
+        "width": 2600.0,
+        "depth": 2006.0,
+        "height": 2600.0
+      },
+      "elapsed_seconds": 0.40815645997645333,
+      "scope": "CNC body only; static BRep overlaps; no robot swept-volume or motion safety validation"
+    },
+    "files": {
+      "mesh.json": "/api/factory/cad/assets/10dab9aa3446091ac31836d8/mesh.json",
+      "cnc.FCStd": "/api/factory/cad/assets/10dab9aa3446091ac31836d8/cnc.FCStd",
+      "cnc.step": "/api/factory/cad/assets/10dab9aa3446091ac31836d8/cnc.step",
+      "report.json": "/api/factory/cad/assets/10dab9aa3446091ac31836d8/report.json"
+    }
+  },
+  "proposal_status": "pending"
+}

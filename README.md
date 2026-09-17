@@ -23,6 +23,19 @@
 
 기본 공정 데모와 순찰·보고는 API 키 없이 동작합니다. 순찰 보고는 **가상 공장의 실제 DES 신호를 사용하는 규칙 기반 기능**입니다. 보행 애니메이션과 평면 경로 계획을 제공하며, 물리 기반 보행·로봇 간 충돌 회피·실제 설비 진단·자동 수리는 구현하지 않았습니다. CCIFPS 실검사는 별도 데이터와 모델 준비가 필요합니다.
 
+## Linux CAD · FreeCAD 연결 1단계
+
+실제 FreeCAD 1.1.3 커널로 CNC 본체를 생성하고 ARIA에 적용합니다. **폭·깊이·높이 입력 → CAD 생성·정적 형상 검증 → 변경 검토·Apply → 3D 표시**를 연결했습니다. FCStd·STEP 원본과 검사 보고서를 내려받을 수 있습니다.
+
+- MCP 도구: `get_cad_status`, `build_cnc_cad`, `get_cad_asset` — 실제 stdio 호출 검증 완료.
+- CNC 본체: **16개 유효 솔리드 · 2,732개 삼각형 · 본체 부품 간 정적 겹침 0건**.
+- 브라우저에서 폭 **2,800mm** 모델 생성·적용·Run/Pause 검증. 전체 테스트 **65개 통과**.
+- 이번 단계는 CNC 본체 형상 연결이며, 로봇 경로 충돌·물리·실제 제조사 설계 검증은 포함하지 않습니다.
+
+![실제 FreeCAD CNC를 적용한 공정 실행](docs/images/freecad_cnc_running.png)
+
+[설치·MCP 연결·검증 및 제한 사항](docs/FREECAD_INTEGRATION.md)
+
 ## 현재 워크스테이션에서 실행
 
 Python 3.10과 Node 20을 사용하는, 이미 구성된 `aria` 환경 기준입니다. 새 환경에서는 Python 의존성(`requirements.txt`)과 프런트엔드 의존성(`frontend/package.json`)을 먼저 설치하세요.
@@ -93,7 +106,7 @@ python -m uvicorn server.app:app --host 127.0.0.1 --port 8230
 
 ## 검증 및 상세 문서
 
-- Python 전체 테스트 **59개 통과**, 프런트엔드 production build 통과(대형 번들 경고 존재).
+- Python 전체 테스트 **65개 통과**, 프런트엔드 production build 통과(대형 번들 경고 존재).
 - 실제 브라우저에서 **고장 주입 → ARIA-01 현장 확인 → recovered 기록** 검증. 해당 검증의 브라우저 예외·HTTP 오류 0건.
 - [공정 시뮬레이션 구현·API·실험 보고서](docs/INDUSTRIAL_V1_REPORT.md)
 - [순찰·문제 보고 구현 및 검증](docs/PATROL_AGENT_REPORT.md)
