@@ -19,7 +19,5 @@ def timeline(run_id:str,start:float=Query(0,alias='from',ge=0,le=3600),end:float
 def kpi(run_id:str,t:float=Query(...,ge=0,le=3600)):return store.kpi(run_id,t)
 @app.get('/api/dt/results/summary')
 def summary():
- if not all((store.FULL/f).is_file() for f in ['completion.json','verification.json','summary_ci95.csv','REPORT.md']):raise HTTPException(404,'실험 진행 중')
- import csv
- with (store.FULL/'summary_ci95.csv').open() as f:rows=list(csv.DictReader(f))
- return {'rows':rows,'report_sha256':store.sha(store.FULL/'REPORT.md'),'complete_sha256':store.sha(store.FULL/'completion.json')}
+ try:return store.summary_data()
+ except FileNotFoundError:raise HTTPException(404,'실험 진행 중')

@@ -44,3 +44,23 @@ def test_baseline_requires_matching_conditions():
  result=store.kpi('8dd8e446a095de96',1800)
  assert result['baseline_run_id']=='8dd8e446a095de96'
  assert all(v==0 for v in result['delta'].values())
+
+def test_summary_pending_and_rejects_unverified(tmp_path,monkeypatch):
+ monkeypatch.setattr(store,'FULL',tmp_path)
+ assert client.get('/api/dt/results/summary').status_code==404
+ for name in ['completion.json','verification.json','run_index.json']:(tmp_path/name).write_text('{}')
+ (tmp_path/'REPORT.md').write_text('incomplete');(tmp_path/'summary_ci95.csv').write_text('metric,mean\n')
+ assert client.get('/api/dt/results/summary').status_code==404
+
+def test_summary_report_numeric_crosscheck(tmp_path,monkeypatch):
+ import csv
+ monkeypatch.setattr(store,'FULL',tmp_path)
+ (tmp_path/'completion.json').write_text(json.dumps({'completed_DES':2970,'posthoc_views':4320}))
+ (tmp_path/'verification.json').write_text(json.dumps({'passed':True,'all_raw_hashes_verified':True,'all_groups_30_unique_seeds':True}))
+ (tmp_path/'run_index.json').write_text('[]')
+ rows=[{'class_name':'fixture','selector':'ccifps','policy':'B','scope':'main','cell':'inline','speed':.5,'latency_mode':'profile','metric':metric,'mean':value,'ci95_low':low,'ci95_high':high} for metric,value,low,high in [('throughput_per_hour',480,479,481),('hold_ratio',.1,.09,.11),('person_hours_per_1000',.03,.02,.04)]]
+ with (tmp_path/'summary_ci95.csv').open('w') as f:w=csv.DictWriter(f,fieldnames=rows[0]);w.writeheader();w.writerows(rows)
+ (tmp_path/'REPORT.md').write_text('|fixture|ccifps|B|480.00|[479.00, 481.00]|0.100000|0.0300|\n')
+ r=client.get('/api/dt/results/summary');assert r.status_code==200 and r.json()['report_rows_verified']==1
+ (tmp_path/'REPORT.md').write_text('|fixture|ccifps|B|481.00|[479.00, 481.00]|0.100000|0.0300|\n')
+ assert client.get('/api/dt/results/summary').status_code==409

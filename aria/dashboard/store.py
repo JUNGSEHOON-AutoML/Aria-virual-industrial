@@ -15,9 +15,13 @@ def sha(p):
  return h.hexdigest()
 def catalog():
  rows=[]
- roots=[PILOT]+([FULL] if (FULL/'completion.json').exists() and (FULL/'verification.json').exists() else [])
- for root in roots:
-  for done in sorted((root/'runs').glob('*/complete.json')):
+ sources=[(PILOT,done) for done in sorted((PILOT/'runs').glob('*/complete.json'))]
+ if full_ready():sources += [(FULL,Path(entry['path'])/'complete.json') for entry in json.loads((FULL/'run_index.json').read_text())]
+ seen=set()
+ for root,done in sources:
+  if done.parent.name in seen:continue
+  seen.add(done.parent.name)
+  if True:
    d=json.loads(done.read_text());c=d['lock']['config']
    if c['policy']!='A':continue
    rows.append({'run_id':done.parent.name,**{k:c[k] for k in ['class_name','selector','cell','speed','latency_mode','seed']},'complete_hash':sha(done),'source':'pilot' if root==PILOT else 'full','_path':done.parent})
@@ -88,3 +92,27 @@ def kpi(run_id,t):
   result['delta']={k:result[k]-reference[k] if result[k] is not None and reference[k] is not None else None for k in ('throughput_per_hour','gt_quality','false_positives_per_1000')}
   result['baseline_run_id']=baseline['run_id']
  return result
+
+def full_ready():
+ required=('completion.json','verification.json','summary_ci95.csv','REPORT.md','run_index.json')
+ if not all((FULL/f).is_file() for f in required):return False
+ try:
+  c=json.loads((FULL/'completion.json').read_text());v=json.loads((FULL/'verification.json').read_text())
+  return c.get('completed_DES')==2970 and c.get('posthoc_views')==4320 and v.get('passed') is True and v.get('all_raw_hashes_verified') is True and v.get('all_groups_30_unique_seeds') is True
+ except (ValueError,OSError):return False
+
+def summary_data():
+ if not full_ready():raise FileNotFoundError('실험 진행 중')
+ with (FULL/'summary_ci95.csv').open() as f:rows=list(csv.DictReader(f))
+ representative=[r for r in rows if r['scope']=='main' and r['cell']=='inline' and float(r['speed'])==.5 and r['latency_mode']=='profile']
+ report=(FULL/'REPORT.md').read_text();tables=[line.split('|')[1:-1] for line in report.splitlines() if line.startswith('|') and len(line.split('|'))==9]
+ validated=0
+ for row in representative:
+  if row['metric']!='throughput_per_hour':continue
+  key=[row['class_name'],row['selector'],row['policy']];match=next((t for t in tables if t[:3]==key),None)
+  others={r['metric']:r for r in representative if [r['class_name'],r['selector'],r['policy']]==key}
+  expected=[*key,f"{float(row['mean']):.2f}",f"[{float(row['ci95_low']):.2f}, {float(row['ci95_high']):.2f}]",f"{float(others['hold_ratio']['mean']):.6f}",f"{float(others['person_hours_per_1000']['mean']):.4f}" if others['person_hours_per_1000']['mean'] else '해당 없음']
+  if match!=expected:raise ValueError('Summary differs from REPORT table')
+  validated+=1
+ if not validated:raise ValueError('REPORT has no verified representative rows')
+ return {'rows':rows,'report_rows_verified':validated,'report_sha256':sha(FULL/'REPORT.md'),'complete_sha256':sha(FULL/'completion.json')}

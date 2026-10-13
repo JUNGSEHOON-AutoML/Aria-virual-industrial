@@ -1,0 +1,24 @@
+{
+  "milestone": "m5",
+  "pass": false,
+  "checks": {
+    "availability": {
+      "pass": true,
+      "status": 404
+    },
+    "summary_REPORT": {
+      "pass": false,
+      "verified_rows": 0
+    }
+  },
+  "at": "2026-10-13T03:07:32.345865+00:00",
+  "status": "pending",
+  "reason": "실험 대기",
+  "experiment_progress": {
+    "stage": "DES_A",
+    "elapsed_wall_seconds": 8192.532500899004,
+    "completed_DES": 1449,
+    "expected_DES": 2970,
+    "new_DES_here": 1425
+  }
+}
