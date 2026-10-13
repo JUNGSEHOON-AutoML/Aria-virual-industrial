@@ -1,0 +1,35 @@
+{
+  "milestone": "m2",
+  "pass": true,
+  "checks": {
+    "same_time_inventory": {
+      "pass": true,
+      "screen": 7,
+      "timeline": 7,
+      "time": 100
+    },
+    "pause": {
+      "pass": true
+    },
+    "ten_x_order": {
+      "pass": true,
+      "times": [
+        104.16599999999991,
+        108.49999999999993,
+        112.66599999999991,
+        116.83199999999997,
+        121.33299999999996
+      ]
+    },
+    "api_tests": {
+      "pass": true,
+      "output": ".........                                                                [100%]\n=============================== warnings summary ===============================\n../miniconda3/envs/aria/lib/python3.10/site-packages/fastapi/testclient.py:1\n  /userHome/userhome4/sehoon/miniconda3/envs/aria/lib/python3.10/site-packages/fastapi/testclient.py:1: StarletteDeprecationWarning: Using `httpx` with `starlette.testclient` is deprecated; install `httpx2` instead.\n    from starlette.testclient import TestClient as TestClient  # noqa\n\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\n9 passed, 1 warning in 0.60s"
+    },
+    "console": {
+      "pass": true,
+      "errors": []
+    }
+  },
+  "at": "2026-10-13T02:52:07.546986+00:00",
+  "run_id": "6e17ce8447426140"
+}

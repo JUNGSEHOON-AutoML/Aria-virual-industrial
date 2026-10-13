@@ -27,6 +27,19 @@ async def main():
    await cmd('Page.navigate',{'url':'http://127.0.0.1:5278/cnotta.html'});await asyncio.sleep(12)
    report['audit']=await js('window.__cnotta.audit()');report['renderer']=await js('window.__cnotta.renderer')
    shot=await cmd('Page.captureScreenshot',{'format':'png'});(OUT/'m1.png').write_bytes(base64.b64decode(shot['data']))
+   for _ in range(90):
+    if await js('!!window.__cnotta.timeline'):break
+    await asyncio.sleep(1)
+   await js('window.__cnotta.setPlaying(false);window.__cnotta.setTime(100)');await asyncio.sleep(.5)
+   snap=await js('({time:window.__cnotta.time,ids:window.__cnotta.activeIds,positions:window.__cnotta.positions,expected:window.__cnotta.timeline.parts.filter(p=>p.born<=window.__cnotta.time&&(p.exit_time==null||window.__cnotta.time<p.exit_time)).map(p=>p.part_id)})')
+   await asyncio.sleep(.6)
+   report['replay']={'snapshot':snap,'paused_positions_equal':snap['positions']==await js('window.__cnotta.positions')}
+   await js('window.__cnotta.setSpeed(10);window.__cnotta.setPlaying(true)');await asyncio.sleep(1)
+   samples=[]
+   for _ in range(5):
+    samples.append(await js('({time:window.__cnotta.time,ids:window.__cnotta.activeIds,expected:window.__cnotta.timeline.parts.filter(p=>p.born<=window.__cnotta.time&&(p.exit_time==null||window.__cnotta.time<p.exit_time)).map(p=>p.part_id)})'));await asyncio.sleep(.2)
+   await js('window.__cnotta.setPlaying(false)')
+   report['replay']['ten_x_samples']=samples;report['replay']['run_id']=await js('window.__cnotta.runId')
    report['errors']=[e for e in events if e.get('method')=='Runtime.exceptionThrown']
    report['http_errors']=[e['params']['response']['url'] for e in events if e.get('method')=='Network.responseReceived' and e['params']['response']['status']>=400]
  finally:
