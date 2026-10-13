@@ -1,0 +1,77 @@
+{
+  "milestone": "M6-overview",
+  "scope": "Local implementation guide only; no new G1-G3 or M7 completion claim",
+  "at": "2026-10-13T05:02:25.786166+00:00",
+  "pass": true,
+  "build": {
+    "pass": true,
+    "entry": "overview.html",
+    "warning": "Existing cnotta 3D bundle exceeds 500 kB"
+  },
+  "browser": {
+    "desktop": {
+      "title": "CNOTTA × ARIA · 현재 구성",
+      "ready": "9 / 9 레인 준비",
+      "milestones": 18,
+      "overflow": false,
+      "brokenImages": 0
+    },
+    "interactions": {
+      "hall": "3공장 CARPET",
+      "lanes": 3,
+      "filter": true,
+      "details": true,
+      "visible": 10
+    },
+    "mobile": {
+      "overflow": false,
+      "width": 390
+    },
+    "links": [
+      {
+        "url": "/overview.html",
+        "status": 200
+      },
+      {
+        "url": "/cnotta.html",
+        "status": 200
+      },
+      {
+        "url": "/cnotta.html?view=line",
+        "status": 200
+      }
+    ],
+    "failure_state": {
+      "ready": "확인 불가",
+      "lanes": [
+        "미확인",
+        "미확인",
+        "미확인"
+      ],
+      "message": "API 연결을 확인하세요 (Failed to fetch). 아래 구현 설명은 저장된 문서 기준입니다."
+    },
+    "recovered": true,
+    "js_errors": [],
+    "http_errors": [],
+    "pass": true
+  },
+  "backend_tests": "Not rerun; displayed evidence is from M7_REPORT.md",
+  "golden_trace": "Not rerun; engine and evaluator unchanged",
+  "actual_gpu": "미확인; Chrome --disable-gpu; no 3D rendering on overview",
+  "sources": [
+    "docs/specs/CNOTTA_ARIA_Autopilot_BuildSpec.md",
+    "docs/autopilot/PROGRESS.md",
+    "docs/autopilot/gates/m7-scene.json",
+    "docs/autopilot/gates/m7.json",
+    "docs/autopilot/M7_REPORT.md",
+    "frontend/src/campus/campus.layout.json"
+  ],
+  "preview": {
+    "local": "http://127.0.0.1:5278/overview.html",
+    "forwarded": "http://localhost:63727/overview.html"
+  },
+  "screenshots": [
+    "docs/autopilot/local/overview-desktop.png",
+    "docs/autopilot/local/overview-mobile.png"
+  ]
+}
