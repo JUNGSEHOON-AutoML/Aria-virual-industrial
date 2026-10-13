@@ -1,0 +1,46 @@
+........................................................................ [ 47%]
+........................................................................ [ 95%]
+.......                                                                  [100%]
+=============================== warnings summary ===============================
+hardware/monitor.py:7
+  /userHome/userhome4/sehoon/Aria-virual-industrial-main/hardware/monitor.py:7: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+    import pynvml
+
+tests/test_cad.py::test_cad_routes_registered_once
+tests/test_cad.py::test_cad_routes_registered_once
+tests/test_ccifps_contract.py::test_full_app_registers_ccifps_routes
+  /userHome/userhome4/sehoon/Aria-virual-industrial-main/server/app.py:33: DeprecationWarning:
+          on_event is deprecated, use lifespan event handlers instead.
+
+          Read more about it in the
+          [FastAPI docs for Lifespan Events](https://fastapi.tiangolo.com/advanced/events/).
+
+    @app.on_event("startup")
+
+tests/test_cad.py::test_cad_routes_registered_once
+tests/test_cad.py::test_cad_routes_registered_once
+tests/test_cad.py::test_cad_routes_registered_once
+tests/test_cad.py::test_cad_routes_registered_once
+tests/test_ccifps_contract.py::test_full_app_registers_ccifps_routes
+tests/test_ccifps_contract.py::test_full_app_registers_ccifps_routes
+  /userHome/userhome4/sehoon/miniconda3/envs/aria/lib/python3.10/site-packages/fastapi/applications.py:4675: DeprecationWarning:
+          on_event is deprecated, use lifespan event handlers instead.
+
+          Read more about it in the
+          [FastAPI docs for Lifespan Events](https://fastapi.tiangolo.com/advanced/events/).
+
+    return self.router.on_event(event_type)  # ty: ignore[deprecated]
+
+tests/test_cad.py::test_cad_routes_registered_once
+tests/test_cad.py::test_cad_routes_registered_once
+tests/test_ccifps_contract.py::test_full_app_registers_ccifps_routes
+  /userHome/userhome4/sehoon/Aria-virual-industrial-main/server/app.py:69: DeprecationWarning:
+          on_event is deprecated, use lifespan event handlers instead.
+
+          Read more about it in the
+          [FastAPI docs for Lifespan Events](https://fastapi.tiangolo.com/advanced/events/).
+
+    @app.on_event("shutdown")
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+151 passed, 13 warnings in 12.13s

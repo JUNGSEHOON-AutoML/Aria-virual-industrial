@@ -1,0 +1,10 @@
+{
+  "completed": 9,
+  "expected": 9,
+  "wall_seconds": 166.90123288999894,
+  "full_matrix_complete": false,
+  "new_DES_runs": 9,
+  "actual_B_DES": 0,
+  "posthoc_views_executed": 0,
+  "status": "stopped_at_cost_gate"
+}

@@ -16,7 +16,7 @@ import os
 import sys
 from pathlib import Path
 
-BASE_DIR = Path(__file__).parent.parent.resolve()
+BASE_DIR = Path(__file__).resolve().parents[3]
 HF_CACHE_DIR = BASE_DIR / "downloads" / "huggingface"
 HF_CACHE_DIR.mkdir(parents=True, exist_ok=True)
 

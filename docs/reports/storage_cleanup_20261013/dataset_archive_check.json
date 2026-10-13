@@ -1,0 +1,13 @@
+{
+  "archive": "/userHome/userhome4/sehoon/Aria-virual-industrial-main/mvtec_anomaly_detection.tar.xz",
+  "bytes": 5264982680,
+  "sha256": "11b730c8d6133266f8e34020cb0178c840bbfbc3601815c617a7d30e8398e0f5",
+  "extracted_root": "/userHome/userhome4/sehoon/CCIFPS-AutoML/data",
+  "members": 6644,
+  "uncompressed_bytes": 5271247124,
+  "missing": [],
+  "size_mismatches": [],
+  "all_members_present_same_size": true,
+  "verification_scope": "all member paths and sizes; extracted contents were not individually hashed",
+  "wall_seconds": 146.2938247060083
+}

@@ -35,7 +35,7 @@ from typing import Dict, List, Optional
 # ──────────────────────────────────────────────
 
 # 프로젝트 루트 (명령 실행 CWD)
-PROJECT_ROOT = str(Path(__file__).parent.parent.resolve())
+PROJECT_ROOT = str(Path(__file__).resolve().parents[3])
 
 # TODO(security): 프로덕션 환경에서는 SELinux/AppArmor 프로파일을 사용하세요.
 

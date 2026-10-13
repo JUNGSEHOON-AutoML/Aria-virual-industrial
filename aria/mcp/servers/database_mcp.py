@@ -22,7 +22,7 @@ from mcp.server.fastmcp import FastMCP
 # SQLite 직접 접근
 import sqlite3
 
-BASE_DIR = Path(__file__).parent.parent.resolve()
+BASE_DIR = Path(__file__).resolve().parents[3]
 DB_PATH = BASE_DIR / "argus_core.db"
 
 mcp = FastMCP("database-mcp")

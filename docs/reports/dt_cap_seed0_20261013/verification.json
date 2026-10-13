@@ -1,0 +1,83 @@
+{
+  "passed": true,
+  "runs": 9,
+  "unique_class_selector_pairs": 9,
+  "all_raw_hashes_match": true,
+  "source_hashes_unchanged": true,
+  "conservation": true,
+  "actual_B_DES": 0,
+  "rows": [
+    {
+      "run_id": "029f3518944e3673",
+      "class_name": "bottle",
+      "selector": "coreset",
+      "generated": 70029,
+      "completed": 70028,
+      "wip": 1
+    },
+    {
+      "run_id": "0cb982dda4c8ecd2",
+      "class_name": "carpet",
+      "selector": "coreset",
+      "generated": 57779,
+      "completed": 57772,
+      "wip": 7
+    },
+    {
+      "run_id": "13480797dfa90cac",
+      "class_name": "screw",
+      "selector": "coreset",
+      "generated": 70028,
+      "completed": 70028,
+      "wip": 0
+    },
+    {
+      "run_id": "1dda8a9318c70584",
+      "class_name": "carpet",
+      "selector": "random_same_k",
+      "generated": 53721,
+      "completed": 53714,
+      "wip": 7
+    },
+    {
+      "run_id": "3805701c06d921fe",
+      "class_name": "bottle",
+      "selector": "random_same_k",
+      "generated": 70013,
+      "completed": 70010,
+      "wip": 3
+    },
+    {
+      "run_id": "541906e88b12d780",
+      "class_name": "carpet",
+      "selector": "ccifps",
+      "generated": 56935,
+      "completed": 56928,
+      "wip": 7
+    },
+    {
+      "run_id": "a1639cca2c5a6349",
+      "class_name": "bottle",
+      "selector": "ccifps",
+      "generated": 70020,
+      "completed": 70019,
+      "wip": 1
+    },
+    {
+      "run_id": "b40f8a02fed98554",
+      "class_name": "screw",
+      "selector": "ccifps",
+      "generated": 70029,
+      "completed": 70028,
+      "wip": 1
+    },
+    {
+      "run_id": "b69b61813a42e340",
+      "class_name": "screw",
+      "selector": "random_same_k",
+      "generated": 70031,
+      "completed": 70030,
+      "wip": 1
+    }
+  ]
+}
