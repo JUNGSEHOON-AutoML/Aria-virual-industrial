@@ -1,5 +1,5 @@
 """Verified saved-A replay and evaluator-backed B views. No DES execution."""
-import csv,gzip,hashlib,json,os,re
+import csv,gzip,hashlib,json,os,re,time
 from functools import lru_cache
 from pathlib import Path
 from aria.simulation.dt.posthoc import reconstruct_b
@@ -13,10 +13,22 @@ def sha(p):
  with p.open('rb') as f:
   for b in iter(lambda:f.read(1024*1024),b''):h.update(b)
  return h.hexdigest()
+@lru_cache(maxsize=1)
+def _campus_completed(root, bucket):
+ # The completion marker is written after the artifacts. Reading it never
+ # starts/controls a run and does not advertise the unfinished full study.
+ rows=[]
+ for done in sorted((root/'runs').glob('*/complete.json')):
+  try:
+   c=json.loads(done.read_text())['lock']['config']
+   if c['policy']=='A' and c['class_name'] in ('bottle','screw','carpet') and c['selector'] in ('coreset','ccifps','random_same_k') and c['seed']==0 and c['cell']=='inline' and c['speed']==.5 and c['latency_mode']=='profile':rows.append(done)
+  except (OSError,ValueError,KeyError):continue
+ return tuple(rows)
 def catalog():
  rows=[]
  sources=[(PILOT,done) for done in sorted((PILOT/'runs').glob('*/complete.json'))]
  if full_ready():sources += [(FULL,Path(entry['path'])/'complete.json') for entry in json.loads((FULL/'run_index.json').read_text())]
+ else:sources += [(FULL,done) for done in _campus_completed(FULL,int(time.monotonic()//15))]
  seen=set()
  for root,done in sources:
   if done.parent.name in seen:continue
@@ -24,9 +36,9 @@ def catalog():
   if True:
    d=json.loads(done.read_text());c=d['lock']['config']
    if c['policy']!='A':continue
-   rows.append({'run_id':done.parent.name,**{k:c[k] for k in ['class_name','selector','cell','speed','latency_mode','seed']},'complete_hash':sha(done),'source':'pilot' if root==PILOT else 'full','_path':done.parent})
+   rows.append({'run_id':done.parent.name,**{k:c[k] for k in ['class_name','selector','cell','speed','latency_mode','seed']},'complete_hash':sha(done),'source':'pilot' if root==PILOT else ('full' if full_ready() else 'completed-run'),'_path':done.parent})
  return rows
-@lru_cache(maxsize=3)
+@lru_cache(maxsize=12)
 def load(run_id):
  if not re.fullmatch(r'[a-f0-9]{16}',run_id):raise KeyError('Unknown run')
  row=next((r for r in catalog() if r['run_id']==run_id),None)

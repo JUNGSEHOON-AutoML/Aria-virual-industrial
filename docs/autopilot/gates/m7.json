@@ -1,0 +1,252 @@
+{
+  "milestone": "m7",
+  "pass": false,
+  "checks": {
+    "viewport": {
+      "pass": true,
+      "measured": [
+        1440,
+        900
+      ]
+    },
+    "roof_wordmark": {
+      "pass": true,
+      "glyph_heights_px": [
+        29.657195357884973,
+        29.657195357884973,
+        29.657195357884973
+      ],
+      "width_ratios": [
+        0.55,
+        0.55,
+        0.55
+      ]
+    },
+    "wordmark_not_obscured": {
+      "pass": true,
+      "logo_bounds": [
+        [
+          308.2883654067236,
+          276.8850382282259,
+          444.0831327895137,
+          319.6886556214482
+        ],
+        [
+          681.7129926321251,
+          312.1282888020642,
+          817.5077600149152,
+          354.9319061952866
+        ],
+        [
+          1055.1376198575267,
+          347.37153937590256,
+          1190.9323872403168,
+          390.17515676912495
+        ]
+      ]
+    },
+    "halls_in_frame": {
+      "pass": true,
+      "bounds": [
+        [
+          195.22856797559768,
+          162.7157921837882,
+          526.4781784790714,
+          442.3345930001898
+        ],
+        [
+          568.6531952009991,
+          197.95904275762655,
+          899.9028057044729,
+          477.5778435740281
+        ],
+        [
+          942.0778224264005,
+          233.2022933314649,
+          1273.3274329298745,
+          512.8210941478665
+        ]
+      ]
+    },
+    "names_readable": {
+      "pass": true,
+      "names": [
+        {
+          "id": "hall-bottle",
+          "text": "CNOTTA 1공장 · BOTTLE",
+          "bounds": [
+            243.26171875,
+            396.14794921875,
+            445.27734375,
+            431.14794921875
+          ]
+        },
+        {
+          "id": "hall-screw",
+          "text": "CNOTTA 2공장 · SCREW",
+          "bounds": [
+            618.2644653320312,
+            431.3912048339844,
+            817.1238403320312,
+            466.3912048339844
+          ]
+        },
+        {
+          "id": "hall-carpet",
+          "text": "CNOTTA 3공장 · CARPET",
+          "bounds": [
+            988.9468994140625,
+            466.63446044921875,
+            1193.2906494140625,
+            501.63446044921875
+          ]
+        }
+      ]
+    },
+    "roof_fade": {
+      "pass": true,
+      "entered": "hall-bottle",
+      "opacity": [
+        0,
+        1,
+        1
+      ]
+    },
+    "minimap": {
+      "pass": true,
+      "target": [
+        40,
+        0.3,
+        0
+      ]
+    },
+    "deterministic_props": {
+      "pass": true,
+      "seed": 7,
+      "instances": 34,
+      "sha256": "366879d28b756f580f5024223845a34e5de04e4083637d5833320685b6aad617"
+    },
+    "decorations_not_clickable": {
+      "pass": true,
+      "handlers": 0
+    },
+    "draw_calls": {
+      "pass": true,
+      "campus": 60,
+      "hall": 46,
+      "hall_playing": 45,
+      "campus_triangles": 11854,
+      "hall_triangles": 19542
+    },
+    "primary_area": {
+      "pass": true,
+      "fraction": 0.0018472222222222223,
+      "limit": 0.15,
+      "method": "HSV hue .62–.73, saturation >.3, value >.4; full screenshot"
+    },
+    "saved_replay": {
+      "pass": true,
+      "time": 1800,
+      "rendered_parts": 3,
+      "rendered_queue": 1477,
+      "paused_positions_equal": true
+    },
+    "motion": {
+      "pass": true,
+      "playing_time": 1802.665,
+      "single_clock": false
+    },
+    "console": {
+      "pass": true,
+      "errors": [],
+      "http_errors": []
+    },
+    "available_run_comparison": {
+      "pass": true,
+      "sites": [
+        {
+          "site": "hall-bottle",
+          "available": 3,
+          "input_sequences_equal": true,
+          "ng": [
+            {
+              "run_id": "ccfbc56c64d4da34",
+              "raw": 795,
+              "screen": 795
+            },
+            {
+              "run_id": "6b305b39587bcf79",
+              "raw": 431,
+              "screen": 431
+            },
+            {
+              "run_id": "71da48a522a7fe4f",
+              "raw": 431,
+              "screen": 431
+            }
+          ],
+          "max_born_delta_seconds": 0.02386468497070382
+        },
+        {
+          "site": "hall-screw",
+          "available": 3,
+          "input_sequences_equal": true,
+          "ng": [
+            {
+              "run_id": "8dd8e446a095de96",
+              "raw": 122,
+              "screen": 122
+            },
+            {
+              "run_id": "2d846f67d08b94fb",
+              "raw": 146,
+              "screen": 146
+            },
+            {
+              "run_id": "ca98abbbb5cbca60",
+              "raw": 46,
+              "screen": 46
+            }
+          ],
+          "max_born_delta_seconds": 0.0019851200049743056
+        },
+        {
+          "site": "hall-carpet",
+          "available": 2,
+          "input_sequences_equal": true,
+          "ng": [
+            {
+              "run_id": "23f23c71a69fbe9a",
+              "raw": 685,
+              "screen": 685
+            },
+            {
+              "run_id": "64d67b7ebd198bd6",
+              "raw": 690,
+              "screen": 690
+            }
+          ],
+          "max_born_delta_seconds": 0.001704566995613277
+        }
+      ],
+      "note": "Recorded birth timestamps are preserved; only ID/image order is required to match."
+    },
+    "nine_lanes": {
+      "pass": false,
+      "ready": 8,
+      "required": 9,
+      "missing": [
+        "hall-carpet:random_same_k"
+      ]
+    }
+  },
+  "at": "2026-10-13T04:15:16.750917+00:00",
+  "status": "pending_data",
+  "actual_gpu": "미확인",
+  "next": "L2",
+  "screenshots": [
+    "docs/autopilot/local/m7-campus.png",
+    "docs/autopilot/local/m7-hall-bottle.png",
+    "docs/autopilot/local/m7-hall-screw.png"
+  ]
+}

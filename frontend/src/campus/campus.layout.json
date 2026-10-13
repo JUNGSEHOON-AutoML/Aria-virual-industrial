@@ -1,0 +1,200 @@
+{
+  "units": "m",
+  "sites": [
+    {
+      "id": "hall-bottle",
+      "name": "1공장 BOTTLE",
+      "number": 1,
+      "kind": "inspection_hall",
+      "class": "bottle",
+      "origin": [
+        0,
+        0
+      ],
+      "rotation": 0,
+      "lanes": [
+        "coreset",
+        "ccifps",
+        "random_same_k"
+      ],
+      "run_selector": {
+        "seed": 0,
+        "cell": "inline",
+        "speed": 0.5,
+        "latency_mode": "profile"
+      }
+    },
+    {
+      "id": "hall-screw",
+      "name": "2공장 SCREW",
+      "number": 2,
+      "kind": "inspection_hall",
+      "class": "screw",
+      "origin": [
+        40,
+        0
+      ],
+      "rotation": 0,
+      "lanes": [
+        "coreset",
+        "ccifps",
+        "random_same_k"
+      ],
+      "run_selector": {
+        "seed": 0,
+        "cell": "inline",
+        "speed": 0.5,
+        "latency_mode": "profile"
+      }
+    },
+    {
+      "id": "hall-carpet",
+      "name": "3공장 CARPET",
+      "number": 3,
+      "kind": "inspection_hall",
+      "class": "carpet",
+      "origin": [
+        80,
+        0
+      ],
+      "rotation": 0,
+      "lanes": [
+        "coreset",
+        "ccifps",
+        "random_same_k"
+      ],
+      "run_selector": {
+        "seed": 0,
+        "cell": "inline",
+        "speed": 0.5,
+        "latency_mode": "profile"
+      }
+    },
+    {
+      "id": "robot-cell",
+      "name": "ROBOT CELL",
+      "kind": "robot_cell",
+      "origin": [
+        12,
+        37
+      ],
+      "rotation": 0,
+      "size": [
+        23,
+        14
+      ]
+    },
+    {
+      "id": "yard",
+      "name": "LOGISTICS YARD",
+      "kind": "logistics_yard",
+      "origin": [
+        65,
+        38
+      ],
+      "rotation": 0,
+      "size": [
+        37,
+        16
+      ],
+      "decorative": true
+    }
+  ],
+  "roads": [
+    [
+      [
+        -24,
+        24
+      ],
+      [
+        106,
+        24
+      ]
+    ],
+    [
+      [
+        40,
+        24
+      ],
+      [
+        40,
+        58
+      ]
+    ]
+  ],
+  "road_width": 6,
+  "entrance": {
+    "origin": [
+      -20,
+      32
+    ],
+    "rotation": 0
+  },
+  "bounds": {
+    "min": [
+      -28,
+      -23
+    ],
+    "max": [
+      108,
+      62
+    ]
+  },
+  "foliage_seed": 7,
+  "foliage_zones": [
+    {
+      "min": [
+        -24,
+        -21
+      ],
+      "max": [
+        104,
+        -18
+      ],
+      "count": 18
+    },
+    {
+      "min": [
+        -24,
+        53
+      ],
+      "max": [
+        103,
+        58
+      ],
+      "count": 16
+    }
+  ],
+  "design": {
+    "assumed": true,
+    "conveyor_modules": 12,
+    "lane_gap": 6.4,
+    "side_margin": 4,
+    "front_margin": 4,
+    "rear_margin": 4,
+    "wall_height": 2.4,
+    "roof_height": 4.8,
+    "roof_brand_width_ratio": 0.55
+  },
+  "camera": {
+    "target": [
+      40,
+      0,
+      13
+    ],
+    "offset": [
+      10,
+      115,
+      85
+    ],
+    "zoom": 9.4,
+    "hall_offset": [
+      20,
+      35,
+      30
+    ],
+    "hall_zoom": 22,
+    "min_zoom": 6,
+    "max_zoom": 45
+  }
+}

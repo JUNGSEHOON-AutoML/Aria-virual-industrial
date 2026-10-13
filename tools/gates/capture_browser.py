@@ -24,7 +24,7 @@ async def main():
     if 'exceptionDetails' in r:raise RuntimeError(r['exceptionDetails'])
     return r.get('result',{}).get('value')
    await cmd('Runtime.enable');await cmd('Network.enable');await cmd('Page.enable');await cmd('Emulation.setDeviceMetricsOverride',{'width':1440,'height':900,'deviceScaleFactor':1,'mobile':False})
-   await cmd('Page.navigate',{'url':'http://127.0.0.1:5278/cnotta.html'});await asyncio.sleep(12)
+   await cmd('Page.navigate',{'url':'http://127.0.0.1:5278/cnotta.html?view=line'});await asyncio.sleep(12)
    report['audit']=await js('window.__cnotta.audit()');report['renderer']=await js('window.__cnotta.renderer')
    shot=await cmd('Page.captureScreenshot',{'format':'png'});(OUT/'m1.png').write_bytes(base64.b64decode(shot['data']))
    for _ in range(90):

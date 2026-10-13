@@ -1,3 +1,4 @@
+import {BRAND_ASSETS} from '../brand/identity'
 import { Suspense, useMemo } from 'react'
 import { useLoader } from '@react-three/fiber'
 import { Html, RoundedBox } from '@react-three/drei'
@@ -72,7 +73,7 @@ export const DEFAULT_CONVEYORS=[
 export function Scene({children,origin=[0,0],rotation=0,lanes=['ccifps']}) {return <Site origin={origin} rotation={rotation} lanes={lanes}>{siteLanes=><group name="d0-static-scene" userData={{modelLanes:siteLanes}}>
  <mesh name="surface" rotation={[-Math.PI/2,0,0]} position={[0,-.015,0]}><planeGeometry args={[80,60]}/><meshBasicMaterial color={C.ground}/></mesh><mesh name="floor" rotation={[-Math.PI/2,0,0]} position={[0,-.001,1]}><planeGeometry args={[24,18]}/><meshBasicMaterial color={C.floor}/></mesh>
  <Box at={[0,.02,12]} size={[48,.04,5]} color={C.line}/>{Array.from({length:13},(_,i)=><Box key={i} at={[-22+i*3.6,.044,12]} size={[1.8,.008,.1]}/>)}
- <Grounded name="cutaway-building"><Box at={[0,1.15,-8]} size={[24,2.3,.25]} color={C.blue}/><Box at={[-12,1.15,1]} size={[.25,2.3,18]} color={C.blue}/><Box at={[0,2.35,-8]} size={[24.2,.1,.4]} color={C.dark}/><Box at={[-12,2.35,1]} size={[.4,.1,18]} color={C.dark}/>{[-9,-5,-1,3,7,10].map(x=><Box key={x} at={[x,1.6,-7.855]} size={[2.4,.65,.05]} color={C.line}/>)}<Box at={[-11.85,1.2,5.8]} size={[.05,2.4,2.5]} color={C.white}/><Html position={[-10,1.7,-7.85]} transform zIndexRange={[1,0]}><img className="wall-mark" src="/brand/cnotta-mark.svg" alt="CNOTTA"/></Html></Grounded>
+ <Grounded name="cutaway-building"><Box at={[0,1.15,-8]} size={[24,2.3,.25]} color={C.blue}/><Box at={[-12,1.15,1]} size={[.25,2.3,18]} color={C.blue}/><Box at={[0,2.35,-8]} size={[24.2,.1,.4]} color={C.dark}/><Box at={[-12,2.35,1]} size={[.4,.1,18]} color={C.dark}/>{[-9,-5,-1,3,7,10].map(x=><Box key={x} at={[x,1.6,-7.855]} size={[2.4,.65,.05]} color={C.line}/>)}<Box at={[-11.85,1.2,5.8]} size={[.05,2.4,2.5]} color={C.white}/><Html position={[-10,1.7,-7.85]} transform zIndexRange={[1,0]}><img className="wall-mark" src={BRAND_ASSETS.mark} alt="CNOTTA"/></Html></Grounded>
  {[-2,2.5].map(z=><Box key={z} at={[0,.007,z]} size={[21,.014,.07]} color={C.line}/>)}
  <group name="process-area"><RobotCell/><Cabinet x={-1.7} z={-5.4}/><Pallet x={-9.5} z={-4.5} stack={2}/>
  {DEFAULT_CONVEYORS.map(({id,...props})=><Belt key={id} {...props}/>)}<Booth/>

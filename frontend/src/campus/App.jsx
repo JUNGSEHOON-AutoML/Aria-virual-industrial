@@ -1,0 +1,27 @@
+import React,{lazy,Suspense,useEffect,useState} from 'react'
+import {Canvas} from '@react-three/fiber'
+import {OrthographicCamera} from '@react-three/drei'
+import * as THREE from 'three'
+import T from '../brand/cnotta.tokens.json'
+import {BRAND_ASSETS} from '../brand/identity'
+import {ReplayBar} from '../cnotta/Replay'
+import {Detail} from '../cnotta/Selection'
+import {VisionAudit} from '../cnotta/VisionAudit'
+import {Hall,LaneEquipment,Landscape} from './Geometry'
+import {layout,halls,hallSize,modelName} from './layout'
+import {useCampusReplay} from './data'
+import {CampusParts,CampusRollers} from './Replay'
+import Camera from './Camera'
+import './style.css'
+const Interior=lazy(()=>import('./Interior'))
+function MiniMap({focus,enter,points}){const a=layout.bounds.min,b=layout.bounds.max;return <aside className="campus-minimap card" aria-label="캠퍼스 미니맵"><div><b>캠퍼스 맵</b><button onClick={()=>enter(null)}>전체</button></div><svg viewBox={`${a[0]-3} ${a[1]-3} ${b[0]-a[0]+6} ${b[1]-a[1]+6}`} role="img" aria-label="공장을 눌러 이동"><g className="minimap-roads">{layout.roads.map((p,i)=><polyline key={i} points={p.map(x=>x.join(',')).join(' ')}/>)}</g>{layout.sites.map(s=>{const h=s.kind==='inspection_hall',size=h?hallSize(s):{width:s.size[0],depth:s.size[1]};return <g key={s.id} transform={`translate(${s.origin.join(' ')}) rotate(${-s.rotation*180/Math.PI})`} onClick={h?()=>enter(s.id):undefined} className={h?'mini-hall':'mini-decor'} data-selected={focus===s.id}><rect x={-size.width/2} y={-size.depth/2} width={size.width} height={size.depth} rx={1.5}/>{h&&<text textAnchor="middle" dy="1.5">{s.number}</text>}</g>})}<polygon className="minimap-view" points={points.map(p=>p.join(',')).join(' ')}/></svg><small>홀 선택 · 현재 시야 테두리</small></aside>}
+const number=(v,d=1)=>v==null?'—':Number(v).toFixed(d)
+function Summary({r,focus,enter}){const sites=focus?halls.filter(s=>s.id===focus):halls;return <section className={'campus-summary '+(focus?'hall-summary':'')} aria-label={focus?'홀 레인 비교':'공장 요약'}>{sites.map(site=><article className="card" key={site.id}><button className="summary-heading" onClick={()=>enter(site.id)}>{site.name}<span>↗</span></button><small>seed 0 · inline · 0.5 m/s · profile</small><div className="lane-metrics">{site.lanes.map(selector=>{const lane=r.catalog?.sites.find(s=>s.id===site.id)?.lanes.find(l=>l.selector===selector),k=r.kpis[lane?.run?.run_id];return <div key={selector} data-lane-summary={`${site.id}:${selector}`}><b>{modelName(selector)}</b><span><i className="metric-dial"/>{number(k?.false_positives_per_1000)}<small>오탐/1,000</small></span>{focus&&<><span>{number(k?.throughput_per_hour,0)}<small>처리량/h</small></span><span>{k?.gt_quality==null?'—':number(k.gt_quality*100,2)+'%'}<small>출하 품질</small></span></>}<em>{lane?.run?(k?`${k.time}s 기준`:'검증·로딩 중'):'완료 대기'}</em></div>})}</div></article>)}</section>}
+export default function CampusApp(){const r=useCampusReplay(),[focus,setFocus]=useState(null),[points,setPoints]=useState([]),[selected,setSelected]=useState(null),[vision,setVision]=useState(false)
+ const enter=id=>{setFocus(id);setSelected(null)}
+ useEffect(()=>{window.__campus={...window.__campus,focus,enter,setFocus,time:r.time,setTime:r.setTime,setPlaying:r.setPlaying,setSpeed:r.setSpeed,playing:r.playing,timelines:r.timelines,catalog:r.catalog,kpis:r.kpis}},[focus,r.time,r.playing,r.timelines,r.catalog,r.kpis])
+ return <main className="campus-app"><div className="viewport"><Canvas frameloop="demand" dpr={1} gl={{antialias:true,toneMapping:THREE.NoToneMapping,outputColorSpace:THREE.SRGBColorSpace,preserveDrawingBuffer:true}}><color attach="background" args={[T.surface]}/><OrthographicCamera makeDefault near={.1} far={500} zoom={layout.camera.zoom} position={layout.camera.offset}/><ambientLight intensity={.6}/><hemisphereLight args={[T.floor,T.line,.4]}/><directionalLight position={[-20,60,45]} intensity={.9}/><Suspense fallback={null}><Landscape/>{halls.map(s=><Hall site={s} key={s.id} focused={focus===s.id} onEnter={enter}><LaneEquipment site={s}/>{focus===s.id&&<Suspense fallback={null}><Interior site={s}/></Suspense>}</Hall>)}<CampusRollers time={r.time} focus={focus} illustrate={r.illustrate}/><CampusParts replay={r} focus={focus} onSelect={setSelected}/></Suspense><Camera focus={focus} onFootprint={setPoints}/></Canvas></div>
+ <header><img src={BRAND_ASSETS.mark} alt=""/><b>{BRAND_ASSETS.word}</b><span>ARIA Inspection Twin</span><nav><button aria-pressed={!focus} onClick={()=>enter(null)}>캠퍼스</button><select aria-label="홀 선택" value={focus||''} onChange={e=>enter(e.target.value||null)}><option value="">전체 캠퍼스</option>{halls.map(s=><option key={s.id} value={s.id}>{s.name}</option>)}</select></nav><button onClick={()=>{r.setPlaying(false);setVision(true)}}>비전 분석</button><a className="legacy-link" href="?view=line">단일 실행</a><span className="mode">sim=1 · replay</span></header>
+ <Summary r={r} focus={focus} enter={enter}/>{r.error&&<aside role="alert" className="error card">{r.error}</aside>}<div className="campus-hint">{focus?'저장된 세 레인 · 공유 재생 시계':'공장을 선택하면 지붕이 열립니다'}<span>{r.catalog?.ready_lanes??0}/9 실행 준비 · B 사후 계산</span></div>
+ <MiniMap focus={focus} enter={enter} points={points}/><Detail selected={selected?.part} time={r.time} timeline={selected?.timeline} close={()=>setSelected(null)}/><ReplayBar r={r}/>{vision&&<VisionAudit close={()=>setVision(false)}/>}<footer>형상·이송·사람 1명/30초 assumed · 실제 GPU 미확인</footer></main>
+}

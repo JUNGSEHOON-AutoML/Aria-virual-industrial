@@ -21,7 +21,7 @@ async def main():
      if r.get('id')==seq:return r.get('result',{})
      events.append(r)
    async def js(s):return await cmd('Runtime.evaluate',{'expression':s,'returnByValue':True,'awaitPromise':True})
-   await cmd('Runtime.enable');await cmd('Page.enable');await cmd('Emulation.setDeviceMetricsOverride',{'width':1440,'height':900,'deviceScaleFactor':1,'mobile':False});await cmd('Page.navigate',{'url':'http://127.0.0.1:5278/cnotta.html'})
+   await cmd('Runtime.enable');await cmd('Page.enable');await cmd('Emulation.setDeviceMetricsOverride',{'width':1440,'height':900,'deviceScaleFactor':1,'mobile':False});await cmd('Page.navigate',{'url':'http://127.0.0.1:5278/cnotta.html?view=line'})
    for _ in range(100):
     r=await js('!!window.__cnotta?.timeline')
     if r.get('result',{}).get('value'):break

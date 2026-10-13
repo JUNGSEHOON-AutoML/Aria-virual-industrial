@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 90" role="img" aria-label="CNOTTA temporary wordmark">
+  <!-- Original geometric placeholder; replace with the approved outlined SVG. -->
+  <g fill="currentColor" fill-rule="evenodd">
+    <path d="M48 0H16Q0 0 0 16V74Q0 90 16 90H48V76H18Q14 76 14 72V18Q14 14 18 14H48Z"/>
+    <path d="M54 90V0H68L90 56V0H104V90H90L68 34V90Z"/>
+    <path d="M126 0H148Q164 0 164 16V74Q164 90 148 90H126Q110 90 110 74V16Q110 0 126 0ZM128 14Q124 14 124 18V72Q124 76 128 76H146Q150 76 150 72V18Q150 14 146 14Z"/>
+    <path d="M168 0H214V14H198V90H184V14H168Z"/>
+    <path d="M220 0H266V14H250V90H236V14H220Z"/>
+    <path d="M270 90L285 0H305L320 90H306L303 70H287L284 90ZM290 56H300L295 22Z"/>
+  </g>
+</svg>
