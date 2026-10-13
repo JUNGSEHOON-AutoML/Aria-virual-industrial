@@ -40,6 +40,12 @@ async def main():
     samples.append(await js('({time:window.__cnotta.time,ids:window.__cnotta.activeIds,expected:window.__cnotta.timeline.parts.filter(p=>p.born<=window.__cnotta.time&&(p.exit_time==null||window.__cnotta.time<p.exit_time)).map(p=>p.part_id)})'));await asyncio.sleep(.2)
    await js('window.__cnotta.setPlaying(false)')
    report['replay']['ten_x_samples']=samples;report['replay']['run_id']=await js('window.__cnotta.runId')
+   await js('window.__cnotta.setTime(100)');await asyncio.sleep(.3)
+   before=await js('({ids:window.__cnotta.activeIds,positions:window.__cnotta.positions,motion:window.__cnotta.motion})')
+   await js('window.__cnotta.setTime(101)');await asyncio.sleep(.3)
+   after=await js('({ids:window.__cnotta.activeIds,positions:window.__cnotta.positions,motion:window.__cnotta.motion})')
+   await asyncio.sleep(.4)
+   report['visible_motion']={'before':before,'after':after,'paused':await js('({ids:window.__cnotta.activeIds,positions:window.__cnotta.positions,motion:window.__cnotta.motion})')}
    report['interaction']=await js("""(async()=>{
     const c=window.__cnotta,p=c.timeline.parts.find(p=>p.inspection_time!=null&&p.score!=null);c.setTime(p.inspection_time+.01);
     const input=document.querySelector('.search input');Object.getOwnPropertyDescriptor(HTMLInputElement.prototype,'value').set.call(input,p.part_id);input.dispatchEvent(new Event('input',{bubbles:true}));await new Promise(r=>setTimeout(r,150));input.form.dispatchEvent(new Event('submit',{bubbles:true,cancelable:true}));await new Promise(r=>setTimeout(r,1600));

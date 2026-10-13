@@ -1,0 +1,38 @@
+{
+  "milestone": "motion",
+  "pass": true,
+  "checks": {
+    "visible_parts": {
+      "pass": true,
+      "same_live_parts_moved": [
+        "P0000016",
+        "P0000018",
+        "P0000020",
+        "P0000014",
+        "P0000015",
+        "P0000017",
+        "P0000019"
+      ]
+    },
+    "robot_cycle": {
+      "pass": true,
+      "yaw_before": -0.11770152132389491,
+      "yaw_after": -0.19259887870905923
+    },
+    "pause": {
+      "pass": true
+    },
+    "inventory": {
+      "pass": true
+    },
+    "unit_checks": {
+      "pass": true,
+      "output": "7 motion assertions passed\n"
+    },
+    "console": {
+      "pass": true,
+      "errors": []
+    }
+  },
+  "at": "2026-10-13T03:23:10.310610+00:00"
+}

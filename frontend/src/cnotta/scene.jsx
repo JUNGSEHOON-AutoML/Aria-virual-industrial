@@ -15,7 +15,7 @@ const material = color => <meshStandardMaterial color={color} roughness={.85} me
 function Box({at=[0,0,0],size,color=C.white,radius=.08,rotation,...props}) {
  return <RoundedBox position={at} args={size} radius={Math.min(radius,...size.map(x=>x/3))} smoothness={2} rotation={rotation} castShadow receiveShadow {...props}>{material(color)}</RoundedBox>
 }
-function Cylinder({at,r=.1,h=.5,color=C.blue,rotation}) {return <mesh position={at} rotation={rotation} castShadow receiveShadow><cylinderGeometry args={[r,r,h,16]}/>{material(color)}</mesh>}
+function Cylinder({at,r=.1,h=.5,color=C.blue,rotation,name}) {return <mesh name={name} position={at} rotation={rotation} castShadow receiveShadow><cylinderGeometry args={[r,r,h,16]}/>{material(color)}</mesh>}
 function Label({at,children}) {return <Html position={at} center zIndexRange={[2,0]} style={{pointerEvents:'none'}}><div className="scene-label">{children}</div></Html>}
 function Grounded({name,x=0,z=0,children}) {return <group name={name} position={[x,0,z]} userData={{grounded:true,groundY:0}}>{children}</group>}
 function Carton({x=0,z=0,bottom=0,size=.5}) {return <group position={[x,bottom,z]} name="fixed-carton" userData={{staticProp:true}}><Box at={[0,size/2,0]} size={[size,size,size]} color={C.box}/><Box at={[0,size+.002,0]} size={[.07,.006,size*.9]} color={C.line}/><Box at={[0,size*.5,size/2+.003]} size={[.15,.09,.006]}/></group>}
@@ -25,7 +25,7 @@ function Belt({x,z=0,length=conveyor.length_mm/1000,rotation=0,width=conveyor.wi
  return <Grounded name="conveyor" x={x} z={z}><group rotation={[0,rotation,0]}>
  {[-length/2+.15,length/2-.15].flatMap(a=>[-width/2+.07,width/2-.07].map(b=><Box key={`${a}-${b}`} at={[a,(h-.14)/2,b]} size={[.1,h-.14,.1]} color={C.ink}/>))}
  <Box at={[0,h-.09,0]} size={[length,.18,width]} color={C.primary}/>
- {Array.from({length:Math.ceil(length/.17)},(_,i)=><Cylinder key={i} at={[-length/2+.09+i*.17,h-.04,0]} r={.04} h={width-.1} color={C.line} rotation={[Math.PI/2,0,0]}/>)}
+ {Array.from({length:Math.ceil(length/.17)},(_,i)=><Cylinder name="conveyor-roller" key={i} at={[-length/2+.09+i*.17,h-.04,0]} r={.04} h={width-.1} color={C.line} rotation={[Math.PI/2,0,0]}/>)}
  </group></Grounded>
 }
 function Booth() {
@@ -46,7 +46,7 @@ function StaticRobot() {
  return <group position={[0,.55,0]} rotation={[-Math.PI/2,0,0]}>{objects.map((object,i)=><group key={i} matrix={new THREE.Matrix4().fromArray(robotPose.frames[visuals[i][0]])} matrixAutoUpdate={false}><primitive object={object}/></group>)}</group>
 }
 function RobotCell() {return <Grounded name="robot-cell" x={-5} z={-4.6}>
- <Box at={[0,.275,0]} size={[.7,.55,.7]} color={C.blue}/><Suspense fallback={null}><StaticRobot/></Suspense>
+ <Box at={[0,.275,0]} size={[.7,.55,.7]} color={C.blue}/><Suspense fallback={null}><group name="robot-demonstration-motion"><StaticRobot/></group></Suspense>
  <Belt x={-1.5} length={1.7}/><Belt x={1.5} length={1.7}/><Fence x={0} z={-1.5} length={5}/><Fence x={-2.5} z={0} length={3} rotation={Math.PI/2}/><Fence x={2.5} z={0} length={3} rotation={Math.PI/2}/>
  <Label at={[0,2.3,-1]}>ROBOT CELL</Label>
  </Grounded>}

@@ -162,3 +162,5 @@ export CNOTTA_P1=/path/to/verified/p1_verified
 실행 선택 → 재생(1/10/60×) 또는 시각 이동 → 부품 ID/설비 검색 → 상세·수명주기 → 자원/재검사/비교 탭 순으로 확인합니다. 초기 예시 부품 ID는 `P0000001`, 설비 검색어는 `VISION`입니다. 판정 전 점수는 숨기고, 저장되지 않은 관절 값·비교 기준·최대 처리량은 —로 표시합니다. 초기 배치와 랙 초과분 1/4 축소 적재는 assumed이며 박스 인스턴스 개수는 실제 사후 대기열과 같습니다. KPI는 [600,t] 관측 창, t≤600은 [0,t]를 사용합니다. 재생 중 KPI는 별도 표기된 시각의 스냅샷입니다.
 
 검증: `PYTHONPATH=. python -m tools.gates.m0`부터 `m6`까지. 브라우저 측정은 `python -m tools.gates.capture_browser`(Chrome·SwiftShader, 로컬 실행 URL 필요), 전체 테스트는 `python -m pytest tests -q`, 골든 검증은 `python tests/golden_trace.py --verify`입니다. DB 통합 테스트에는 `ARIA_TEST_POSTGRES_DSN`이 필요합니다. 게이트 JSON·진행·결정·제약은 `docs/autopilot/`, 최종 보고서는 `docs/autopilot/REPORT.md`에 있습니다. 녹화·브라우저 캡처는 커밋하지 않는 `docs/autopilot/local/`에 저장합니다.
+
+흐름 확인: 하단 **흐름 연출 (assumed)** 모드에서 **재생 → 1×**를 선택하세요. 저장된 대기·처리 시간에 부품 위치와 로봇 셀 회전을 맞춘 설명용 연출이며, 실제 이송 속도나 관절 측정값은 아닙니다. **기록 위치** 모드는 기존 원시 역 위치를 유지합니다. 검사·분류·출구 시각이 같은 원시 이벤트는 여전히 즉시 완료됩니다. 두 모드 모두 판정·재고 수·KPI·이벤트 시각은 동일하며 일시정지 시 움직임도 멈춥니다.

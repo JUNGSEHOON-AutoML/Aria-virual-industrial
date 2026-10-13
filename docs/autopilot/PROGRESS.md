@@ -9,3 +9,5 @@ M3 | 완료 | gates/m3.json | 원시 점수·판정 일치, 검색 선택·장�
 M4 | 완료 | gates/m4.json | KPI 3종 일치·대기 0/2/2564 일치·설비 가림 0%; M5 확인
 M5 | 실험 대기 (구현·404 게이트 완료) | gates/m5.json | A 1449/2970; 완료 후 실데이터 REPORT 대조
 M6 | 완료 (파일럿) | gates/m6.json | 새 클론·즉시 재시작·163 tests·golden diff 0·60초 녹화; 최종 데모 확인
+
+M2 후속 동작 가시성 수정 완료: `gates/motion.json` 통과. 같은 생존 부품 7개의 위치 변화·로봇 회전·일시정지·10× 재고 보존·7개 단위 assertion·콘솔 오류 0 확인. CPU 빌드 성공, 골든 diff 0.
