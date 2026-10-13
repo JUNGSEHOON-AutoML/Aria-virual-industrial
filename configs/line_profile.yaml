@@ -1,0 +1,75 @@
+schema_version: 1
+sim: 1
+parameters:
+  defect_rate:
+    value: 0.05
+    unit: probability
+    source: assumed
+    reference: User revised P3; seeded sampling with replacement, independent of test-set prevalence
+  pitch_m:
+    value: 0.1
+    unit: m
+    source: assumed
+    reference: Fixed 100 mm synthetic arrival pitch; not inferred from MVTec image
+      scale
+  sensor_distance_m:
+    value: 1.0
+    unit: m
+    source: cad
+    reference: Designed trigger at diverter envelope entrance and sorter at exit;
+      not a measured sensor distance
+    cad_binding:
+      path: assets/cad/diverter/dt_v1/dims.json
+      sha256: c9573427386a7eb94c67af2f3ca97fbc73161c4ebfa9d7aebb157bb7ada6d4aa
+      field: length_mm
+  actuator_s:
+    value: 0.1
+    unit: s
+    source: assumed
+    reference: BuildSpec actuator allowance
+  reinspection_s:
+    value: 30
+    unit: s
+    source: assumed
+    reference: User-approved assumed human station baseline; sensitivity runs 10/30/60
+      seconds
+  mtbf_s:
+    value: 300
+    unit: s
+    source: assumed
+    reference: BuildSpec inherited failure model
+  mttr_s:
+    value: 20
+    unit: s
+    source: assumed
+    reference: BuildSpec inherited recovery model
+  buffer_capacity:
+    value: 5
+    unit: parts
+    source: assumed
+    reference: Inherited bounded DES buffer
+  handling_s:
+    value: 0
+    unit: s
+    source: assumed
+    reference: Inline profile excludes extra handling; robot program adds its own
+      stages
+human_reinspection:
+  sensitivity:
+    value: 1.0
+    unit: probability
+    source: assumed
+    reference: User specification; alternatives 0.95/0.98
+  specificity:
+    value: 1.0
+    unit: probability
+    source: assumed
+    reference: User specification; alternatives 0.95/0.98
+  service_seconds:
+    values:
+    - 10
+    - 30
+    - 60
+    unit: s
+    source: assumed
+    reference: User specification

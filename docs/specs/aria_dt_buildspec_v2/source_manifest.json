@@ -1,0 +1,64 @@
+{
+  "document_version": "2.0",
+  "authored_date_kst": "2026-10-13",
+  "scope": "document refactor; read-only inspection, no experiment rerun",
+  "head": "0b68a3b38fbaa27c54135313490e55730cb48d16",
+  "dirty_worktree": true,
+  "sources": [
+    {
+      "path": "/userHome/userhome4/sehoon/.codex/attachments/c5e26e07-a6f5-457c-867e-c30e05f1995f/ARIA_DT_BuildSpec — 비전 AI × 디지털 트윈 공정 시뮬레이션 전환 명세서 (2).pdf",
+      "sha256": "3507ef1598556033981eb9069e6be0517027993a52c797bb91b225534c12befc",
+      "bytes": 1413507
+    },
+    {
+      "path": "/userHome/userhome4/sehoon/Aria-virual-industrial-main/docs/specs/ARIA_DT_P2_LatencyCoupling_BuildSpec.md",
+      "sha256": "d35dae5ef74276ddd2938861a29f22cde9a706e9b76e008057ab3ae89dc749c2",
+      "bytes": 3161
+    },
+    {
+      "path": "/userHome/userhome4/sehoon/Aria-virual-industrial-main/docs/specs/ARIA_DT_P3_QualityCoupling_BuildSpec.md",
+      "sha256": "45584cb30d81eaa18347d3e9445dee2be8948c508f9dab5383616354aeba6937",
+      "bytes": 2132
+    },
+    {
+      "path": "/userHome/userhome4/sehoon/Aria-virual-industrial-main/docs/specs/ARIA_DT_Cosine_Execution_20261012.md",
+      "sha256": "5a73cee18a79c90bdeb658cd9e13e586fb19ba81f83a195ebc665424118de692",
+      "bytes": 3508
+    },
+    {
+      "path": "/userHome/userhome4/sehoon/Aria-virual-industrial-main/docs/validation/aria_dt_20261013_03/REPORT.md",
+      "sha256": "4f1ff8bd37c0839388555bf076198c09d7685b1ce0823bc6a0f6b1d1708f95b6",
+      "bytes": 9432
+    },
+    {
+      "path": "/userHome/userhome4/sehoon/Aria-virual-industrial-main/aria/simulation/dt/replay.py",
+      "sha256": "c597114a962229bd20772fc6241f2fe1a79818df8d418c3f61d56d55a4387e7a",
+      "bytes": 5292
+    },
+    {
+      "path": "/userHome/userhome4/sehoon/Aria-virual-industrial-main/aria/simulation/dt/evaluation.py",
+      "sha256": "1ad8cde928f083e7a4756935ca6becdb5a3c06fcf9a1da7843c936cfeaf3d9fe",
+      "bytes": 7138
+    },
+    {
+      "path": "/userHome/userhome4/sehoon/Aria-virual-industrial-main/aria/simulation/dt/line.py",
+      "sha256": "2584ad315456b38e646c96779bb641d3e41c2cb2316d17cd3fb0d8499a64584d",
+      "bytes": 4897
+    },
+    {
+      "path": "/userHome/userhome4/sehoon/Aria-virual-industrial-main/tools/benchmark_dt.py",
+      "sha256": "4fceee75d1d24ec11d4c37484d0af88ef82c8304b15ca9d18aa8c01d218b5a25",
+      "bytes": 9558
+    },
+    {
+      "path": "/userHome/userhome4/sehoon/Aria-virual-industrial-main/configs/line_profile.yaml",
+      "sha256": "02db95df72143af07a336f10ca9944799910357bab78b26d0534678d62b60db0",
+      "bytes": 1866
+    },
+    {
+      "path": "/userHome/userhome4/sehoon/Aria-virual-industrial-main/docs/validation/aria_dt_20261012_02/REPORT.md",
+      "sha256": "6603c9d5e95b4ad30e0e5dc1a5b46c683153ad9e963e3165f3be81613bc912d4",
+      "bytes": 6805
+    }
+  ]
+}

@@ -3,7 +3,7 @@
 // S2: uiMode(operator|expert) + [운영|전문가] 토글.
 // S3: 패널별 모드 인식은 uiMode Context 경유.
 // S4: isMobile(<900px) → flex-column 레이아웃, 3D 주연.
-import { useEffect, useState } from 'react'
+import { useEffect, useState, lazy, Suspense } from 'react'
 import {
   ThemeProvider, createTheme, CssBaseline, Box, AppBar, Toolbar, Typography,
   ToggleButton, ToggleButtonGroup, IconButton, Drawer, Tabs, Tab, Chip,
@@ -14,7 +14,9 @@ import { useSignalStore } from './signalStore'
 import { getPanel } from './slots'
 import { UIModeContext } from './uiMode'
 import './registerPanels'
-import FactoryWorkspace from './factory/FactoryWorkspace'
+import ControlTowerShell from '../features/control-tower/ControlTowerShell'
+
+const DTDashboard=lazy(()=>import('../features/dt/DTDashboard'))
 
 const theme = createTheme({
   palette: {
@@ -56,6 +58,8 @@ export default function AppShell() {
   const isMobile = useMediaQuery('(max-width:900px)')
 
   useEffect(() => { connect() }, [connect])
+
+  if(new URLSearchParams(window.location.search).get('view')==='dt')return <Suspense fallback={<div>ARIA DT 불러오는 중…</div>}><DTDashboard/></Suspense>
 
   const isExpert = uiMode === 'expert'
   const SettingsPanel = getPanel('settings_drawer')
@@ -141,7 +145,7 @@ export default function AppShell() {
         {/* ── S4 모바일: flex-column ───────────────────────────────────── */}
         {factoryView ? (
           <Box sx={{ height: '100%', display: 'flex', flexDirection: 'column', minHeight: 0 }}>
-            {Topbar}<FactoryWorkspace />
+            <ControlTowerShell onOpenQC={() => setFactoryView(false)} />
           </Box>
         ) : isMobile ? (
           <Box sx={{ height: '100%', display: 'flex', flexDirection: 'column',

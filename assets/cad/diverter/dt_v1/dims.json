@@ -1,0 +1,26 @@
+{
+  "part": "diverter",
+  "version": "dt_v1",
+  "source": "cad",
+  "meaning": "assumed design dimensions; not datasheet or physical measurement",
+  "unit": "mm",
+  "cad_axis": "Z-up",
+  "glb_axis": "Y-up",
+  "length_mm": 1000,
+  "width_mm": 600,
+  "height_mm": 700,
+  "glb_bbox_xyz_mm": [
+    1000.0,
+    700.0,
+    600.0
+  ],
+  "bbox_max_error_mm": 0.0,
+  "valid_solids": 1,
+  "freecad_version": "1.1.3",
+  "files": {
+    "model.FCStd": "83f16096a42ae18417f621541d33e6680dd36a80e2fd2e23f8ccc67d0f65f2c2",
+    "model.glb": "9d1ac545c9829d2c29f4749cb53c11d36495ca5f3db8eabdec5b35c88021dd6a",
+    "model.step": "8980130edeafdfe16882f6add43303fe5e0e134ed070124824e87cb9c9b0ba25"
+  },
+  "scope": "simple design envelopes, not mechanical/camera/robot safety validation"
+}

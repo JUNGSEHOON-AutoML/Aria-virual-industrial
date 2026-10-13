@@ -18,7 +18,8 @@ function Limb({ side, leg = false, phase, moving, inspect }) {
     </group>
   </group>
 }
-function Humanoid({ robot, enabled }) {
+export function Humanoid({ robot, enabled, labels = true }) {
+  const initialPosition = useRef(robot.position)
   const ref = useRef(), phase = useRef(robot.phase), previous = useRef(robot.position)
   const target = new THREE.Vector3(...robot.position)
   useFrame((_,dt) => {
@@ -32,7 +33,7 @@ function Humanoid({ robot, enabled }) {
   const moving = enabled && ['PATROLLING','RESPONDING'].includes(robot.state)
   const inspecting = ['INSPECTING','DIAGNOSING','REPAIRING','VERIFYING'].includes(robot.state)
   const accent = robot.id === 'ARIA-01' ? '#1cb4cf' : '#ec9e30'
-  return <group ref={ref} position={robot.position}>
+  return <group ref={ref} position={labels ? robot.position : initialPosition.current}>
     <Solid at={[0, 1.28, 0]} size={[.48, .57, .28]} color="#d8e3e7" />
     <Solid at={[0, 1.32, .15]} size={[.31, .23, .035]} color="#253e50" />
     <Solid at={[0, 1.3, .177]} size={[.16, .025, .01]} color={accent} />
@@ -44,7 +45,7 @@ function Humanoid({ robot, enabled }) {
     {[-1,1].flatMap(side => [false,true].map(leg => <Limb key={`${side}-${leg}`} side={side} leg={leg} phase={robot.phase} moving={moving} inspect={inspecting} />))}
     <mesh rotation={[-Math.PI/2,0,0]} position={[0,.015,0]}><ringGeometry args={[.37,.41,36]} /><meshBasicMaterial color={accent} /></mesh>
     {inspecting && <mesh position={[0,1.5,1.1]} rotation={[Math.PI/2,0,0]}><coneGeometry args={[.55,2,20,1,true]} /><meshBasicMaterial color={accent} transparent opacity={.07} depthWrite={false} side={THREE.DoubleSide} /></mesh>}
-    <Html position={[0,2.2,0]} center zIndexRange={[18,0]}><div className="patrol-robot-label" style={{borderColor:accent}}><b>{robot.id}</b><span>{enabled ? robot.state : 'PAUSED'}</span><small>{robot.target || 'Patrol route'}</small></div></Html>
+    {labels && <Html position={[0,2.2,0]} center zIndexRange={[18,0]}><div className="patrol-robot-label" style={{borderColor:accent}}><b>{robot.id}</b><span>{enabled ? robot.state : 'PAUSED'}</span><small>{robot.target || 'Patrol route'}</small></div></Html>}
   </group>
 }
 export default function PatrolHumanoids({ visible = true, focus = null }) {

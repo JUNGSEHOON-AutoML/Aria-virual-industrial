@@ -12,12 +12,20 @@ from collections import deque
 from .model import FactoryModel, STATES
 
 class Engine:
-    def __init__(self, model, inspect=None):
+    def __init__(self, model, inspect=None, *, external_sources=(), event_sink=None):
         self.model = FactoryModel.model_validate(model.model_dump() if isinstance(model, FactoryModel) else model)
         self.inspect = inspect
+        self.external_sources = frozenset(external_sources)
+        self.event_sink = event_sink
+        from .latency import ProfileSampler
+        self.latency_samplers = {c.id: ProfileSampler(c, self.model.seed)
+                                 for c in self.model.components if c.latency_mode == 'profile'}
         self.reset()
 
     def reset(self):
+        for sampler in self.latency_samplers.values():
+            sampler.reset()
+        self.profile_event_seq = 0
         self.run_token = uuid.uuid4().hex
         self.inspections = deque(maxlen=30)
         self.now = 0.
@@ -26,6 +34,7 @@ class Engine:
         self.heap = []
         self.sequence = 0
         self.serial = 0
+        self.external_parts = {}
         self.events_processed = 0
         self.history = deque(maxlen=160)
         self.moves = deque(maxlen=300)
@@ -41,7 +50,7 @@ class Engine:
                                     states={s: 0. for s in STATES}, state='IDLE',
                                     rng=random.Random(self.model.seed + index * 104729), pending_source=False)
         for c in self.model.components:
-            if c.kind == 'Source':
+            if c.kind == 'Source' and c.id not in self.external_sources:
                 self.schedule(0., 'arrival', c.id)
             if c.kind in ('Machine', 'Inspection'):
                 self._next_failure(self.nodes[c.id])
@@ -52,7 +61,40 @@ class Engine:
         heapq.heappush(self.heap, (at, self.sequence, kind, node, part, epoch))
 
     def emit(self, kind, **payload):
-        self.history.append(dict(type=kind, time=round(self.now, 6), **payload))
+        event = dict(type=kind, time=round(self.now, 6), **payload)
+        if self.latency_samplers:
+            self.profile_event_seq += 1
+            event.update(event_seq=self.profile_event_seq, sim_time=event['time'],
+                         wall_ns=time.monotonic_ns(), sim=1, run_id=self.run_token)
+        if self.event_sink:
+            event.update(self.external_parts.get(payload.get('part'), {}))
+            self.event_sink(dict(event))
+        self.history.append(event)
+
+    def admit_external(self, source, *, workpiece_id, shipment_id, pallet_id):
+        """Admit a real correlated demo material unit only when a source has space.
+
+        Caller owns the same serialization lock as run_until. No model mutation.
+        Returns False on backpressure; duplicate IDs are rejected, not regenerated.
+        """
+        if source not in self.external_sources or source not in self.nodes:
+            raise ValueError('Source is not externally supplied')
+        if workpiece_id in self.external_parts:
+            raise ValueError('Duplicate external workpiece')
+        if len(self.external_parts) >= 1000:
+            raise ValueError('External admission limit reached')
+        n = self.nodes[source]
+        if n['c'].kind != 'Source':raise ValueError('External input requires a Source')
+        if n['down'] or n['c'].maintenance or len(n['jobs']) >= n['c'].capacity:
+            return False
+        self.serial += 1
+        self.external_parts[workpiece_id] = dict(shipment_id=shipment_id, pallet_id=pallet_id)
+        part = dict(id=workpiece_id, serial=self.serial, born=self.now,
+                    product_type=n['c'].product_type, verdict=None, shipment_id=shipment_id, pallet_id=pallet_id)
+        self._admit(n, part)
+        self.emit('external_material_admitted', component=source, part=workpiece_id)
+        self._settle()
+        return True
 
     def _next_failure(self, node):
         c = node['c']
@@ -74,14 +116,22 @@ class Engine:
             return 'BLOCKED'
         return 'STARVED' if c.kind in ('Machine', 'Inspection', 'Conveyor') else 'IDLE'
 
+    def _slot_counts(self, node):
+        return (sum(j['phase'] == 'process' for j in node['jobs']),
+                sum(j['phase'] == 'ready' for j in node['jobs']))
+
+    def _transfer_jobs(self, node):
+        return list(node['jobs'])
+
     def _advance(self, at):
         dt = at - self.now
         for n in self.nodes.values():
             n['states'][n['state']] += dt
             n['area'] += len(n['jobs']) * dt
             if not n['down'] and not n['c'].maintenance:
-                n['busy'] += sum(j['phase'] == 'process' for j in n['jobs']) * dt
-                n['blocked'] += sum(j['phase'] == 'ready' for j in n['jobs']) * dt
+                processing, ready = self._slot_counts(n)
+                n['busy'] += processing * dt
+                n['blocked'] += ready * dt
         self.now = at
 
     def _admit(self, n, part, previous=None):
@@ -99,16 +149,27 @@ class Engine:
             self.moves.append(dict(part=part['id'], source=previous, target=c.id, time=self.now, verdict=v))
             return
         duration = c.length / c.speed if c.kind == 'Conveyor' else c.processing_time
+        timing = self.latency_samplers[c.id].sample() if c.id in self.latency_samplers else None
+        inspection_time = timing['latency_ms']['total'] / 1000 + c.handling_time_s if timing else c.processing_time
+        if timing:
+            duration = inspection_time
         if c.robot_model:
             from .robot import program
-            duration = program(c.processing_time)[1]
+            duration = program(inspection_time)[1]
         service = c.kind in ('Machine', 'Inspection', 'Conveyor')
         phase = ('setup' if c.setup_time and c.kind in ('Machine', 'Inspection') else 'process') if service else 'ready'
         delay = c.setup_time if phase == 'setup' else duration
         j = dict(part=part, entered=self.now, phase=phase, due=self.now + delay, duration=duration, motion_start=self.now + (delay if phase=='setup' else 0), robot_checks=[], gripper_closed=False)
+        if timing:
+            j.update(timing=timing, inspection_time=inspection_time, inspection_decided=False)
         n['jobs'].append(j)
         if service:
             self._schedule_job(n, j)
+        if timing:
+            self.emit('inspection_scheduled', component=c.id, part=part['id'],
+                      service_seconds=duration, handling_time_s=c.handling_time_s, **timing)
+            if c.inspection_deadline_s is not None:
+                self.schedule(self.now + c.inspection_deadline_s, 'inspection_deadline', c.id, part['id'])
         self.moves.append(dict(part=part['id'], source=previous, target=c.id, time=self.now, verdict=part.get('verdict')))
         self.emit('part_move', component=c.id, source=previous, part=part['id'])
 
@@ -119,6 +180,10 @@ class Engine:
         edge = exact or next((e for e in edges if e.condition == 'always'), None)
         return self.nodes[edge.target] if edge else None
 
+    def _has_capacity(self, node):
+        """Admission hook; legacy finite-capacity behavior is unchanged."""
+        return node['c'].kind == 'Sink' or len(node['jobs']) < node['c'].capacity
+
     def _settle(self):
         changed = True
         while changed:
@@ -127,7 +192,7 @@ class Engine:
                 c = n['c']
                 if n['down'] or c.maintenance:
                     continue
-                jobs = list(n['jobs'])
+                jobs = self._transfer_jobs(n)
                 if c.queue_discipline == 'LIFO' and c.kind == 'Buffer':
                     jobs.reverse()
                 for j in jobs:
@@ -136,10 +201,12 @@ class Engine:
                     dest = self._target(n, j)
                     if dest is None or dest['down'] or dest['c'].maintenance:
                         break
-                    if dest['c'].kind != 'Sink' and len(dest['jobs']) >= dest['c'].capacity:
+                    if not self._has_capacity(dest):
                         break
                     n['jobs'].remove(j)
                     n['total'] += 1
+                    if 'timing' in j:
+                        n['profile_completed_work'] = n.get('profile_completed_work', 0.) + j['duration']
                     if c.kind in ('Source', 'Buffer', 'Diverter'):
                         n['wait'] += self.now - j['entered']
                         n['wait_n'] += 1
@@ -171,6 +238,13 @@ class Engine:
                     self._admit(n, dict(id=f'P{self.serial:07d}', serial=self.serial, born=self.now,
                                         product_type=c.product_type, verdict=None))
                 self.schedule(self.now + c.interarrival, 'arrival', cid)
+        elif kind == 'inspection_deadline':
+            j = next((j for j in n['jobs'] if j['part']['id'] == pid), None)
+            if j and not j.get('inspection_decided'):
+                # Completion at the exact deadline wins, including a rescheduled completion.
+                finishing = not n['down'] and not c.maintenance and j['phase'] == 'process' and j['due'] <= self.now
+                if not finishing:
+                    self._record_inspection(n, j, dict(verdict='SKIPPED', reason='Inspection deadline exceeded'), deadline_met=False)
         elif kind == 'failure' and not c.maintenance and not n['down']:
             n['down'] = True
             n['epoch'] += 1
@@ -184,13 +258,13 @@ class Engine:
             j=next((j for j in n['jobs'] if j['part']['id']==pid),None)
             if j and j['phase']=='process':
                 from .robot import program, sample
-                rows,_=program(c.processing_time)
+                rows,_=program(j.get('inspection_time', c.processing_time))
                 stage=kind.split(':',1)[1];index=next(i for i,r in enumerate(rows) if r['stage']==stage)
                 if stage not in j['robot_checks']:
                     if len(j['robot_checks'])!=index:
                         raise ValueError('Robot command acknowledgement order mismatch')
                     row=rows[index]
-                    position=sample(c.processing_time,row['start']+row['duration'])['joints']
+                    position=sample(j.get('inspection_time', c.processing_time),row['start']+row['duration'])['joints']
                     error=max(abs(a-b) for a,b in zip(position,row['target']))
                     if error>1e-6:raise ValueError('Robot failed to reach joint target')
                     if stage=='GRIP':j['gripper_closed']=True
@@ -200,7 +274,7 @@ class Engine:
                     self.emit('robot_ack',component=cid,part=pid,stage=stage,joint_error_rad=error,gripper_closed=j['gripper_closed'],source='virtual controller')
         elif kind == 'complete' and epoch == n['epoch'] and not n['down']:
             j = next((j for j in n['jobs'] if j['part']['id'] == pid), None)
-            if j:
+            if j and j['phase'] != 'ready':
                 if j['phase'] == 'setup':
                     j['phase'] = 'process'
                     j['motion_start'] = self.now
@@ -210,7 +284,7 @@ class Engine:
                     if c.robot_model and (len(j['robot_checks'])!=7 or j['gripper_closed']):
                         raise ValueError('Robot cycle cannot complete without all command acknowledgements')
                     j['phase'] = 'ready'
-                    if c.kind == 'Inspection':
+                    if c.kind == 'Inspection' and not j.get('inspection_decided'):
                         if c.inspection_mode == 'mock':
                             result = dict(verdict='NG' if n['rng'].random() < c.defect_rate else 'OK', mode='mock')
                         else:
@@ -222,15 +296,27 @@ class Engine:
                                     raise ValueError('Non-finite detector score')
                             except Exception as exc:
                                 result = dict(verdict='SKIPPED', reason=str(exc)[:300])
-                        j['part'].update(verdict=result['verdict'], inspection=result)
-                        self.inspections.append(dict(component=cid,part=pid,time=self.now,**result))
-                        self.emit('inspection_result', component=cid, part=pid, **result)
+                        self._record_inspection(n, j, result)
         self._settle()
+
+    def _record_inspection(self, n, j, result, deadline_met=True):
+        c, part = n['c'], j['part']
+        if 'timing' in j:
+            j['inspection_decided'] = True
+            result = dict(result, **j['timing'],
+                          deadline_ms=c.inspection_deadline_s * 1000 if c.inspection_deadline_s is not None else None,
+                          deadline_met=deadline_met if c.inspection_deadline_s is not None else None,
+                          route='HOLD' if result['verdict'] == 'SKIPPED' else result['verdict'],
+                          decision_elapsed_ms=(self.now - j['entered']) * 1000,
+                          handling_time_s=c.handling_time_s)
+        part.update(verdict=result['verdict'], inspection=result)
+        self.inspections.append(dict(component=c.id,part=part['id'],time=self.now,**result))
+        self.emit('inspection_result', component=c.id, part=part['id'], **result)
 
     def _schedule_job(self, n, j):
         if n['c'].robot_model and j['phase']=='process':
             from .robot import program
-            rows,_=program(n['c'].processing_time)
+            rows,_=program(j.get('inspection_time', n['c'].processing_time))
             for row in rows:
                 if row['stage'] not in j['robot_checks']:
                     at=j['motion_start']+row['start']+row['duration']
@@ -279,7 +365,7 @@ class Engine:
         elapsed=0.
         if j and j['phase']!='setup':
             elapsed=j['duration']-j['remaining'] if n['down'] and 'remaining' in j else self.now-j['motion_start']
-        result=sample(n['c'].processing_time,elapsed,stopped=n['down'] or self.status!='running' or not j or j['phase']!='process')
+        result=sample(j.get('inspection_time', n['c'].processing_time) if j else n['c'].processing_time,elapsed,stopped=n['down'] or self.status!='running' or not j or j['phase']!='process')
         result['completed_steps']=list(j['robot_checks']) if j else []
         result['attached']=bool(j and j['gripper_closed'])
         result['gripper']='CLOSED' if result['attached'] else 'OPEN'
@@ -295,7 +381,8 @@ class Engine:
             downtime = n['states']['DOWN'] + n['states']['MAINTENANCE']
             availability = max(0., 1 - downtime / self.now) if self.now else 0.
             active = max((self.now - downtime) * c.capacity, 1e-12)
-            performance = min(1., n['total'] * c.processing_time / active) if c.kind in ('Machine', 'Inspection') else None
+            ideal_work = n.get('profile_completed_work', 0.) if c.latency_mode == 'profile' else n['total'] * c.processing_time
+            performance = min(1., ideal_work / active) if c.kind in ('Machine', 'Inspection') else None
             quality = self.counts['OK'] / total if total else 0.
             resources[cid] = dict(robot=self.robot_state(n), fault=n.get('fault'), kind=c.kind, state=n['state'], occupancy=len(n['jobs']), capacity=c.capacity,
                 completed=n['total'], utilization=utilization, avg_queue=n['area'] / self.now if self.now else 0.,

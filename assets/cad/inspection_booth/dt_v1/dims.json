@@ -1,0 +1,26 @@
+{
+  "part": "inspection_booth",
+  "version": "dt_v1",
+  "source": "cad",
+  "meaning": "assumed design dimensions; not datasheet or physical measurement",
+  "unit": "mm",
+  "cad_axis": "Z-up",
+  "glb_axis": "Y-up",
+  "length_mm": 800,
+  "width_mm": 800,
+  "height_mm": 1500,
+  "glb_bbox_xyz_mm": [
+    800.0,
+    1500.0,
+    800.0
+  ],
+  "bbox_max_error_mm": 0.0,
+  "valid_solids": 1,
+  "freecad_version": "1.1.3",
+  "files": {
+    "model.FCStd": "e5e59b7ee396c8b6286db82dd3cdf57ab35d9bd7cbe030ef9ae718f40fb0ff3c",
+    "model.glb": "61582506a1f95f8f4a27fbabb24b4e601a7e935d42d197f18ed514e05ef319cb",
+    "model.step": "e292a9619a340de217900853ee7a99e12d774f589c475ad61138c502189e2fc6"
+  },
+  "scope": "simple design envelopes, not mechanical/camera/robot safety validation"
+}

@@ -1,7 +1,10 @@
+import VisualAsset from '../../features/twin/assets/VisualAsset'
 import RobotArm from './RobotArm'
+import MotionGroup from './MotionGroup'
 // Parametric industrial equipment. Robot/spindle pose is a visualization of the
 // actual DES processing phase, not a collision-checked robot motion program.
-import { useMemo } from 'react'
+import { useMemo, useContext } from 'react'
+import { PresentationContext } from './PresentationContext'
 import CADBody from './CADBody'
 import { Html, Line } from '@react-three/drei'
 
@@ -17,6 +20,8 @@ function Glass({ at, size }) {
   return <mesh position={at}><boxGeometry args={size} /><meshStandardMaterial color="#86bfc7" transparent opacity={.15} depthWrite={false} roughness={.15} metalness={.15} /></mesh>
 }
 function Sign({ at, children, color = '#e5edf0', small = false }) {
+  const { labels } = useContext(PresentationContext)
+  if (!labels) return null
   return <Html position={at} transform distanceFactor={5} zIndexRange={[12, 0]} style={{ pointerEvents: 'none' }}>
     <div className={`equipment-decal ${small ? 'small' : ''}`} style={{ color }}>{children}</div>
   </Html>
@@ -37,15 +42,15 @@ function Pendant({ at }) {
 export function Robot({ at = [0, 0, 0], phase = 0, active = false }) {
   // Joint angles only advance when simulation time/processing advances.
   const cycle = active ? Math.sin(phase * Math.PI * 2) : 0
-  return <group position={at}>
+  return <group userData={{profileCategory:"robot",sourceModule:"IndustrialEquipment.Robot"}} position={at}>
     <Solid at={[0, .12, 0]} size={[.7, .24, .65]} color="#444e53" />
     <Cylinder at={[0, .37, 0]} radius={.24} length={.34} color="#ed8b19" />
-    <group position={[0, .55, 0]} rotation={[0, -.7 + cycle * .3, 0]}>
+    <MotionGroup position={[0, .55, 0]} rotation={[0, -.7 + cycle * .3, 0]}>
       <Cylinder at={[0, .1, 0]} radius={.22} length={.32} rotation={[Math.PI / 2, 0, 0]} color="#de7b11" />
-      <group rotation={[0, 0, -.38 + cycle * .15]}>
+      <MotionGroup rotation={[0, 0, -.38 + cycle * .15]}>
         <Solid at={[0, .5, 0]} size={[.26, 1, .28]} color="#f59b20" />
         <Cylinder at={[0, 1, 0]} radius={.19} length={.36} rotation={[Math.PI / 2, 0, 0]} color="#46545b" />
-        <group position={[0, 1, 0]} rotation={[0, 0, -1.55 + cycle * .22]}>
+        <MotionGroup position={[0, 1, 0]} rotation={[0, 0, -1.55 + cycle * .22]}>
           <Solid at={[0, .43, 0]} size={[.2, .86, .22]} color="#f29b21" />
           <Cylinder at={[0, .86, 0]} radius={.14} length={.26} rotation={[Math.PI / 2, 0, 0]} />
           <group position={[0, .91, 0]} rotation={[0, 0, -.4]}>
@@ -53,15 +58,15 @@ export function Robot({ at = [0, 0, 0], phase = 0, active = false }) {
             <Solid at={[0, .35, 0]} size={[.24, .14, .2]} color="#303e47" />
             {[-1, 1].map(x => <Solid key={x} at={[x * .095, .47, 0]} size={[.04, .22, .12]} color="#a5b0b5" />)}
           </group>
-        </group>
-      </group>
+        </MotionGroup>
+      </MotionGroup>
       <Line points={[[.12, .12, -.2], [.19, .9, -.2], [.8, 1.2, -.2]]} color="#242d34" lineWidth={3} />
-    </group>
+    </MotionGroup>
   </group>
 }
-function Fence({ at, length, rotation = 0, glass = false }) {
+function LegacyFence({ at, length, rotation = 0, glass = false }) {
   const count = Math.max(1, Math.ceil(length / 1.2))
-  return <group position={at} rotation={[0, rotation, 0]}>
+  return <group userData={{profileCategory:"fence",sourceModule:"IndustrialEquipment.Fence"}} position={at} rotation={[0, rotation, 0]}>
     {[...Array(count + 1)].map((_, i) => <Solid key={i} at={[i * length / count - length / 2, 1, 0]} size={[.07, 2, .07]} color="#dba31c" />)}
     {[.15, 1.9].map(y => <Solid key={y} at={[0, y, 0]} size={[length, .055, .055]} color="#dba31c" />)}
     {glass ? <Glass at={[0, 1, 0]} size={[length, 1.65, .02]} /> : <>
@@ -70,6 +75,7 @@ function Fence({ at, length, rotation = 0, glass = false }) {
     </>}
   </group>
 }
+function Fence(props){return props.glass?<LegacyFence {...props}/>:<VisualAsset visual_asset_id="aria.fence" {...props}/>}
 function CNC({ state, phase }) {
   return <group>
     <Solid at={[0, .2, 0]} size={[2.5, .4, 1.9]} color="#257e82" />
@@ -79,7 +85,7 @@ function CNC({ state, phase }) {
     <Solid at={[0, 2.45, 0]} size={[2.45, .25, 1.85]} color="#eef0ed" />
     <Solid at={[0, .63, .05]} size={[1.55, .42, 1.35]} color="#596773" />
     {[-.5, -.25, 0, .25, .5].map(x => <Solid key={x} at={[x, .855, .05]} size={[.055, .015, 1.05]} color="#c1cbce" />)}
-    <Solid at={[0, 1.87 + (state === 'PROCESSING' ? Math.sin(phase * Math.PI) * .13 : 0), -.1]} size={[.35, .7, .4]} color="#76838a" />
+    <MotionGroup position={[0, 1.87 + (state === 'PROCESSING' ? Math.sin(phase * Math.PI) * .13 : 0), -.1]}><Solid size={[.35, .7, .4]} color="#76838a" /></MotionGroup>
     <Cylinder at={[0, 1.38, -.1]} radius={.07} length={.32} color="#c9d2d4" />
     <Glass at={[0, 1.58, .88]} size={[1.62, 1.6, .045]} />
     {[-.82, 0, .82].map(x => <Solid key={x} at={[x, 1.58, .91]} size={[.04, 1.65, .03]} color="#7c8d92" />)}
@@ -91,8 +97,8 @@ function CNC({ state, phase }) {
     <Sign at={[-1, 1.4, .87]} small color="#e5b521">⚠</Sign>
   </group>
 }
-function Pallet({ at = [0, 0, 0], totes = false }) {
-  return <group position={at}>
+function LegacyPallet({ at = [0, 0, 0], totes = false }) {
+  return <group userData={{profileCategory:"pallet",sourceModule:"IndustrialEquipment.Pallet"}} position={at}>
     {[-.5, 0, .5].map(z => <Solid key={z} at={[0, .09, z]} size={[1.2, .18, .13]} color="#8a7150" />)}
     {[-.48, -.24, 0, .24, .48].map(x => <Solid key={x} at={[x, .23, 0]} size={[.2, .1, 1.2]} color="#b49a70" />)}
     {totes && [0, 1].map(y => <group key={y} position={[0, .3 + y * .32, 0]}>
@@ -102,12 +108,13 @@ function Pallet({ at = [0, 0, 0], totes = false }) {
     </group>)}
   </group>
 }
+function Pallet(props){return <VisualAsset visual_asset_id="aria.pallet" {...props}/>}
 export function Equipment({ component: c, resource, part, time }) {
   const active = resource?.state === 'PROCESSING'
   const phase = part ? Math.min(1, Math.max(0, (time - part.entered) / Math.max(.01, part.due - part.entered))) : 0
   if (c.kind === 'Machine') return <>
     {c.cad_asset ? <CADBody asset={c.cad_asset} fallback={<CNC state={resource?.state} phase={phase} />} /> : <CNC state={resource?.state} phase={phase} />}
-    {resource?.robot ? <group position={[.45,.65,2.05]} rotation={[0,Math.PI,0]}><Solid at={[0,-.32,0]} size={[.32,.64,.32]} color="#637680"/><RobotArm state={resource.robot}/></group> : <group position={[.45, 0, 2.05]} rotation={[0, Math.PI, 0]}><Robot active={active} phase={phase} /></group>}
+    {resource?.robot ? <group userData={{profileCategory:"robot",sourceModule:"RobotArm"}} position={[.45,.65,2.05]} rotation={[0,Math.PI,0]}><Solid at={[0,-.32,0]} size={[.32,.64,.32]} color="#637680"/><RobotArm state={resource.robot}/></group> : <group position={[.45, 0, 2.05]} rotation={[0, Math.PI, 0]}><Robot active={active} phase={phase} /></group>}
     <Fence at={[0, 0, 3.05]} length={3} /><Fence at={[-1.55, 0, 2]} length={2.1} rotation={Math.PI / 2} />
     <Pendant at={[1.55, 0, 2.7]} />
     {c.capacity > 1 && <Sign at={[0, 3.45, 0]}>{c.capacity} PARALLEL PROCESS SLOTS</Sign>}

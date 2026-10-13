@@ -28,6 +28,11 @@ class Component(Contract):
     mttr: float = Field(default=20, ge=.01, le=3600)
     maintenance: bool = False
     inspection_mode: Literal['mock', 'patchcore', 'ccifps', 'combined'] = 'mock'
+    latency_mode: Literal['constant', 'profile'] = 'constant'
+    latency_profile: str = ''
+    latency_profile_sha256: str = Field(default='', pattern=r'^(|[0-9a-f]{64})$')
+    handling_time_s: float = Field(default=0, ge=0, le=3600)
+    inspection_deadline_s: float | None = Field(default=None, gt=0, le=3600)
     defect_rate: float = Field(default=.12, ge=0, le=1)
     category: str = Field(default='bottle', pattern=r'^[A-Za-z0-9_-]+$')
     run_id: str = ''
@@ -39,6 +44,11 @@ class Component(Contract):
 
     @model_validator(mode='after')
     def check(self):
+        if self.latency_mode == 'profile':
+            if self.kind != 'Inspection' or not self.latency_profile or not self.latency_profile_sha256:
+                raise ValueError('Profile mode requires Inspection, profile path and SHA-256')
+        elif self.latency_profile or self.latency_profile_sha256 or self.handling_time_s or self.inspection_deadline_s is not None:
+            raise ValueError('Constant mode retains legacy timing; profile options require profile mode')
         if self.robot_model and (self.kind not in ('Machine','Inspection') or self.capacity != 1):
             raise ValueError('Robot-controlled cell requires Machine/Inspection capacity=1')
         if self.kind == 'Source' and self.batch_size > self.capacity:

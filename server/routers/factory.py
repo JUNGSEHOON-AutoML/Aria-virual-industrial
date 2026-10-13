@@ -14,6 +14,10 @@ from aria.simulation.des.patrol import PatrolSupervisor
 from aria.simulation.des.maintenance import MaintenanceHarness
 from typing import Literal
 from server.ws import manager
+from aria.simulation.site.runtime import SiteRuntime
+from aria.persistence.service import create_history
+from aria.persistence.contracts import PersistenceFault
+from aria.persistence.repositories import MemorySpatialRepository,PostgresSpatialRepository
 
 ROOT = Path(__file__).resolve().parents[2]
 service = FactoryService(Path(os.environ.get('ARIA_FACTORY_STATE_DIR', str(ROOT / 'outputs' / 'factory'))), InspectionAdapter(ROOT))
@@ -22,6 +26,8 @@ agent_lock = asyncio.Lock()
 patrol = PatrolSupervisor(service.directory)
 patrol_lock = threading.RLock()
 maintenance = MaintenanceHarness()
+history = create_history(service.directory)
+site = SiteRuntime(service.engine.model.model_dump(), service.inspect, service.revision, history=history)
 
 def patrol_view():
     with patrol_lock:
@@ -101,6 +107,7 @@ async def maintenance_fault(payload: MaintenanceFaultRequest):
     return result
 
 class ChatRequest(BaseModel):
+    scope: Literal['factory','site'] = 'factory'
     message: str = Field(min_length=1, max_length=4000)
 
 async def invoke(name, args=None, human=False):
@@ -213,8 +220,10 @@ async def chat(payload: ChatRequest):
     if agent_lock.locked():
         raise HTTPException(409, 'Agent already processing a request')
     async with agent_lock:
-        await manager.broadcast(dict(type='agent_plan', scope='factory', goal=payload.message))
+        await manager.broadcast(dict(type='agent_plan', scope=payload.scope, goal=payload.message))
         def execute():
+            if payload.scope == 'site':
+                return site.query(payload.message)
             if any(word in payload.message.lower() for word in ('보고', '문제', '순찰', 'report', 'patrol', 'incident')):
                 evidence=patrol_view()
                 rows=evidence['reports'][:5]
@@ -226,9 +235,9 @@ async def chat(payload: ChatRequest):
                 return IndustrialAgent(service).run(payload.message)
         result = await asyncio.to_thread(execute)
         for step in result.get('trace', []):
-            await manager.broadcast(dict(type='agent_action', scope='factory', tool=step['tool']))
-            await manager.broadcast(dict(type='agent_observation', scope='factory', tool=step['tool'], result=step['result']))
-        await manager.broadcast(dict(type='agent_result', scope='factory', **result))
+            await manager.broadcast(dict(type='agent_action', scope=payload.scope, tool=step['tool']))
+            await manager.broadcast(dict(type='agent_observation', scope=payload.scope, tool=step['tool'], result=step['result']))
+        await manager.broadcast(dict(type='agent_result', scope=payload.scope, **result))
         await publish()
         return result
 
@@ -238,12 +247,59 @@ async def simulation_loop():
         await asyncio.sleep(.15)
         now = time.monotonic()
         snap = await asyncio.to_thread(service.tick, now - previous)
+        await asyncio.to_thread(site.tick, now - previous)
+        site_state = await asyncio.to_thread(site.snapshot)
+        await manager.broadcast(dict(type='site_state', **site_state))
         patrol_state = await asyncio.to_thread(patrol_tick, now - previous)
         await manager.broadcast(dict(type='patrol_state', **patrol_state))
         previous = now
         if snap is not None or patrol_state.get('maintenance'):
             await publish()
 
+
+# The synthetic site owns its own runtime, cloned from the approved Engineering
+# model on reset. Existing standalone production endpoints retain their semantics.
+@router.get('/site/definition')
+async def site_definition():
+    with site.lock:
+        return site.definition.model_dump()
+
+@router.get('/site/snapshot')
+async def site_snapshot():
+    return await asyncio.to_thread(site.snapshot)
+
+class SiteControlRequest(BaseModel):
+    speed: Literal[1,2,5,20] | None = None
+
+@router.post('/site/control/{operation}')
+async def site_control(operation: str, payload: SiteControlRequest = Body(default=SiteControlRequest())):
+    def perform():
+        if operation == 'reset':
+            with service.lock:
+                model=service.engine.model.model_dump();revision=service.revision
+            site.reset(model,revision)
+            return site.snapshot()
+        return site.control(operation,payload.speed)
+    try:result=await asyncio.to_thread(perform)
+    except (ValueError,PersistenceFault) as exc:raise HTTPException(422,str(exc)) from exc
+    await manager.broadcast(dict(type='site_state', **result))
+    return result
+
+class DockBlockRequest(BaseModel):
+    blocked: bool
+
+@router.post('/site/docks/{dock_id}/block')
+async def site_dock_block(dock_id: str, payload: DockBlockRequest):
+    try:result=await asyncio.to_thread(site.block_dock,dock_id,payload.blocked)
+    except (KeyError,ValueError) as exc:raise HTTPException(422,str(exc)) from exc
+    await manager.broadcast(dict(type='site_state', **result))
+    return result
+
+@router.get('/site/entities/{entity_id}')
+async def site_entity(entity_id: str):
+    result=await asyncio.to_thread(site.query,entity_id)
+    if result['trace'][0]['tool']!='get_site_entity':raise HTTPException(404,'Unknown runtime entity')
+    return result
 
 @router.get('/evidence/{key}/{name}')
 async def evidence_file(key: str,name: str):
@@ -293,3 +349,38 @@ async def inspection_preview(payload: InspectionPreviewRequest):
 async def robot_model():
     from aria.simulation.des.robot import model_info
     return model_info()
+
+
+@router.get('/history/status')
+async def history_status():
+    return await asyncio.to_thread(history.health)
+
+@router.get('/history/runs/{run_id}/events')
+async def historical_events(run_id: str, after: int=0, limit: int=1000):
+    if after<0 or not 1<=limit<=1000:raise HTTPException(422,'Invalid pagination')
+    try:return await asyncio.to_thread(history.store.read,run_id,after,limit)
+    except Exception as exc:raise HTTPException(503,'History store unavailable; see history/status') from exc
+
+@router.get('/site/spatial/{operation}')
+async def spatial_read(operation: str, entity_id: str='', x: float=0, y: float=0, z: float=0, radius: float=10):
+    def query():
+        with site.lock:ctx=dict(site.history_context)
+        repo=PostgresSpatialRepository(history.store,ctx['site_id'],ctx['twin_revision'],ctx['site_definition_hash']) if history.store.mode=='postgres' else MemorySpatialRepository(ctx['definition'])
+        if operation=='assets_in_zone':result=repo.get_assets_in_zone(entity_id)
+        elif operation=='nearby_assets':result=repo.get_nearby_assets([x,y,z],radius)
+        elif operation in ('site','transport_nodes','transport_edges','docks','staging_areas'):result=getattr(repo,'get_'+operation)()
+        elif operation=='zone':result=repo.get_zone(entity_id)
+        else:raise ValueError('Unknown spatial tool')
+        return dict(run_id=ctx['run_id'],twin_revision=ctx['twin_revision'],site_definition_hash=ctx['site_definition_hash'],coordinates='local metres; horizontal x,z; elevation y; SRID 0',result=result)
+    try:return await asyncio.to_thread(query)
+    except ValueError as exc:raise HTTPException(422,str(exc)) from exc
+    except Exception as exc:raise HTTPException(503,'Static revision not available in selected repository') from exc
+
+
+def shutdown_history():
+    # asyncio task cancellation does not cancel an already-running to_thread tick.
+    # Acquiring the runtime lock is a barrier before closing event acceptance.
+    with site.lock:
+        site.status='paused'
+        site.engine.status='paused'
+    return history.close()

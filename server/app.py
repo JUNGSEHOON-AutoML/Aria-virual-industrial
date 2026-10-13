@@ -17,6 +17,7 @@ _log = logging.getLogger("aria.server")
 from server.ws import manager
 from server.routers import inspector, sim, classes, dataset, analyze, state, internal, twin, ccifps, factory, cad
 from server.routers.internal import get_producer_last_seen
+from server.routers import dt
 
 
 def create_app() -> FastAPI:
@@ -26,7 +27,7 @@ def create_app() -> FastAPI:
         allow_credentials=True, allow_methods=["*"], allow_headers=["*"],
     )
 
-    for r in (inspector, sim, classes, dataset, analyze, state, internal, twin, ccifps, factory, cad):
+    for r in (inspector, sim, classes, dataset, analyze, state, internal, twin, ccifps, factory, cad, dt):
         app.include_router(r.router)
 
     @app.on_event("startup")
@@ -63,9 +64,15 @@ def create_app() -> FastAPI:
         # 4. 공장 트윈 라인 루프 — 현실 라인 지표 + GPU 텔레메트리 주기 방송
         asyncio.create_task(twin.line_loop())
         app.state.factory_task = asyncio.create_task(factory.simulation_loop())
+        app.state.dt_task = asyncio.create_task(dt.loop())
 
     @app.on_event("shutdown")
     async def _stop_factory():
+        dt_task = getattr(app.state, "dt_task", None)
+        if dt_task:
+            dt_task.cancel()
+            try:await dt_task
+            except asyncio.CancelledError:pass
         task = getattr(app.state, "factory_task", None)
         if task:
             task.cancel()
@@ -73,6 +80,7 @@ def create_app() -> FastAPI:
                 await task
             except asyncio.CancelledError:
                 pass
+        await asyncio.to_thread(factory.shutdown_history)
 
     async def _stale_heartbeat(interval_s: float = 2.0) -> None:
         """P-producer가 침묵하는 동안 P-core가 주기적으로 stale 상태를 WS에 발행.

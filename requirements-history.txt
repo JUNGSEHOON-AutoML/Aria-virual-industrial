@@ -1,0 +1,2 @@
+# Optional: install only for explicitly selected PostgreSQL mode.
+psycopg[binary]==3.3.6

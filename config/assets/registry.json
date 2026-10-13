@@ -1,0 +1,90 @@
+[
+  {
+    "asset_id": "aria.fence",
+    "uri": "procedural:fence",
+    "format": "procedural",
+    "version": "1",
+    "hash": "aaf0c79b63fb4339dfffd4b632a4e285e2276ae20b43d82700462512704b47f9",
+    "unit": "m",
+    "up_axis": "Y",
+    "origin": [
+      0,
+      0,
+      0
+    ],
+    "bounds": {
+      "type": "parameter-derived"
+    },
+    "provenance": "existing ARIA procedural asset; geometry preserved",
+    "license": "existing repository/source license; no new external artwork",
+    "lod_policy": "production zone visibility; no decimation",
+    "instancing_policy": "one box instance batch per fence; canonical parent selection",
+    "fallback": null
+  },
+  {
+    "asset_id": "aria.pallet",
+    "uri": "procedural:pallet",
+    "format": "procedural",
+    "version": "1",
+    "hash": "aaf0c79b63fb4339dfffd4b632a4e285e2276ae20b43d82700462512704b47f9",
+    "unit": "m",
+    "up_axis": "Y",
+    "origin": [
+      0,
+      0,
+      0
+    ],
+    "bounds": {
+      "type": "parameter-derived"
+    },
+    "provenance": "existing ARIA procedural asset; geometry preserved",
+    "license": "existing repository/source license; no new external artwork",
+    "lod_policy": "production zone visibility; no decimation",
+    "instancing_policy": "one box instance batch per pallet; canonical parent selection",
+    "fallback": null
+  },
+  {
+    "asset_id": "aria.cad",
+    "uri": "/api/factory/cad/assets/{asset}/mesh.json",
+    "format": "cad",
+    "version": "1",
+    "hash": null,
+    "unit": "m",
+    "up_axis": "Y",
+    "origin": [
+      0,
+      0,
+      0
+    ],
+    "bounds": {
+      "type": "source-derived"
+    },
+    "provenance": "existing ARIA cad asset; geometry preserved",
+    "license": "existing repository/source license; no new external artwork",
+    "lod_policy": "production zone visibility; no decimation",
+    "instancing_policy": "preserve per-body geometry",
+    "fallback": null
+  },
+  {
+    "asset_id": "aria.robot",
+    "uri": "/robots/doosan_m0609/",
+    "format": "urdf",
+    "version": "1",
+    "hash": null,
+    "unit": "mm",
+    "up_axis": "Z",
+    "origin": [
+      0,
+      0,
+      0
+    ],
+    "bounds": {
+      "type": "source-derived"
+    },
+    "provenance": "existing ARIA urdf asset; geometry preserved",
+    "license": "existing repository/source license; no new external artwork",
+    "lod_policy": "production zone visibility; no decimation",
+    "instancing_policy": "preserve joint hierarchy",
+    "fallback": null
+  }
+]
