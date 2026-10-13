@@ -139,3 +139,26 @@ python -m uvicorn server.app:app --host 127.0.0.1 --port 8230
 - [작업 진행 기록](docs/CODEX_PROGRESS.md)
 
 주요 코드: `aria/simulation/des/`(엔진·검사·순찰·에이전트), `server/routers/factory.py`(API), `frontend/src/hmi/factory/`(3D/UI), `aria/mcp/servers/factory_mcp.py`(MCP).
+
+
+## CNOTTA 검사 트윈 데모
+
+`dt-cnotta`의 `/cnotta.html`은 저장된 정책 A 타임라인과 B 사후 계산만 재생합니다. DES·추론·본 실험을 시작하지 않습니다. 임시 로고이며 실제 GPU 화풍·FPS는 미확인입니다.
+
+격리 Python 환경의 기존 프로젝트 의존성과 FastAPI/Uvicorn, Node 20.19+ 및 `frontend/node_modules`가 필요합니다. 새 체크아웃에서는 `cd frontend && npm ci`로 프런트 로컬 의존성을 준비하세요. 설치된 격리 환경을 사용할 수 있으며 시스템 패키지를 변경하지 않습니다.
+
+```bash
+export CNOTTA_PYTHON=/path/to/isolated/env/bin/python
+export CNOTTA_NODE=/path/to/node
+export CNOTTA_PILOT=/path/to/verified/des_pilot30
+export CNOTTA_P1=/path/to/verified/p1_verified
+./scripts/demo.sh
+```
+
+기존 작업 폴더의 파일럿·P1은 기본 경로를 사용합니다. 연구 원자료는 Git에 포함하지 않으므로 새 클론은 위 환경변수로 보존된 데이터를 읽기 전용 연결해야 합니다. `CNOTTA_RESULTS`는 검증 완료된 본 실험 폴더를 지정합니다. 결과가 미완료이면 비교 탭은 **실험 진행 중**을 표시합니다.
+
+브라우저: `http://127.0.0.1:5278/cnotta.html`. 원격 사용 시 SSH로 5278 포트를 전달하세요. API는 5277이며 두 서버 모두 loopback에만 바인딩합니다. 다른 프로세스가 점유한 포트는 종료하지 않고 실행을 거절합니다. 대체 포트는 `CNOTTA_WEB_PORT`, `CNOTTA_API_PORT`로 지정합니다. `./scripts/demo.sh --check`는 기동·API/페이지 응답을 검증하고 자신이 시작한 서버만 정리합니다. Ctrl+C도 동일합니다.
+
+실행 선택 → 재생(1/10/60×) 또는 시각 이동 → 부품 ID/설비 검색 → 상세·수명주기 → 자원/재검사/비교 탭 순으로 확인합니다. 초기 예시 부품 ID는 `P0000001`, 설비 검색어는 `VISION`입니다. 판정 전 점수는 숨기고, 저장되지 않은 관절 값·비교 기준·최대 처리량은 —로 표시합니다. 초기 배치와 랙 초과분 1/4 축소 적재는 assumed이며 박스 인스턴스 개수는 실제 사후 대기열과 같습니다. KPI는 [600,t] 관측 창, t≤600은 [0,t]를 사용합니다. 재생 중 KPI는 별도 표기된 시각의 스냅샷입니다.
+
+검증: `PYTHONPATH=. python -m tools.gates.m0`부터 `m6`까지. 브라우저 측정은 `python -m tools.gates.capture_browser`(Chrome·SwiftShader, 로컬 실행 URL 필요), 전체 테스트는 `python -m pytest tests -q`, 골든 검증은 `python tests/golden_trace.py --verify`입니다. DB 통합 테스트에는 `ARIA_TEST_POSTGRES_DSN`이 필요합니다. 게이트 JSON·진행·결정·제약은 `docs/autopilot/`, 최종 보고서는 `docs/autopilot/REPORT.md`에 있습니다. 녹화·브라우저 캡처는 커밋하지 않는 `docs/autopilot/local/`에 저장합니다.
