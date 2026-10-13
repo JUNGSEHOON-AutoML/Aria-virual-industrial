@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "status": "contract_only_pending_G1",
+  "status": "G1_registry_enforced",
   "default_action": "deny",
   "policy": {
     "registration_required_for": "all_motion",
@@ -25,32 +25,32 @@
       "kind": "event",
       "source": "api:/api/dt/runs/{id}/timeline#parts",
       "clock": "sim",
-      "enabled": false,
-      "status": "pending_G1"
+      "enabled": true,
+      "status": "connected_G1"
     },
     {
       "id": "replay.reinspection_queue",
       "kind": "event",
       "source": "api:/api/dt/runs/{id}/timeline#queue",
       "clock": "sim",
-      "enabled": false,
-      "status": "pending_G1"
+      "enabled": true,
+      "status": "connected_G1"
     },
     {
       "id": "view.camera",
       "kind": "event",
       "source": "ui:camera_input_or_site_selection",
       "clock": "view_transition",
-      "enabled": false,
-      "status": "pending_G1"
+      "enabled": true,
+      "status": "connected_G1"
     },
     {
       "id": "view.roof_fade",
       "kind": "event",
       "source": "ui:site_selection",
       "clock": "view_transition",
-      "enabled": false,
-      "status": "pending_G1"
+      "enabled": true,
+      "status": "connected_G1"
     }
   ],
   "ambient": [],

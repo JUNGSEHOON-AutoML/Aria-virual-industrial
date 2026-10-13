@@ -1,6 +1,6 @@
 {
   "milestone": "m7",
-  "pass": false,
+  "pass": true,
   "checks": {
     "viewport": {
       "pass": true,
@@ -75,30 +75,30 @@
           "id": "hall-bottle",
           "text": "CNOTTA 1공장 · BOTTLE",
           "bounds": [
-            243.26171875,
-            396.14794921875,
-            445.27734375,
-            431.14794921875
+            243.26177978515625,
+            396.1479797363281,
+            445.27740478515625,
+            431.1479797363281
           ]
         },
         {
           "id": "hall-screw",
           "text": "CNOTTA 2공장 · SCREW",
           "bounds": [
-            618.2644653320312,
-            431.3912048339844,
-            817.1238403320312,
-            466.3912048339844
+            618.2645263671875,
+            431.3912353515625,
+            817.1239013671875,
+            466.3912353515625
           ]
         },
         {
           "id": "hall-carpet",
           "text": "CNOTTA 3공장 · CARPET",
           "bounds": [
-            988.9468994140625,
-            466.63446044921875,
-            1193.2906494140625,
-            501.63446044921875
+            988.947021484375,
+            466.6344909667969,
+            1193.290771484375,
+            501.6344909667969
           ]
         }
       ]
@@ -140,7 +140,7 @@
     },
     "primary_area": {
       "pass": true,
-      "fraction": 0.0018472222222222223,
+      "fraction": 0.001845679012345679,
       "limit": 0.15,
       "method": "HSV hue .62–.73, saturation >.3, value >.4; full screenshot"
     },
@@ -153,8 +153,8 @@
     },
     "motion": {
       "pass": true,
-      "playing_time": 1802.665,
-      "single_clock": false
+      "playing_time": 1805.833,
+      "single_clock": true
     },
     "console": {
       "pass": true,
@@ -212,7 +212,7 @@
         },
         {
           "site": "hall-carpet",
-          "available": 2,
+          "available": 3,
           "input_sequences_equal": true,
           "ng": [
             {
@@ -224,26 +224,29 @@
               "run_id": "64d67b7ebd198bd6",
               "raw": 690,
               "screen": 690
+            },
+            {
+              "run_id": "13ce1b557a986bc4",
+              "raw": 720,
+              "screen": 720
             }
           ],
-          "max_born_delta_seconds": 0.001704566995613277
+          "max_born_delta_seconds": 0.002719837000768166
         }
       ],
       "note": "Recorded birth timestamps are preserved; only ID/image order is required to match."
     },
     "nine_lanes": {
-      "pass": false,
-      "ready": 8,
+      "pass": true,
+      "ready": 9,
       "required": 9,
-      "missing": [
-        "hall-carpet:random_same_k"
-      ]
+      "missing": []
     }
   },
-  "at": "2026-10-13T04:15:16.750917+00:00",
-  "status": "pending_data",
+  "at": "2026-10-13T05:10:49.472903+00:00",
+  "status": "complete_cpu",
   "actual_gpu": "미확인",
-  "next": "L2",
+  "next": "G1",
   "screenshots": [
     "docs/autopilot/local/m7-campus.png",
     "docs/autopilot/local/m7-hall-bottle.png",

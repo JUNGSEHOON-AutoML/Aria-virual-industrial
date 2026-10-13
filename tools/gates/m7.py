@@ -48,5 +48,5 @@ def main():
  checks['available_run_comparison']={'pass':all(s['input_sequences_equal'] and all(n['raw']==n['screen'] for n in s['ng']) for s in raw),'sites':raw,'note':'Recorded birth timestamps are preserved; only ID/image order is required to match.'}
  scene=emit('m7-scene',checks,renderer=evidence['renderer'],actual_gpu='미확인')
  all_checks={**checks,'nine_lanes':{'pass':len(ready)==9,'ready':len(ready),'required':9,'missing':[s['site']+':'+s['selector'] for s in snapshots if not s.get('run_id')]}}
- emit('m7',all_checks,status='complete_cpu' if scene['pass'] and len(ready)==9 else 'pending_data' if scene['pass'] else 'failed',actual_gpu='미확인',next='L2',screenshots=['docs/autopilot/local/m7-campus.png','docs/autopilot/local/m7-hall-bottle.png','docs/autopilot/local/m7-hall-screw.png'])
+ emit('m7',all_checks,status='complete_cpu' if scene['pass'] and len(ready)==9 else 'pending_data' if scene['pass'] else 'failed',actual_gpu='미확인',next='G1',screenshots=['docs/autopilot/local/m7-campus.png','docs/autopilot/local/m7-hall-bottle.png','docs/autopilot/local/m7-hall-screw.png'])
 if __name__=='__main__':main()

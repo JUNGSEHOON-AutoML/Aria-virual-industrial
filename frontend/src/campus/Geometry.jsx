@@ -5,6 +5,7 @@ import * as THREE from 'three'
 import {mergeGeometries} from 'three/examples/jsm/utils/BufferGeometryUtils.js'
 import {SVGLoader} from 'three/examples/jsm/loaders/SVGLoader.js'
 import T from '../brand/cnotta.tokens.json'
+import {allowed} from '../motion/registry'
 import {BRAND_ASSETS} from '../brand/identity'
 import {Site} from '../cnotta/Site'
 import {layout,hallSize,laneZ,seededDecorations} from './layout'
@@ -35,7 +36,7 @@ export function Logo({width=10,name='roof-wordmark',...props}){
 function Roof({site,focused,onEnter}){
  const ref=useRef(),fade=useRef(1),{invalidate}=useThree();const {width,depth}=hallSize(site)
  useEffect(()=>{ref.current.userData.opacity=fade.current;invalidate()},[focused,invalidate])
- useFrame((_,dt)=>{const target=focused?0:1;if(Math.abs(fade.current-target)<.001)return;fade.current=THREE.MathUtils.clamp(fade.current+(target?1:-1)*dt/.8,0,1);ref.current.visible=fade.current>0;ref.current.userData.opacity=fade.current;ref.current.traverse(o=>{if(o.material){o.material.transparent=true;o.material.opacity=fade.current;o.material.depthWrite=fade.current>.99}});invalidate()})
+ useFrame((_,dt)=>{if(!allowed('view.roof_fade'))return;const target=focused?0:1;if(Math.abs(fade.current-target)<.001)return;fade.current=THREE.MathUtils.clamp(fade.current+(target?1:-1)*dt/.8,0,1);ref.current.visible=fade.current>0;ref.current.userData.opacity=fade.current;ref.current.traverse(o=>{if(o.material){o.material.transparent=true;o.material.opacity=fade.current;o.material.depthWrite=fade.current>.99}});invalidate()})
  return <group ref={ref} name={'roof-'+site.id} position={[0,layout.design.roof_height,0]} onClick={e=>{e.stopPropagation();onEnter(site.id)}}>
   <Boxes color={T.floor} items={[[[0,-1.2,-depth/2],[width,2.4,.3]],[[0,-1.4,depth/2],[width,2.8,.3]],[[-width/2,-1.2,0],[.3,2.4,depth]],[[width/2,-1.2,0],[.3,2.4,depth]]]}/>
   <Boxes color={T.brand['primary-200']} items={[-.33,0,.33].map(x=>[[width*x,-.95,depth/2+.16],[6,.65,.04]])}/>
