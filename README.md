@@ -1,3 +1,9 @@
+# ARIA 디지털 트윈 연구 실행
+
+현재 연구 실행 기준은 [재설정 명세 v3](docs/specs/ARIA_DT_Reset_BuildSpec_v3.md)입니다. 정책 A만 DES로 실행하고, 정책 B·재검사 변형은 저장된 A 원자료에서 사후 계산합니다. 불량률 5% 복원추출과 1,000개당 재검사 지표를 사용합니다.
+
+[디렉터리 구조·재현 명령·검증 결과](docs/DT_RESET_REPORT.md)를 먼저 확인하세요. 본 실행은 사용자 확인 대기 상태입니다. 아래 소개와 화면 기록은 기존 기능의 역사 자료이며 이번 작업에서 화면을 변경하지 않았습니다.
+
 # ARIA — Autonomous Industrial Simulation & AI Agent
 
 ![ARIA 관절 구동·고장·수리·검사 — 실제 브라우저 캡처](docs/images/aria_robot_workflow.gif)

@@ -1,4 +1,4 @@
-"""Approved 1800 main + 540 one-factor sensitivity DES runs, one class only."""
+"""Policy-A trial implementation. Legacy A/B CLI archived; execution is not authorized."""
 import argparse,csv,gzip,hashlib,json,os,platform,shutil,time,sys
 from pathlib import Path
 from concurrent.futures import ProcessPoolExecutor
@@ -19,22 +19,17 @@ def csvwrite(p,rows):
     opener=gzip.open(p,'wt',compresslevel=6) if str(p).endswith('.gz') else Path(p).open('w')
     with opener as f:w=csv.DictWriter(f,fieldnames=list(rows[0]));w.writeheader();w.writerows(rows)
 
-def configurations():
-    configs=[]
-    for selector in ['coreset','ccifps','random_same_k']:
-        for cell,speed in [('robot',.5),('inline',.25),('inline',.5),('inline',.75),('inline',1.)]:
-            for mode in ['profile','constant']:
-                for policy in ['A','B']:
-                    for seed in range(30):configs.append(dict(selector=selector,cell=cell,speed=speed,latency_mode=mode,policy=policy,seed=seed,sensitivity=1.,specificity=1.,reinspection_s=30.,scope='main'))
-        for changed,value in [('reinspection_s',10.),('reinspection_s',60.),('sensitivity',.98),('sensitivity',.95),('specificity',.98),('specificity',.95)]:
-            for seed in range(30):
-                c=dict(selector=selector,cell='inline',speed=.5,latency_mode='profile',policy='B',seed=seed,sensitivity=1.,specificity=1.,reinspection_s=30.,scope='sensitivity');c[changed]=value;configs.append(c)
-    for c in configs:c['defect_rate']=0.05
-    assert len(configs)==2340
-    return configs
+def configurations(class_name='bottle'):
+    """Current single-class baseline: policy A only (900 conditions)."""
+    from aria.simulation.dt.plan import baseline
+    return baseline(class_name)
+
 
 def trial(job):
-    c,base,out,profile_root,source_hash=job;base=Path(base);out=Path(out)
+    c,base,out,profile_root,source_hash=job
+    if c['policy'] != 'A':
+        raise ValueError('Policy B is posthoc only; new B DES execution is disabled')
+    base=Path(base);out=Path(out)
     identity=hashlib.sha256(json.dumps(c,sort_keys=True).encode()).hexdigest()[:16];target=out/'runs'/identity;target.mkdir(parents=True,exist_ok=True)
     pred=base/c['selector']/'predictions.csv';profile=base/c['selector']/'latency_profile_faiss_gpu.json';gt=base/'gt_labels.csv'
     inputs={str(x):sha(x) for x in [pred,profile,gt,ROOT/'configs/line_profile.yaml']}
@@ -83,32 +78,6 @@ def trial(job):
     return result
 
 def main():
-    p=argparse.ArgumentParser();p.add_argument('--p1',type=Path,required=True);p.add_argument('--out',type=Path,required=True);p.add_argument('--workers',type=int,default=2);p.add_argument('--estimate',action='store_true');a=p.parse_args()
-    if not 1<=a.workers<=2:raise ValueError('At most two independent CPU workers')
-    if not a.estimate:raise ValueError('Full execution suspended pending user approval of revised P3 pilot')
-    a.out.mkdir(parents=True,exist_ok=True)
-    # Verify all saved P1 artifacts, never treat file existence as completion.
-    complete=json.loads((a.p1/'complete.json').read_text())
-    for name,h in complete['files'].items():
-        if sha(a.p1/name)!=h:raise ValueError('P1 artifact changed: '+name)
-    profile_root=Path('config/latency_profiles')/a.out.name; (ROOT/profile_root).mkdir(parents=True,exist_ok=True)
-    for selector in ['coreset','ccifps','random_same_k']:
-        profile=a.p1/selector/'latency_profile_faiss_gpu.json';dest=ROOT/profile_root/(selector+'.json')
-        if dest.exists() and sha(dest)!=sha(profile):raise ValueError('Existing profile differs')
-        if not dest.exists():shutil.copyfile(profile,dest)
-        for f in (a.p1/selector).glob('search_regression*.json'):
-            if not json.loads(f.read_text())['passed']:raise ValueError('P1 parity not passed')
-    source_files=list((ROOT/'aria/simulation/dt').glob('*.py'))+[ROOT/'tools/benchmark_dt.py',ROOT/'aria/simulation/des/engine.py',ROOT/'aria/simulation/des/latency.py',ROOT/'aria/simulation/des/model.py']
-    hashes={str(p.relative_to(ROOT)):sha(p) for p in source_files};source_hash=hashlib.sha256(json.dumps(hashes,sort_keys=True).encode()).hexdigest()
-    configs=configurations()
-    if a.estimate:
-        configs=[dict(selector='ccifps',cell='inline',speed=.5,latency_mode='profile',policy=policy,seed=0,sensitivity=1.,specificity=1.,reinspection_s=30.,scope='estimate') for policy in ['A','B']]
-    write(a.out/'protocol.json',dict(sim=1,class_name=a.p1.name,conditions=len(configs),main=1800,sensitivity=540,workers=a.workers,warmup_seconds=600,horizon_seconds=3600,source_hashes=hashes,source_hash=source_hash,search_backend='faiss_gpu_exact_cosine',cost_ratios='postprocess 5/20/100',p1_complete_sha256=sha(a.p1/'complete.json'),environment=dict(python=sys.version,platform=platform.platform())))
-    start=time.perf_counter();jobs=[(c,str(a.p1.resolve()),str(a.out.resolve()),str(profile_root),source_hash) for c in configs];results=[]
-    with ProcessPoolExecutor(max_workers=a.workers,mp_context=multiprocessing.get_context('spawn')) as pool:
-        for r in pool.map(trial,jobs,chunksize=1):
-            results.append(r)
-            if len(results)%30==0 or len(results)==len(configs):
-                csvwrite(a.out/'scenario_results.csv',results);print(f'{len(results)}/{len(configs)} runs complete; wall={time.perf_counter()-start:.1f}s',flush=True)
-    write(a.out/'completion.json',dict(completed=len(results),expected=len(configs),wall_seconds=time.perf_counter()-start,total_worker_seconds=sum(r['wall_seconds'] for r in results),events_bytes=sum(r['events_bytes'] for r in results)))
+    raise SystemExit('Legacy benchmark CLI is INVALID for the current plan. Use tools/run_dt_matrix.py to prepare the policy-A plan; full execution awaits user confirmation.')
+
 if __name__=='__main__':main()

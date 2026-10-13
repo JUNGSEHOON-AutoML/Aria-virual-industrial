@@ -1,7 +1,7 @@
 """Validate posthoc B against 15 saved actual-B runs; do not launch any DES."""
 import argparse,csv,gzip,hashlib,json,sys,time
 from pathlib import Path
-from dt_posthoc_reinspection import reconstruct_b
+from aria.simulation.dt.posthoc import reconstruct_b
 ROOT=Path(__file__).resolve().parents[1]
 NUMERIC_PART_FIELDS=['born','inspection_time','reinspection_time','exit_time','mainline_exit_time','reinspection_queue_enter','reinspection_start']
 def readparts(p):
@@ -18,7 +18,7 @@ def sha(p):
 def csvwrite(p,rows):
     with p.open('w') as f:w=csv.DictWriter(f,fieldnames=list(rows[0]));w.writeheader();w.writerows(rows)
 def main():
-    p=argparse.ArgumentParser();p.add_argument('--pilot',type=Path,required=True);p.add_argument('--p1',type=Path,required=True);p.add_argument('--out',type=Path,required=True);a=p.parse_args();a.out.mkdir(parents=True,exist_ok=True)
+    p=argparse.ArgumentParser();p.add_argument('--pilot',type=Path,required=True);p.add_argument('--p1',type=Path,required=True);p.add_argument('--out',type=Path,required=True);a=p.parse_args();a.out.mkdir(parents=True,exist_ok=False)
     protocol=json.loads((a.pilot/'protocol.json').read_text());pairs={}
     for c in protocol['plan']:
         rid=hashlib.sha256(json.dumps(c,sort_keys=True).encode()).hexdigest()[:16];folder=a.pilot/'runs'/rid
@@ -30,9 +30,13 @@ def main():
         for folder in (af,bf):
             complete=json.loads((folder/'complete.json').read_text())
             for name in ('parts.csv.gz','result.json','resource_metrics.json','source_schedule.json'):assert sha(folder/name)==complete['hashes'][name]
+            gt=(a.p1/c['class_name']/'gt_labels.csv').resolve()
+            assert complete['lock']['inputs'][str(gt)]==sha(gt),'GT input changed'
+        assert sha(af/'source_schedule.json')==sha(bf/'source_schedule.json'),'A/B source mismatch'
         t=time.perf_counter();parts=readparts(af/'parts.csv.gz');read_s=time.perf_counter()-t
         t=time.perf_counter();bp,metrics,norm,events=reconstruct_b(parts,a.p1/c['class_name']/'gt_labels.csv',seed=c['seed']);compute_s=time.perf_counter()-t
         actual=json.loads((bf/'result.json').read_text());saved=readparts(bf/'parts.csv.gz');byid={p['part_id']:p for p in saved};identity=dict(zip(('class_name','selector','cell','speed','latency_mode','seed'),key))
+        assert len(bp)==len(saved)==len(byid) and {p['part_id'] for p in bp}==set(byid),'Part inventory mismatch'
         bad=[];max_part_time_error=0.
         for p in bp:
             q=byid[p['part_id']]

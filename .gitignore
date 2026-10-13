@@ -85,3 +85,6 @@ files (1)/
 # 런타임 시계열 DB
 *.db
 *.db-journal
+
+# Large local experiment evidence is inventoried in docs/provenance, not committed.
+docs/validation/

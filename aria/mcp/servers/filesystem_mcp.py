@@ -19,7 +19,7 @@ from pathlib import Path
 from mcp.server.fastmcp import FastMCP
 
 # ── 샌드박스 루트 (프로젝트 디렉토리로 제한) ──────────────────
-BASE_DIR = Path(__file__).parent.parent.resolve()
+BASE_DIR = Path(__file__).resolve().parents[3]
 SANDBOX_ROOTS = [
     BASE_DIR / "uploads",
     BASE_DIR / "outputs",

@@ -1,0 +1,40 @@
+보존 커밋 0e5420c 이후 변경. 이 통계 파일 자체는 제외.
+
+ .gitignore                                         |   3 +
+ README.md                                          |   6 +
+ .../ARIA_DT_Reset_BuildSpec_v3_initial.md          |  94 +++++++
+ archive/dt_legacy_20261013/INVALID.md              |   7 +
+ archive/dt_legacy_20261013/benchmark_dt.py         | 114 +++++++++
+ .../dt_legacy_20261013/dt_posthoc_reinspection.py  |  37 +++
+ archive/dt_legacy_20261013/finish_dt_matrix.py     |  22 ++
+ archive/dt_legacy_20261013/plan_dt_policy_a.py     |  50 ++++
+ archive/dt_legacy_20261013/plan_dt_policy_a_cap.py |  51 ++++
+ archive/dt_legacy_20261013/report_dt_status.py     |  22 ++
+ archive/dt_legacy_20261013/run_dt_matrix.py        |  70 +++++
+ archive/dt_legacy_20261013/summarize_dt.py         |  72 ++++++
+ aria/mcp/servers/filesystem_mcp.py                 |   2 +-
+ aria/simulation/dt/plan.py                         |  49 ++++
+ aria/simulation/dt/posthoc.py                      |  37 +++
+ docs/DT_RESET_REPORT.md                            | 119 +++++++++
+ .../provenance/dt-wip-20261013/backend-summary.txt |   5 +
+ .../dt-wip-20261013/constant-regression.json       |  47 ++++
+ docs/provenance/dt-wip-20261013/golden-trace.txt   |   2 +
+ docs/provenance/dt-wip-20261013/posthoc-gate.json  | 267 +++++++++++++++++++
+ .../dt-wip-20261013/validation_evidence.json       | 282 +++++++++++++++++++++
+ docs/specs/ARIA_DT_Cosine_Execution_20261012.md    |   2 +
+ docs/specs/ARIA_DT_P2_LatencyCoupling_BuildSpec.md |   2 +
+ docs/specs/ARIA_DT_P3_QualityCoupling_BuildSpec.md |   2 +
+ docs/specs/ARIA_DT_Reset_BuildSpec_v3.md           | 108 ++++----
+ tests/test_dt_plan.py                              |  55 ++++
+ tests/test_filesystem_mcp.py                       |  20 ++
+ tools/benchmark_dt.py                              |  55 +---
+ tools/dt_posthoc_reinspection.py                   |  39 +--
+ tools/finish_dt_matrix.py                          |  27 +-
+ tools/plan_dt_policy_a.py                          |  55 +---
+ tools/plan_dt_policy_a_cap.py                      |  56 +---
+ tools/postprocess_dt.py                            |  73 ++++++
+ tools/report_dt_status.py                          |  27 +-
+ tools/run_dt_matrix.py                             | 158 +++++++-----
+ tools/summarize_dt.py                              |  77 +-----
+ tools/verify_dt_posthoc.py                         |   8 +-
+ 37 files changed, 1699 insertions(+), 423 deletions(-)
