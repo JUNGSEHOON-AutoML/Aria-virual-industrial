@@ -12,8 +12,10 @@ for _ in range(2):
  with socket.socket() as s:s.bind(('127.0.0.1',0));ports.append(s.getsockname()[1])
 env.update(CNOTTA_PYTHON=sys.executable,CNOTTA_NODE=os.environ.get('CNOTTA_NODE',str(Path(sys.executable).parent/'node')),CNOTTA_PILOT=str(ROOT/'docs/validation/aria_dt_20261013_03/des_pilot30'),CNOTTA_P1=str(ROOT/'docs/validation/aria_dt_20261012_02/p1_verified'),CNOTTA_API_PORT=str(ports[0]),CNOTTA_WEB_PORT=str(ports[1]))
 r=subprocess.run(['bash','scripts/demo.sh','--check'],cwd=clone,env=env,text=True,capture_output=True,timeout=180)
-(out/'m6-fresh-clone.txt').write_text(r.stdout+r.stderr)
-checks['fresh_clone']={'pass':r.returncode==0,'clone':str(clone),'returncode':r.returncode,'output':r.stdout+r.stderr,'dependencies':'existing isolated Python and linked local node_modules; no network','data':'original verified pilot/P1 read-only paths'}
+first=r
+if r.returncode==0:r=subprocess.run(['bash','scripts/demo.sh','--check'],cwd=clone,env=env,text=True,capture_output=True,timeout=180)
+(out/'m6-fresh-clone.txt').write_text(first.stdout+first.stderr+r.stdout+r.stderr)
+checks['fresh_clone']={'pass':r.returncode==0,'clone':str(clone),'returncode':r.returncode,'immediate_restart_pass':first.returncode==r.returncode==0,'output':r.stdout+r.stderr,'dependencies':'existing isolated Python and linked local node_modules; no network','data':'original verified pilot/P1 read-only paths'}
 tests=(out/'m6-tests.txt').read_text();golden=(out/'m6-golden.txt').read_text();build=(out/'m6-build.txt').read_text();recording=json.loads((out/'recording.json').read_text())
 checks['backend_tests']={'pass':'163 passed' in tests and 'failed' not in tests,'summary':tests.splitlines()[-1]}
 checks['golden']={'pass':'diff 0' in golden,'output':golden.strip()}

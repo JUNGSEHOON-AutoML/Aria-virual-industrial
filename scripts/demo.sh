@@ -18,7 +18,8 @@ mkdir -p "$LOG_DIR"
 "$PYTHON_BIN" - <<'PY'
 import os,socket
 for name in ('CNOTTA_API_PORT','CNOTTA_WEB_PORT'):
- with socket.socket() as s:s.bind(('127.0.0.1',int(os.environ[name])))
+ with socket.socket() as s:
+  s.setsockopt(socket.SOL_SOCKET,socket.SO_REUSEADDR,1);s.bind(('127.0.0.1',int(os.environ[name])))
 PY
 api_pid='';web_pid=''
 cleanup(){ for pid in "$web_pid" "$api_pid"; do if [[ -n "$pid" ]]; then kill "$pid" 2>/dev/null || true; wait "$pid" 2>/dev/null || true; fi; done; }
