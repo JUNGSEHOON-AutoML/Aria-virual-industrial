@@ -1,0 +1,28 @@
+{
+  "passed": true,
+  "date": "2026-10-13",
+  "branch": "dt-cnotta",
+  "checks": {
+    "backend_passed": 223,
+    "backend_skipped": 3,
+    "golden_diff": 0,
+    "original_robot_and_tests_unchanged": true,
+    "protected_files": 27,
+    "cpu_build": true,
+    "browser_errors": 0,
+    "http_errors": 0,
+    "actual_gpu_verified": false
+  },
+  "evidence_report": "docs/autopilot/STATIONS_REPORT.md",
+  "renderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+  "milestone": "L2 stations revalidation",
+  "gate": {
+    "actual_cpu_inspections": 1,
+    "sim_time": 19.232012081192767,
+    "paused_parts_stable": true,
+    "fixed_camera_no_attached_inspection_parts": true,
+    "legacy_cad_mounted": false,
+    "original_and_heatmap_http_ok": true
+  },
+  "scope": "Existing BOTTLE CCIFPS CPU Live; other eight lanes remain verified saved replay. Full old L2 tests unchanged."
+}
