@@ -1,0 +1,15 @@
+{
+  "python": "3.10.20",
+  "environment": "venv/omniverse",
+  "isolated": true,
+  "system_site_packages": false,
+  "package": "usd-core",
+  "version": "26.8",
+  "license_declared": "LicenseRef-TOST-1.0",
+  "license_sha256": "4d6e8e3a9bd0104e10c48e3bc6af2f0976448a70a377d20cef674740f96f4452",
+  "distribution": "PyPI binary wheel",
+  "wheel": "usd_core-26.8-cp310-none-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl",
+  "source": "https://pypi.org/project/usd-core/26.8/",
+  "gpu_context_created": false,
+  "kit_installed": false
+}

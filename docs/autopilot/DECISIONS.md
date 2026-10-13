@@ -71,3 +71,7 @@
 
 2026-10-13 | O0 | 조회 실패/미검증 드라이버는 차단, 컴퓨트뿐 아니라 그래픽 프로세스도 있는 GPU는 미예약; RAM은 MemAvailable 16 GiB, 디스크는 250 GB 기준 | 공용 GPU 비개입 및 단위 명시; O0 실패는 O2/O3만 차단 | 관리자 할당 후 읽기 전용 재점검
 2026-10-13 | O1 | 프로젝트 venv/omniverse에만 usd-core 26.8 설치, 별도 CPU 정적 export 사용 | 기존 실험 Python·GPU·시계에 영향 없이 13.0의 독립 O1 실행 | 격리 환경/도구를 archive로 이동해 비활성화
+2026-10-13 | O1 | 웹 LaneEquipment를 동일 좌표의 Lane/Booth/Diverter/Reinspection 그룹으로 분리하고 CPU 정적 진입점에서 동일 prefab·SVG 메시 추출 | 웹과 USD에 좌표를 이중 작성하지 않고 USD 의미 계층 확보; 117 draw calls로 300 한도 이내 | 별도 변경 커밋으로 그룹 구조 복원; 공유 스냅샷/게이트 재실행
+2026-10-13 | O1 | 기존 STEP/GLB 해시·치수 검증 후 USD 자산 참조; 기본 web 표현과 native CAD envelope 변형 분리, CAD 배치는 assumed | USD는 STEP을 직접 읽지 못하며 실제 GLB는 이미 m 단위; 웹 개략 형상에 맞춰 CAD를 찌그러뜨리지 않음 | representation 선택 변경 또는 검증된 기계 조립으로 교체
+2026-10-13 | O1 | usd-core wheel에 upstream CLI가 없어 공식 UsdValidation 28종을 호출하는 프로젝트 usdchecker 어댑터 사용 | 기본 장면 및 CAD 변형의 실제 공식 검증을 유지하며 실행 방식 공개 | upstream 실행 파일이 포함된 승인된 격리 배포본으로 교체
+2026-10-13 | O1 | M0609는 기존 캠퍼스 자리 표시 형상과 명시 메타데이터로 export; DOM·Live 동작 제외 | 공식 URDF→USD 변환 도구 미확인, O2 미승인/환경 미달 | O2 조건 통과 후 검증된 converter와 기존 이벤트 연결

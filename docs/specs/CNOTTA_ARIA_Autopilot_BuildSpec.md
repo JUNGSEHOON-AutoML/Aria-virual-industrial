@@ -650,3 +650,5 @@ O2 이후. 조명·카메라 각도·배경을 바꾼 합성 이미지로 CCIFPS
 - O0 실패는 O2/O3를 막으며, 13.0에 명시된 독립 CPU O1은 계속한다. 더 높은 드라이버 버전은 미검증이며 자동 통과하지 않는다. GPU 조회 실패도 UNKNOWN으로 차단한다. 유휴 GPU 관측은 실험 종료나 사용 승인이 아니다.
 - 2026-10-13 [NVIDIA 기술 요구사항](https://docs.omniverse.nvidia.com/dev-guide/latest/common/technical-requirements.html)에서 Ampere GeForce 드라이버 목록 및 Kit OS·최소 사양을 확인했다. 첨부의 무료/상용 라이선스 주장은 원문 출처로 보존한 것으로, 이번 작업에서 검증·승인한 라이선스 판단은 아니다. Kit/Replicator 다운로드는 하지 않는다.
 - O1 설치 위치는 프로젝트 `venv/omniverse/`이며 기존 Python 환경과 시스템은 수정하지 않는다. 웹과 동일한 정적 prefab의 실제 메시·변환·SVG 돌출을 CPU로 추출한다. Replay/Live 시계·부품·DOM 패널은 정적 USD 범위 밖이다.
+- STEP은 별도 형식 플러그인 없이 USD 참조로 직접 읽을 수 없으므로 기존 `dims.json`의 STEP·GLB 해시를 검증하고 해당 GLB를 상대 경로 USD 자산으로 변환한다. 기본 `web` 표현은 공유 prefab과 동일하며, `cad_envelope` 변형은 원래 CAD 치수의 설계 외피를 웹 컴포넌트 XZ 중심/바닥에 두는 assumed 표현이다. 완성된 기계 조립으로 해석하지 않는다. 바운딩박스 1cm 게이트는 기본 web 표현에 적용하고 CAD 치수·참조·변형은 별도 검증한다.
+- PyPI `usd-core 26.8`에는 upstream `usdchecker` 실행 파일이 없다. 프로젝트 CLI `tools/omniverse/usdchecker.py`에서 OpenUSD 공식 `UsdValidation` 28종을 모두 호출해 기본 장면과 모든 CAD 변형을 검증한다. 독자 규칙으로 공식 검증기를 대체하지 않으며, 실행 방식은 게이트 JSON에 명시한다.

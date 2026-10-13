@@ -45,3 +45,5 @@ L2: `/cnotta.html?mode=live`에 실제 BOTTLE CCIFPS CPU 검사·M0609 공식 CA
 L2 접속 후속: gates/l2-access.json — Live→Replay 9레인 로드/재생→Live 전환·서버 배속/선택 표시 일치·콘솔/HTTP 오류 0. 최종 Live 시작 동작으로 서버를 가동해 두었다. 저장 원기록 최초 검증은 60초를 넘을 수 있으므로 완료 레인 로딩 표시를 보존하고 화면 검사 대기를 확장했다.
 
 Omniverse 독립 트랙: O0 읽기 전용 점검 완료, 환경 게이트 실패(`gates/o0.json`). 드라이버 550.54.14·Ubuntu 20.04·Kit 예정 경로 64.16 GB. GPU 4개에 기존 그래픽 프로세스가 있어 전용 유휴 GPU로 예약하지 않음. 관리자 요청서 생성; O2/O3 미착수. 웹 순서는 유지하고 O1 CPU USD 생성 진행.
+
+O1 완료: `exports/usd/cnotta_campus.usda` 생성, `gates/o1.json` 전부 통과. 사이트 5개(검사 홀 3개)·레인 9개·기본 메시 268개·SVG 돌출 지붕 로고 6개. 웹/USD 및 실제 대시보드/정적 원본 bbox 최대 차이 0m. 공식 UsdValidation 28종·기본/변형 55회·CAD 자산 3개 검증 통과. CPU 전용 도구 테스트 10개·웹 빌드 통과·브라우저 오류 0·117 draw calls. 실제 GPU 미확인. 백엔드·DES·평가기 변경 없음(기존 207 passed/3 skipped·골든 diff 0은 L2 기록, 이번 작업에서 재실행하지 않음). O2/O3는 O0 실패로 대기하며 웹 다음 단계는 기존대로 L3. 실행 명령과 범위는 `O1_REPORT.md` 및 `tools/omniverse/README.md`.

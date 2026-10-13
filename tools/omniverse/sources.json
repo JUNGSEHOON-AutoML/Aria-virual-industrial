@@ -1,0 +1,15 @@
+[
+  "frontend/src/campus/campus.layout.json",
+  "frontend/src/campus/layout.js",
+  "frontend/src/campus/Geometry.jsx",
+  "frontend/src/cnotta/Site.jsx",
+  "frontend/src/brand/cnotta.tokens.json",
+  "frontend/public/brand/identity.json",
+  "frontend/public/brand/cnotta-mark.svg",
+  "frontend/public/brand/cnotta-wordmark.svg",
+  "frontend/src/omniverse/serialize.js",
+  "frontend/src/omniverse/export.jsx",
+  "assets/cad/conveyor/dt_v1/dims.json",
+  "assets/cad/inspection_booth/dt_v1/dims.json",
+  "assets/cad/diverter/dt_v1/dims.json"
+]

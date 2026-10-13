@@ -1,0 +1,765 @@
+{
+  "schema": 1,
+  "scope": "static campus, roof closed, highest LOD; no DOM, lights, process parts or animation",
+  "sources": {
+    "frontend/src/campus/campus.layout.json": "d8b9da9a70919335e4f6b4245dc0ed72dbc6e9a2d4ff801b27dfd1302ce37187",
+    "frontend/src/campus/layout.js": "2b6f907a7b7ec048081a00ac160d6d82e8b67a001b1a5dfc00b3f513033a5332",
+    "frontend/src/campus/Geometry.jsx": "41296edd479005d4889da0dfe96baf0288281d35984ebff28707f8bd7cbb8198",
+    "frontend/src/cnotta/Site.jsx": "0f9b0e64b9e197655ee33174d5fe00c1575d656072e12a822312b8986116fb55",
+    "frontend/src/brand/cnotta.tokens.json": "ebe2a57435c614d19b4d143a3f9f130a0007d5b86b3c21d1dcd95f23404676e8",
+    "frontend/public/brand/identity.json": "e78f24721e7f0777021a6633b73c54cf3a1ccb7dc1c5a918fb11883c827fe0a7",
+    "frontend/public/brand/cnotta-mark.svg": "19e68a5f954c831de1756d003a9535eb184fd706470e4e83e42ebf8da630b915",
+    "frontend/public/brand/cnotta-wordmark.svg": "3a331ddd262855db1670e9b1dbf99138ea397dc44bc1f2247a3c430d869d5385",
+    "frontend/src/omniverse/serialize.js": "6bac8c839cd6389628fe3fcb2c93bb36b70c6b00a3c01ed7b0147c47247b8dce",
+    "frontend/src/omniverse/export.jsx": "6343fdafe33583e42e426fc7fe42e0c17323425cf36b6e90a77883b290616061",
+    "assets/cad/conveyor/dt_v1/dims.json": "7561e4eefe43ae8949e624c1324e1365b0fa698ec9a0f3e820b558de8a5ba372",
+    "assets/cad/inspection_booth/dt_v1/dims.json": "a76fe900819274387029cb51b8a3fb06fa6a1b091888bb59d0a6d1f677abe381",
+    "assets/cad/diverter/dt_v1/dims.json": "c9573427386a7eb94c67af2f3ca97fbc73161c4ebfa9d7aebb157bb7ada6d4aa"
+  },
+  "snapshot_sha256": "3cb73fecce90f68784aabc55d2f528c470ce02f47352a35104a0d4f237668a42",
+  "snapshot_bounds": {
+    "/World/Campus/Hall_bottle": [
+      [
+        -16.190000534057617,
+        -4.7683716530855236e-08,
+        -14.989999771118164
+      ],
+      [
+        16.190000534057617,
+        5.449999976158142,
+        15.050000190734863
+      ]
+    ],
+    "/World/Campus/Hall_bottle/Lane_coreset": [
+      [
+        -12,
+        -1.1920929132713809e-08,
+        -8.974999976158141
+      ],
+      [
+        15.75,
+        1.899999976158142,
+        -3.95
+      ]
+    ],
+    "/World/Campus/Hall_bottle/Lane_coreset/MainConveyor": [
+      [
+        -12,
+        -1.1920929132713809e-08,
+        -7.724999976158142
+      ],
+      [
+        2,
+        0.7425000071525574,
+        -6.675000023841858
+      ]
+    ],
+    "/World/Campus/Hall_bottle/Lane_coreset/Booth": [
+      [
+        -4.199999809265137,
+        0.5,
+        -7.940000009536743
+      ],
+      [
+        -3,
+        1.5800000429153442,
+        -6.7
+      ]
+    ],
+    "/World/Campus/Hall_bottle/Lane_coreset/Diverter": [
+      [
+        2.5,
+        0.5600000023841858,
+        -8.974999976158141
+      ],
+      [
+        9.5,
+        0.7425000071525574,
+        -5.425000023841858
+      ]
+    ],
+    "/World/Campus/Hall_bottle/Lane_coreset/Reinspection": [
+      [
+        9.199999809265137,
+        1.1920929132713809e-08,
+        -7.249999974668026
+      ],
+      [
+        15.75,
+        1.899999976158142,
+        -3.95
+      ]
+    ],
+    "/World/Campus/Hall_bottle/Lane_ccifps": [
+      [
+        -12,
+        -1.1920929132713809e-08,
+        -1.774999976158142
+      ],
+      [
+        15.75,
+        1.899999976158142,
+        3.25
+      ]
+    ],
+    "/World/Campus/Hall_bottle/Lane_ccifps/MainConveyor": [
+      [
+        -12,
+        -1.1920929132713809e-08,
+        -0.5249999761581421
+      ],
+      [
+        2,
+        0.7425000071525574,
+        0.5249999761581421
+      ]
+    ],
+    "/World/Campus/Hall_bottle/Lane_ccifps/Booth": [
+      [
+        -4.199999809265137,
+        0.5,
+        -0.7400000095367432
+      ],
+      [
+        -3,
+        1.5800000429153442,
+        0.5
+      ]
+    ],
+    "/World/Campus/Hall_bottle/Lane_ccifps/Diverter": [
+      [
+        2.5,
+        0.5600000023841858,
+        -1.774999976158142
+      ],
+      [
+        9.5,
+        0.7425000071525574,
+        1.774999976158142
+      ]
+    ],
+    "/World/Campus/Hall_bottle/Lane_ccifps/Reinspection": [
+      [
+        9.199999809265137,
+        1.1920929132713809e-08,
+        -0.04999997466802597
+      ],
+      [
+        15.75,
+        1.899999976158142,
+        3.25
+      ]
+    ],
+    "/World/Campus/Hall_bottle/Lane_random_same_k": [
+      [
+        -12,
+        -1.1920929132713809e-08,
+        5.425000023841858
+      ],
+      [
+        15.75,
+        1.899999976158142,
+        10.45
+      ]
+    ],
+    "/World/Campus/Hall_bottle/Lane_random_same_k/MainConveyor": [
+      [
+        -12,
+        -1.1920929132713809e-08,
+        6.675000023841858
+      ],
+      [
+        2,
+        0.7425000071525574,
+        7.724999976158142
+      ]
+    ],
+    "/World/Campus/Hall_bottle/Lane_random_same_k/Booth": [
+      [
+        -4.199999809265137,
+        0.5,
+        6.459999990463257
+      ],
+      [
+        -3,
+        1.5800000429153442,
+        7.7
+      ]
+    ],
+    "/World/Campus/Hall_bottle/Lane_random_same_k/Diverter": [
+      [
+        2.5,
+        0.5600000023841858,
+        5.425000023841858
+      ],
+      [
+        9.5,
+        0.7425000071525574,
+        8.974999976158141
+      ]
+    ],
+    "/World/Campus/Hall_bottle/Lane_random_same_k/Reinspection": [
+      [
+        9.199999809265137,
+        1.1920929132713809e-08,
+        7.150000025331974
+      ],
+      [
+        15.75,
+        1.899999976158142,
+        10.45
+      ]
+    ],
+    "/World/Campus/Hall_bottle/Roof": [
+      [
+        -16.149999618530273,
+        2.0000000476837156,
+        -14.949999809265137
+      ],
+      [
+        16.149999618530273,
+        5.449999976158142,
+        14.979999542236328
+      ]
+    ],
+    "/World/Campus/Hall_screw": [
+      [
+        23.809999465942383,
+        -4.7683716530855236e-08,
+        -14.989999771118164
+      ],
+      [
+        56.19000053405762,
+        5.449999976158142,
+        15.050000190734863
+      ]
+    ],
+    "/World/Campus/Hall_screw/Lane_coreset": [
+      [
+        28,
+        -1.1920929132713809e-08,
+        -8.974999976158141
+      ],
+      [
+        55.75,
+        1.899999976158142,
+        -3.95
+      ]
+    ],
+    "/World/Campus/Hall_screw/Lane_coreset/MainConveyor": [
+      [
+        28,
+        -1.1920929132713809e-08,
+        -7.724999976158142
+      ],
+      [
+        42,
+        0.7425000071525574,
+        -6.675000023841858
+      ]
+    ],
+    "/World/Campus/Hall_screw/Lane_coreset/Booth": [
+      [
+        35.80000019073486,
+        0.5,
+        -7.940000009536743
+      ],
+      [
+        37,
+        1.5800000429153442,
+        -6.7
+      ]
+    ],
+    "/World/Campus/Hall_screw/Lane_coreset/Diverter": [
+      [
+        42.5,
+        0.5600000023841858,
+        -8.974999976158141
+      ],
+      [
+        49.5,
+        0.7425000071525574,
+        -5.425000023841858
+      ]
+    ],
+    "/World/Campus/Hall_screw/Lane_coreset/Reinspection": [
+      [
+        49.19999980926514,
+        1.1920929132713809e-08,
+        -7.249999974668026
+      ],
+      [
+        55.75,
+        1.899999976158142,
+        -3.95
+      ]
+    ],
+    "/World/Campus/Hall_screw/Lane_ccifps": [
+      [
+        28,
+        -1.1920929132713809e-08,
+        -1.774999976158142
+      ],
+      [
+        55.75,
+        1.899999976158142,
+        3.25
+      ]
+    ],
+    "/World/Campus/Hall_screw/Lane_ccifps/MainConveyor": [
+      [
+        28,
+        -1.1920929132713809e-08,
+        -0.5249999761581421
+      ],
+      [
+        42,
+        0.7425000071525574,
+        0.5249999761581421
+      ]
+    ],
+    "/World/Campus/Hall_screw/Lane_ccifps/Booth": [
+      [
+        35.80000019073486,
+        0.5,
+        -0.7400000095367432
+      ],
+      [
+        37,
+        1.5800000429153442,
+        0.5
+      ]
+    ],
+    "/World/Campus/Hall_screw/Lane_ccifps/Diverter": [
+      [
+        42.5,
+        0.5600000023841858,
+        -1.774999976158142
+      ],
+      [
+        49.5,
+        0.7425000071525574,
+        1.774999976158142
+      ]
+    ],
+    "/World/Campus/Hall_screw/Lane_ccifps/Reinspection": [
+      [
+        49.19999980926514,
+        1.1920929132713809e-08,
+        -0.04999997466802597
+      ],
+      [
+        55.75,
+        1.899999976158142,
+        3.25
+      ]
+    ],
+    "/World/Campus/Hall_screw/Lane_random_same_k": [
+      [
+        28,
+        -1.1920929132713809e-08,
+        5.425000023841858
+      ],
+      [
+        55.75,
+        1.899999976158142,
+        10.45
+      ]
+    ],
+    "/World/Campus/Hall_screw/Lane_random_same_k/MainConveyor": [
+      [
+        28,
+        -1.1920929132713809e-08,
+        6.675000023841858
+      ],
+      [
+        42,
+        0.7425000071525574,
+        7.724999976158142
+      ]
+    ],
+    "/World/Campus/Hall_screw/Lane_random_same_k/Booth": [
+      [
+        35.80000019073486,
+        0.5,
+        6.459999990463257
+      ],
+      [
+        37,
+        1.5800000429153442,
+        7.7
+      ]
+    ],
+    "/World/Campus/Hall_screw/Lane_random_same_k/Diverter": [
+      [
+        42.5,
+        0.5600000023841858,
+        5.425000023841858
+      ],
+      [
+        49.5,
+        0.7425000071525574,
+        8.974999976158141
+      ]
+    ],
+    "/World/Campus/Hall_screw/Lane_random_same_k/Reinspection": [
+      [
+        49.19999980926514,
+        1.1920929132713809e-08,
+        7.150000025331974
+      ],
+      [
+        55.75,
+        1.899999976158142,
+        10.45
+      ]
+    ],
+    "/World/Campus/Hall_screw/Roof": [
+      [
+        23.850000381469727,
+        2.0000000476837156,
+        -14.949999809265137
+      ],
+      [
+        56.14999961853027,
+        5.449999976158142,
+        14.979999542236328
+      ]
+    ],
+    "/World/Campus/Hall_carpet": [
+      [
+        63.80999946594238,
+        -4.7683716530855236e-08,
+        -14.989999771118164
+      ],
+      [
+        96.19000053405762,
+        5.449999976158142,
+        15.050000190734863
+      ]
+    ],
+    "/World/Campus/Hall_carpet/Lane_coreset": [
+      [
+        68,
+        -1.1920929132713809e-08,
+        -8.974999976158141
+      ],
+      [
+        95.75,
+        1.899999976158142,
+        -3.95
+      ]
+    ],
+    "/World/Campus/Hall_carpet/Lane_coreset/MainConveyor": [
+      [
+        68,
+        -1.1920929132713809e-08,
+        -7.724999976158142
+      ],
+      [
+        82,
+        0.7425000071525574,
+        -6.675000023841858
+      ]
+    ],
+    "/World/Campus/Hall_carpet/Lane_coreset/Booth": [
+      [
+        75.80000019073486,
+        0.5,
+        -7.940000009536743
+      ],
+      [
+        77,
+        1.5800000429153442,
+        -6.7
+      ]
+    ],
+    "/World/Campus/Hall_carpet/Lane_coreset/Diverter": [
+      [
+        82.5,
+        0.5600000023841858,
+        -8.974999976158141
+      ],
+      [
+        89.5,
+        0.7425000071525574,
+        -5.425000023841858
+      ]
+    ],
+    "/World/Campus/Hall_carpet/Lane_coreset/Reinspection": [
+      [
+        89.19999980926514,
+        1.1920929132713809e-08,
+        -7.249999974668026
+      ],
+      [
+        95.75,
+        1.899999976158142,
+        -3.95
+      ]
+    ],
+    "/World/Campus/Hall_carpet/Lane_ccifps": [
+      [
+        68,
+        -1.1920929132713809e-08,
+        -1.774999976158142
+      ],
+      [
+        95.75,
+        1.899999976158142,
+        3.25
+      ]
+    ],
+    "/World/Campus/Hall_carpet/Lane_ccifps/MainConveyor": [
+      [
+        68,
+        -1.1920929132713809e-08,
+        -0.5249999761581421
+      ],
+      [
+        82,
+        0.7425000071525574,
+        0.5249999761581421
+      ]
+    ],
+    "/World/Campus/Hall_carpet/Lane_ccifps/Booth": [
+      [
+        75.80000019073486,
+        0.5,
+        -0.7400000095367432
+      ],
+      [
+        77,
+        1.5800000429153442,
+        0.5
+      ]
+    ],
+    "/World/Campus/Hall_carpet/Lane_ccifps/Diverter": [
+      [
+        82.5,
+        0.5600000023841858,
+        -1.774999976158142
+      ],
+      [
+        89.5,
+        0.7425000071525574,
+        1.774999976158142
+      ]
+    ],
+    "/World/Campus/Hall_carpet/Lane_ccifps/Reinspection": [
+      [
+        89.19999980926514,
+        1.1920929132713809e-08,
+        -0.04999997466802597
+      ],
+      [
+        95.75,
+        1.899999976158142,
+        3.25
+      ]
+    ],
+    "/World/Campus/Hall_carpet/Lane_random_same_k": [
+      [
+        68,
+        -1.1920929132713809e-08,
+        5.425000023841858
+      ],
+      [
+        95.75,
+        1.899999976158142,
+        10.45
+      ]
+    ],
+    "/World/Campus/Hall_carpet/Lane_random_same_k/MainConveyor": [
+      [
+        68,
+        -1.1920929132713809e-08,
+        6.675000023841858
+      ],
+      [
+        82,
+        0.7425000071525574,
+        7.724999976158142
+      ]
+    ],
+    "/World/Campus/Hall_carpet/Lane_random_same_k/Booth": [
+      [
+        75.80000019073486,
+        0.5,
+        6.459999990463257
+      ],
+      [
+        77,
+        1.5800000429153442,
+        7.7
+      ]
+    ],
+    "/World/Campus/Hall_carpet/Lane_random_same_k/Diverter": [
+      [
+        82.5,
+        0.5600000023841858,
+        5.425000023841858
+      ],
+      [
+        89.5,
+        0.7425000071525574,
+        8.974999976158141
+      ]
+    ],
+    "/World/Campus/Hall_carpet/Lane_random_same_k/Reinspection": [
+      [
+        89.19999980926514,
+        1.1920929132713809e-08,
+        7.150000025331974
+      ],
+      [
+        95.75,
+        1.899999976158142,
+        10.45
+      ]
+    ],
+    "/World/Campus/Hall_carpet/Roof": [
+      [
+        63.85000038146973,
+        2.0000000476837156,
+        -14.949999809265137
+      ],
+      [
+        96.14999961853027,
+        5.449999976158142,
+        14.979999542236328
+      ]
+    ],
+    "/World/Campus/RobotCell": [
+      [
+        0.35000038146972656,
+        -2.3841858265427618e-08,
+        29.84999990463257
+      ],
+      [
+        23.5,
+        3.200000047683716,
+        44
+      ]
+    ],
+    "/World/Campus/Yard": [
+      [
+        46.5,
+        8.940696516468449e-10,
+        30
+      ],
+      [
+        83.5,
+        3.049999952316284,
+        46
+      ]
+    ],
+    "/World/Campus/Landscape": [
+      [
+        -260,
+        -0.020000000000066614,
+        -280.5
+      ],
+      [
+        340,
+        4.849999904632568,
+        319.5
+      ]
+    ]
+  },
+  "world_bounds": [
+    [
+      -260,
+      -0.020000000000066614,
+      -280.5
+    ],
+    [
+      340,
+      5.449999976158142,
+      319.5
+    ]
+  ],
+  "cad_assets": {
+    "conveyor": {
+      "reference": "assets/conveyor.usda",
+      "source_step": "assets/cad/conveyor/dt_v1/model.step",
+      "sha256": {
+        "model.step": "58e4dc5c0dd387053e1d2aff8ed1c3087c241b69e789356f46da3686a7ceb76d",
+        "model.glb": "5b26302775970bec030d8c80e83f0c9f4c7341c9bac6b07b6b5cc592af1edd49"
+      },
+      "dims_sha256": "7561e4eefe43ae8949e624c1324e1365b0fa698ec9a0f3e820b558de8a5ba372",
+      "dimensions_m": [
+        2.0,
+        0.699999988079071,
+        0.6000000238418579
+      ],
+      "dimension_error_m": 2.384185793236071e-08
+    },
+    "inspection_booth": {
+      "reference": "assets/inspection_booth.usda",
+      "source_step": "assets/cad/inspection_booth/dt_v1/model.step",
+      "sha256": {
+        "model.step": "e292a9619a340de217900853ee7a99e12d774f589c475ad61138c502189e2fc6",
+        "model.glb": "61582506a1f95f8f4a27fbabb24b4e601a7e935d42d197f18ed514e05ef319cb"
+      },
+      "dims_sha256": "a76fe900819274387029cb51b8a3fb06fa6a1b091888bb59d0a6d1f677abe381",
+      "dimensions_m": [
+        0.800000011920929,
+        1.5,
+        0.800000011920929
+      ],
+      "dimension_error_m": 1.1920928910669204e-08
+    },
+    "diverter": {
+      "reference": "assets/diverter.usda",
+      "source_step": "assets/cad/diverter/dt_v1/model.step",
+      "sha256": {
+        "model.step": "8980130edeafdfe16882f6add43303fe5e0e134ed070124824e87cb9c9b0ba25",
+        "model.glb": "9d1ac545c9829d2c29f4749cb53c11d36495ca5f3db8eabdec5b35c88021dd6a"
+      },
+      "dims_sha256": "c9573427386a7eb94c67af2f3ca97fbc73161c4ebfa9d7aebb157bb7ada6d4aa",
+      "dimensions_m": [
+        1.0,
+        0.699999988079071,
+        0.6000000238418579
+      ],
+      "dimension_error_m": 2.384185793236071e-08
+    }
+  },
+  "cad_variants": [
+    "/World/Campus/Hall_bottle/Lane_coreset/MainConveyor",
+    "/World/Campus/Hall_bottle/Lane_coreset/Booth",
+    "/World/Campus/Hall_bottle/Lane_coreset/Diverter",
+    "/World/Campus/Hall_bottle/Lane_ccifps/MainConveyor",
+    "/World/Campus/Hall_bottle/Lane_ccifps/Booth",
+    "/World/Campus/Hall_bottle/Lane_ccifps/Diverter",
+    "/World/Campus/Hall_bottle/Lane_random_same_k/MainConveyor",
+    "/World/Campus/Hall_bottle/Lane_random_same_k/Booth",
+    "/World/Campus/Hall_bottle/Lane_random_same_k/Diverter",
+    "/World/Campus/Hall_screw/Lane_coreset/MainConveyor",
+    "/World/Campus/Hall_screw/Lane_coreset/Booth",
+    "/World/Campus/Hall_screw/Lane_coreset/Diverter",
+    "/World/Campus/Hall_screw/Lane_ccifps/MainConveyor",
+    "/World/Campus/Hall_screw/Lane_ccifps/Booth",
+    "/World/Campus/Hall_screw/Lane_ccifps/Diverter",
+    "/World/Campus/Hall_screw/Lane_random_same_k/MainConveyor",
+    "/World/Campus/Hall_screw/Lane_random_same_k/Booth",
+    "/World/Campus/Hall_screw/Lane_random_same_k/Diverter",
+    "/World/Campus/Hall_carpet/Lane_coreset/MainConveyor",
+    "/World/Campus/Hall_carpet/Lane_coreset/Booth",
+    "/World/Campus/Hall_carpet/Lane_coreset/Diverter",
+    "/World/Campus/Hall_carpet/Lane_ccifps/MainConveyor",
+    "/World/Campus/Hall_carpet/Lane_ccifps/Booth",
+    "/World/Campus/Hall_carpet/Lane_ccifps/Diverter",
+    "/World/Campus/Hall_carpet/Lane_random_same_k/MainConveyor",
+    "/World/Campus/Hall_carpet/Lane_random_same_k/Booth",
+    "/World/Campus/Hall_carpet/Lane_random_same_k/Diverter"
+  ],
+  "geometry_count": 117,
+  "mesh_count": 268,
+  "material_count": 117,
+  "renderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+  "m0609": "placeholder only; no verified URDF-to-USD conversion tool used",
+  "representation": "default web; cad_envelope variant references hash-verified STEP-derived GLB converted to USD; native dimensions, not production assembly",
+  "usd_sha256": "8ed94690ede4c8ba902c8e2652e0d25cf10bc9cfabb014aa77b2465bce61f993"
+}

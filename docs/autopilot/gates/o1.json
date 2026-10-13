@@ -1,0 +1,635 @@
+{
+  "milestone": "O1",
+  "pass": true,
+  "checks": {
+    "official_usd_validation": true,
+    "units_m_y_up": true,
+    "sites_and_lanes": true,
+    "layout_positions_and_yaw": true,
+    "lane_components": true,
+    "web_usd_bbox_le_1cm": true,
+    "actual_dashboard_static_bbox_le_1cm": true,
+    "mesh_count": true,
+    "extruded_roof_logos": true,
+    "token_colors": true,
+    "cad_references": true,
+    "fresh_sources": true,
+    "fresh_usd": true,
+    "cpu_only_capture": true,
+    "browser_clean": true,
+    "web_draw_calls": true
+  },
+  "sites": [
+    {
+      "id": "hall-bottle",
+      "origin": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "expected": [
+        0,
+        0,
+        0
+      ],
+      "error_m": 0.0,
+      "yaw_vector_error": 0.0
+    },
+    {
+      "id": "hall-screw",
+      "origin": [
+        40.0,
+        0.0,
+        0.0
+      ],
+      "expected": [
+        40,
+        0,
+        0
+      ],
+      "error_m": 0.0,
+      "yaw_vector_error": 0.0
+    },
+    {
+      "id": "hall-carpet",
+      "origin": [
+        80.0,
+        0.0,
+        0.0
+      ],
+      "expected": [
+        80,
+        0,
+        0
+      ],
+      "error_m": 0.0,
+      "yaw_vector_error": 0.0
+    },
+    {
+      "id": "robot-cell",
+      "origin": [
+        12.0,
+        0.0,
+        37.0
+      ],
+      "expected": [
+        12,
+        0,
+        37
+      ],
+      "error_m": 0.0,
+      "yaw_vector_error": 0.0
+    },
+    {
+      "id": "yard",
+      "origin": [
+        65.0,
+        0.0,
+        38.0
+      ],
+      "expected": [
+        65,
+        0,
+        38
+      ],
+      "error_m": 0.0,
+      "yaw_vector_error": 0.0
+    }
+  ],
+  "lanes": [
+    {
+      "site": "hall-bottle",
+      "model": "coreset",
+      "local_position": [
+        0.0,
+        0.0,
+        -7.2
+      ],
+      "expected": [
+        0,
+        0,
+        -7.2
+      ],
+      "error_m": 0.0,
+      "components": [
+        "MainConveyor",
+        "Booth",
+        "Diverter",
+        "Reinspection"
+      ]
+    },
+    {
+      "site": "hall-bottle",
+      "model": "ccifps",
+      "local_position": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "expected": [
+        0,
+        0,
+        0.0
+      ],
+      "error_m": 0.0,
+      "components": [
+        "MainConveyor",
+        "Booth",
+        "Diverter",
+        "Reinspection"
+      ]
+    },
+    {
+      "site": "hall-bottle",
+      "model": "random_same_k",
+      "local_position": [
+        0.0,
+        0.0,
+        7.2
+      ],
+      "expected": [
+        0,
+        0,
+        7.2
+      ],
+      "error_m": 0.0,
+      "components": [
+        "MainConveyor",
+        "Booth",
+        "Diverter",
+        "Reinspection"
+      ]
+    },
+    {
+      "site": "hall-screw",
+      "model": "coreset",
+      "local_position": [
+        0.0,
+        0.0,
+        -7.2
+      ],
+      "expected": [
+        0,
+        0,
+        -7.2
+      ],
+      "error_m": 0.0,
+      "components": [
+        "MainConveyor",
+        "Booth",
+        "Diverter",
+        "Reinspection"
+      ]
+    },
+    {
+      "site": "hall-screw",
+      "model": "ccifps",
+      "local_position": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "expected": [
+        0,
+        0,
+        0.0
+      ],
+      "error_m": 0.0,
+      "components": [
+        "MainConveyor",
+        "Booth",
+        "Diverter",
+        "Reinspection"
+      ]
+    },
+    {
+      "site": "hall-screw",
+      "model": "random_same_k",
+      "local_position": [
+        0.0,
+        0.0,
+        7.2
+      ],
+      "expected": [
+        0,
+        0,
+        7.2
+      ],
+      "error_m": 0.0,
+      "components": [
+        "MainConveyor",
+        "Booth",
+        "Diverter",
+        "Reinspection"
+      ]
+    },
+    {
+      "site": "hall-carpet",
+      "model": "coreset",
+      "local_position": [
+        0.0,
+        0.0,
+        -7.2
+      ],
+      "expected": [
+        0,
+        0,
+        -7.2
+      ],
+      "error_m": 0.0,
+      "components": [
+        "MainConveyor",
+        "Booth",
+        "Diverter",
+        "Reinspection"
+      ]
+    },
+    {
+      "site": "hall-carpet",
+      "model": "ccifps",
+      "local_position": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "expected": [
+        0,
+        0,
+        0.0
+      ],
+      "error_m": 0.0,
+      "components": [
+        "MainConveyor",
+        "Booth",
+        "Diverter",
+        "Reinspection"
+      ]
+    },
+    {
+      "site": "hall-carpet",
+      "model": "random_same_k",
+      "local_position": [
+        0.0,
+        0.0,
+        7.2
+      ],
+      "expected": [
+        0,
+        0,
+        7.2
+      ],
+      "error_m": 0.0,
+      "components": [
+        "MainConveyor",
+        "Booth",
+        "Diverter",
+        "Reinspection"
+      ]
+    }
+  ],
+  "bbox_max_error_m": 0.0,
+  "bbox_errors_m": {
+    "/World/Campus/Hall_bottle": 0.0,
+    "/World/Campus/Hall_bottle/Lane_coreset": 0.0,
+    "/World/Campus/Hall_bottle/Lane_coreset/MainConveyor": 0.0,
+    "/World/Campus/Hall_bottle/Lane_coreset/Booth": 0.0,
+    "/World/Campus/Hall_bottle/Lane_coreset/Diverter": 0.0,
+    "/World/Campus/Hall_bottle/Lane_coreset/Reinspection": 0.0,
+    "/World/Campus/Hall_bottle/Lane_ccifps": 0.0,
+    "/World/Campus/Hall_bottle/Lane_ccifps/MainConveyor": 0.0,
+    "/World/Campus/Hall_bottle/Lane_ccifps/Booth": 0.0,
+    "/World/Campus/Hall_bottle/Lane_ccifps/Diverter": 0.0,
+    "/World/Campus/Hall_bottle/Lane_ccifps/Reinspection": 0.0,
+    "/World/Campus/Hall_bottle/Lane_random_same_k": 0.0,
+    "/World/Campus/Hall_bottle/Lane_random_same_k/MainConveyor": 0.0,
+    "/World/Campus/Hall_bottle/Lane_random_same_k/Booth": 0.0,
+    "/World/Campus/Hall_bottle/Lane_random_same_k/Diverter": 0.0,
+    "/World/Campus/Hall_bottle/Lane_random_same_k/Reinspection": 0.0,
+    "/World/Campus/Hall_bottle/Roof": 0.0,
+    "/World/Campus/Hall_screw": 0.0,
+    "/World/Campus/Hall_screw/Lane_coreset": 0.0,
+    "/World/Campus/Hall_screw/Lane_coreset/MainConveyor": 0.0,
+    "/World/Campus/Hall_screw/Lane_coreset/Booth": 0.0,
+    "/World/Campus/Hall_screw/Lane_coreset/Diverter": 0.0,
+    "/World/Campus/Hall_screw/Lane_coreset/Reinspection": 0.0,
+    "/World/Campus/Hall_screw/Lane_ccifps": 0.0,
+    "/World/Campus/Hall_screw/Lane_ccifps/MainConveyor": 0.0,
+    "/World/Campus/Hall_screw/Lane_ccifps/Booth": 0.0,
+    "/World/Campus/Hall_screw/Lane_ccifps/Diverter": 0.0,
+    "/World/Campus/Hall_screw/Lane_ccifps/Reinspection": 0.0,
+    "/World/Campus/Hall_screw/Lane_random_same_k": 0.0,
+    "/World/Campus/Hall_screw/Lane_random_same_k/MainConveyor": 0.0,
+    "/World/Campus/Hall_screw/Lane_random_same_k/Booth": 0.0,
+    "/World/Campus/Hall_screw/Lane_random_same_k/Diverter": 0.0,
+    "/World/Campus/Hall_screw/Lane_random_same_k/Reinspection": 0.0,
+    "/World/Campus/Hall_screw/Roof": 0.0,
+    "/World/Campus/Hall_carpet": 0.0,
+    "/World/Campus/Hall_carpet/Lane_coreset": 0.0,
+    "/World/Campus/Hall_carpet/Lane_coreset/MainConveyor": 0.0,
+    "/World/Campus/Hall_carpet/Lane_coreset/Booth": 0.0,
+    "/World/Campus/Hall_carpet/Lane_coreset/Diverter": 0.0,
+    "/World/Campus/Hall_carpet/Lane_coreset/Reinspection": 0.0,
+    "/World/Campus/Hall_carpet/Lane_ccifps": 0.0,
+    "/World/Campus/Hall_carpet/Lane_ccifps/MainConveyor": 0.0,
+    "/World/Campus/Hall_carpet/Lane_ccifps/Booth": 0.0,
+    "/World/Campus/Hall_carpet/Lane_ccifps/Diverter": 0.0,
+    "/World/Campus/Hall_carpet/Lane_ccifps/Reinspection": 0.0,
+    "/World/Campus/Hall_carpet/Lane_random_same_k": 0.0,
+    "/World/Campus/Hall_carpet/Lane_random_same_k/MainConveyor": 0.0,
+    "/World/Campus/Hall_carpet/Lane_random_same_k/Booth": 0.0,
+    "/World/Campus/Hall_carpet/Lane_random_same_k/Diverter": 0.0,
+    "/World/Campus/Hall_carpet/Lane_random_same_k/Reinspection": 0.0,
+    "/World/Campus/Hall_carpet/Roof": 0.0,
+    "/World/Campus/RobotCell": 0.0,
+    "/World/Campus/Yard": 0.0,
+    "/World/Campus/Landscape": 0.0,
+    "/World/Campus": 0.0
+  },
+  "dashboard_bbox_max_error_m": 0.0,
+  "material_max_linear_error": 2.7730498897149403e-08,
+  "mesh_count": 268,
+  "roof_logo_mesh_count": 6,
+  "cad_dimension_errors_m": {
+    "conveyor": 2.384185793236071e-08,
+    "inspection_booth": 1.1920928910669204e-08,
+    "diverter": 2.384185793236071e-08
+  },
+  "usdchecker": {
+    "pass": true,
+    "engine": "OpenUSD UsdValidation; project CLI adapter (wheel has no upstream usdchecker binary)",
+    "version": [
+      0,
+      26,
+      8
+    ],
+    "validators": [
+      "usdGeomValidators:EncapsulationChecker",
+      "usdGeomValidators:StageMetadataChecker",
+      "usdGeomValidators:SubsetFamilies",
+      "usdGeomValidators:SubsetParentIsImageable",
+      "usdLuxValidators:EncapsulationRulesValidator",
+      "usdPhysicsValidators:ArticulationChecker",
+      "usdPhysicsValidators:ColliderChecker",
+      "usdPhysicsValidators:PhysicsJointChecker",
+      "usdPhysicsValidators:RigidBodyChecker",
+      "usdShadeValidators:EncapsulationMaterialValidator",
+      "usdShadeValidators:EncapsulationRulesValidator",
+      "usdShadeValidators:MaterialBindingApiAppliedValidator",
+      "usdShadeValidators:MaterialBindingCollectionValidator",
+      "usdShadeValidators:MaterialBindingRelationships",
+      "usdShadeValidators:NormalMapTextureValidator",
+      "usdShadeValidators:ShaderSdrCompliance",
+      "usdShadeValidators:SubsetMaterialBindFamilyName",
+      "usdShadeValidators:SubsetsMaterialBindFamily",
+      "usdSkelValidators:SkelBindingApiAppliedValidator",
+      "usdSkelValidators:SkelBindingApiValidator",
+      "usdUtilsValidators:FileExtensionValidator",
+      "usdUtilsValidators:MissingReferenceValidator",
+      "usdUtilsValidators:PackageEncapsulationValidator",
+      "usdUtilsValidators:RootPackageValidator",
+      "usdUtilsValidators:UsdzPackageValidator",
+      "usdValidation:AttributeTypeMismatch",
+      "usdValidation:CompositionErrorTest",
+      "usdValidation:StageMetadataChecker"
+    ],
+    "file": "cnotta_campus.usda",
+    "runs": [
+      {
+        "selection": "default",
+        "issues": []
+      },
+      {
+        "selection": "/World/Campus/Hall_bottle/Lane_coreset/MainConveyor:representation=cad_envelope",
+        "issues": []
+      },
+      {
+        "selection": "/World/Campus/Hall_bottle/Lane_coreset/MainConveyor:representation=web",
+        "issues": []
+      },
+      {
+        "selection": "/World/Campus/Hall_bottle/Lane_coreset/Booth:representation=cad_envelope",
+        "issues": []
+      },
+      {
+        "selection": "/World/Campus/Hall_bottle/Lane_coreset/Booth:representation=web",
+        "issues": []
+      },
+      {
+        "selection": "/World/Campus/Hall_bottle/Lane_coreset/Diverter:representation=cad_envelope",
+        "issues": []
+      },
+      {
+        "selection": "/World/Campus/Hall_bottle/Lane_coreset/Diverter:representation=web",
+        "issues": []
+      },
+      {
+        "selection": "/World/Campus/Hall_bottle/Lane_ccifps/MainConveyor:representation=cad_envelope",
+        "issues": []
+      },
+      {
+        "selection": "/World/Campus/Hall_bottle/Lane_ccifps/MainConveyor:representation=web",
+        "issues": []
+      },
+      {
+        "selection": "/World/Campus/Hall_bottle/Lane_ccifps/Booth:representation=cad_envelope",
+        "issues": []
+      },
+      {
+        "selection": "/World/Campus/Hall_bottle/Lane_ccifps/Booth:representation=web",
+        "issues": []
+      },
+      {
+        "selection": "/World/Campus/Hall_bottle/Lane_ccifps/Diverter:representation=cad_envelope",
+        "issues": []
+      },
+      {
+        "selection": "/World/Campus/Hall_bottle/Lane_ccifps/Diverter:representation=web",
+        "issues": []
+      },
+      {
+        "selection": "/World/Campus/Hall_bottle/Lane_random_same_k/MainConveyor:representation=cad_envelope",
+        "issues": []
+      },
+      {
+        "selection": "/World/Campus/Hall_bottle/Lane_random_same_k/MainConveyor:representation=web",
+        "issues": []
+      },
+      {
+        "selection": "/World/Campus/Hall_bottle/Lane_random_same_k/Booth:representation=cad_envelope",
+        "issues": []
+      },
+      {
+        "selection": "/World/Campus/Hall_bottle/Lane_random_same_k/Booth:representation=web",
+        "issues": []
+      },
+      {
+        "selection": "/World/Campus/Hall_bottle/Lane_random_same_k/Diverter:representation=cad_envelope",
+        "issues": []
+      },
+      {
+        "selection": "/World/Campus/Hall_bottle/Lane_random_same_k/Diverter:representation=web",
+        "issues": []
+      },
+      {
+        "selection": "/World/Campus/Hall_screw/Lane_coreset/MainConveyor:representation=cad_envelope",
+        "issues": []
+      },
+      {
+        "selection": "/World/Campus/Hall_screw/Lane_coreset/MainConveyor:representation=web",
+        "issues": []
+      },
+      {
+        "selection": "/World/Campus/Hall_screw/Lane_coreset/Booth:representation=cad_envelope",
+        "issues": []
+      },
+      {
+        "selection": "/World/Campus/Hall_screw/Lane_coreset/Booth:representation=web",
+        "issues": []
+      },
+      {
+        "selection": "/World/Campus/Hall_screw/Lane_coreset/Diverter:representation=cad_envelope",
+        "issues": []
+      },
+      {
+        "selection": "/World/Campus/Hall_screw/Lane_coreset/Diverter:representation=web",
+        "issues": []
+      },
+      {
+        "selection": "/World/Campus/Hall_screw/Lane_ccifps/MainConveyor:representation=cad_envelope",
+        "issues": []
+      },
+      {
+        "selection": "/World/Campus/Hall_screw/Lane_ccifps/MainConveyor:representation=web",
+        "issues": []
+      },
+      {
+        "selection": "/World/Campus/Hall_screw/Lane_ccifps/Booth:representation=cad_envelope",
+        "issues": []
+      },
+      {
+        "selection": "/World/Campus/Hall_screw/Lane_ccifps/Booth:representation=web",
+        "issues": []
+      },
+      {
+        "selection": "/World/Campus/Hall_screw/Lane_ccifps/Diverter:representation=cad_envelope",
+        "issues": []
+      },
+      {
+        "selection": "/World/Campus/Hall_screw/Lane_ccifps/Diverter:representation=web",
+        "issues": []
+      },
+      {
+        "selection": "/World/Campus/Hall_screw/Lane_random_same_k/MainConveyor:representation=cad_envelope",
+        "issues": []
+      },
+      {
+        "selection": "/World/Campus/Hall_screw/Lane_random_same_k/MainConveyor:representation=web",
+        "issues": []
+      },
+      {
+        "selection": "/World/Campus/Hall_screw/Lane_random_same_k/Booth:representation=cad_envelope",
+        "issues": []
+      },
+      {
+        "selection": "/World/Campus/Hall_screw/Lane_random_same_k/Booth:representation=web",
+        "issues": []
+      },
+      {
+        "selection": "/World/Campus/Hall_screw/Lane_random_same_k/Diverter:representation=cad_envelope",
+        "issues": []
+      },
+      {
+        "selection": "/World/Campus/Hall_screw/Lane_random_same_k/Diverter:representation=web",
+        "issues": []
+      },
+      {
+        "selection": "/World/Campus/Hall_carpet/Lane_coreset/MainConveyor:representation=cad_envelope",
+        "issues": []
+      },
+      {
+        "selection": "/World/Campus/Hall_carpet/Lane_coreset/MainConveyor:representation=web",
+        "issues": []
+      },
+      {
+        "selection": "/World/Campus/Hall_carpet/Lane_coreset/Booth:representation=cad_envelope",
+        "issues": []
+      },
+      {
+        "selection": "/World/Campus/Hall_carpet/Lane_coreset/Booth:representation=web",
+        "issues": []
+      },
+      {
+        "selection": "/World/Campus/Hall_carpet/Lane_coreset/Diverter:representation=cad_envelope",
+        "issues": []
+      },
+      {
+        "selection": "/World/Campus/Hall_carpet/Lane_coreset/Diverter:representation=web",
+        "issues": []
+      },
+      {
+        "selection": "/World/Campus/Hall_carpet/Lane_ccifps/MainConveyor:representation=cad_envelope",
+        "issues": []
+      },
+      {
+        "selection": "/World/Campus/Hall_carpet/Lane_ccifps/MainConveyor:representation=web",
+        "issues": []
+      },
+      {
+        "selection": "/World/Campus/Hall_carpet/Lane_ccifps/Booth:representation=cad_envelope",
+        "issues": []
+      },
+      {
+        "selection": "/World/Campus/Hall_carpet/Lane_ccifps/Booth:representation=web",
+        "issues": []
+      },
+      {
+        "selection": "/World/Campus/Hall_carpet/Lane_ccifps/Diverter:representation=cad_envelope",
+        "issues": []
+      },
+      {
+        "selection": "/World/Campus/Hall_carpet/Lane_ccifps/Diverter:representation=web",
+        "issues": []
+      },
+      {
+        "selection": "/World/Campus/Hall_carpet/Lane_random_same_k/MainConveyor:representation=cad_envelope",
+        "issues": []
+      },
+      {
+        "selection": "/World/Campus/Hall_carpet/Lane_random_same_k/MainConveyor:representation=web",
+        "issues": []
+      },
+      {
+        "selection": "/World/Campus/Hall_carpet/Lane_random_same_k/Booth:representation=cad_envelope",
+        "issues": []
+      },
+      {
+        "selection": "/World/Campus/Hall_carpet/Lane_random_same_k/Booth:representation=web",
+        "issues": []
+      },
+      {
+        "selection": "/World/Campus/Hall_carpet/Lane_random_same_k/Diverter:representation=cad_envelope",
+        "issues": []
+      },
+      {
+        "selection": "/World/Campus/Hall_carpet/Lane_random_same_k/Diverter:representation=web",
+        "issues": []
+      }
+    ]
+  },
+  "asset_validation": {
+    "conveyor": true,
+    "inspection_booth": true,
+    "diverter": true
+  },
+  "web_draw_calls": 117,
+  "web_triangles": 11854,
+  "scope": "static campus, roof closed, highest LOD; no DOM, lights, process parts or animation",
+  "renderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+  "gpu_verified": false,
+  "limitations": [
+    "O2 blocked by O0; Kit not installed or launched",
+    "M0609 placeholder only",
+    "CAD variant is a native-size assumed design envelope; default is exact web representation",
+    "DOM labels/panels and dynamic entities are not static USD geometry"
+  ]
+}

@@ -56,20 +56,40 @@ export function Hall({site,focused,onEnter,children}){
   {children}<Roof site={site} focused={focused} onEnter={onEnter}/>
  </group></Site>
 }
+// A lane is a shared semantic prefab for both the web and the CPU USD export.
+function EquipmentLane({site,index,live}){
+ const model=site.lanes[index]
+ const shapes=useMemo(()=>{
+  const feet=[],racks=[]
+  for(const x of [-11,-8,-5,-2,1])for(const z of [-.4,.4])feet.push([[x,.3,z],[.12,.6,.12]])
+  for(const x of [12,14.7]){for(const y of [.22,.95,1.68])racks.push([[x,y,1.9],[2.1,.08,.9]]);for(const dx of [-1,1])racks.push([[x+dx,.95,1.9],[.06,1.9,.9]])}
+  return {feet,racks}
+ },[])
+ return <group name={'Lane_'+model} position={[0,0,laneZ(site,index)]} userData={{selector:model,laneIndex:index}}>
+  <group name="MainConveyor" userData={{cadPart:'conveyor'}}>
+   <Boxes color={T['equip-frame']} items={[[[-5,.63,0],[14,.14,1.05]]]}/>
+   <Boxes color={T.brand.primary} items={[[[-5,.72,0],[14,.045,.8]]]}/>
+   <Boxes color={T.brand.ink} items={shapes.feet}/>
+  </group>
+  <group name="Booth" userData={{cadPart:'inspection_booth'}}>
+   {!(live&&model==='ccifps')&&<Boxes color={T['equip-frame']} items={[[[-3.6,1.5,-.5],[1.2,.16,.4]],[[-3.6,1,-.67],[1.2,1,.14]],[[-4.15,1,.45],[.1,1,.1]],[[-3.05,1,.45],[.1,1,.1]]]}/>}
+  </group>
+  <group name="Diverter" userData={{cadPart:'diverter'}}>
+   <Boxes color={T['equip-frame']} items={[-1.4,0,1.4].map(z=>[[6,.63,z],[7,.14,.75]])}/>
+   <Boxes color={T.brand.primary} items={[-1.4,0,1.4].map(z=>[[6,.72,z],[7,.045,.56]])}/>
+  </group>
+  <group name="Reinspection">
+   <Boxes name="waiting-racks" color={T['text-2']} items={shapes.racks}/>
+   <Boxes color={T.brand['primary-200']} items={[[[12.4,.091,1.6],[6.4,.014,3.3]]]}/>
+  </group>
+ </group>
+}
 export function LaneEquipment({site,live=false}){
  const {width,depth}=hallSize(site)
- const shapes=useMemo(()=>{const frames=[],belts=[],feet=[],racks=[],floor=[]
-  site.lanes.forEach((_,i)=>{const z=laneZ(site,i)
-   frames.push([[-5,.63,z],[14,.14,1.05]])
-   if(!(live&&site.lanes[i]==='ccifps'))frames.push([[-3.6,1.5,z-.5],[1.2,.16,.4]],[[-3.6,1,z-.67],[1.2,1,.14]],[[-4.15,1,z+.45],[.1,1,.1]],[[-3.05,1,z+.45],[.1,1,.1]])
-   belts.push([[-5,.72,z],[14,.045,.8]])
-   for(const x of [-11,-8,-5,-2,1])for(const dz of [-.4,.4])feet.push([[x,.3,z+dz],[.12,.6,.12]])
-   for(const dz of [-1.4,0,1.4]){frames.push([[6,.63,z+dz],[7,.14,.75]]);belts.push([[6,.72,z+dz],[7,.045,.56]])}
-   // Offline queue rack is separated from the lane ends by a walkway.
-   for(const x of [12,14.7]){for(const y of [.22,.95,1.68])racks.push([[x,y,z+1.9],[2.1,.08,.9]]);for(const dx of [-1,1])racks.push([[x+dx,.95,z+1.9],[.06,1.9,.9]])}
-   floor.push([[12.4,.091,z+1.6],[6.4,.014,3.3]])
-  });return {frames,belts,feet,racks,floor}},[site,live])
- return <group name={'lanes-'+site.id}><Boxes color={T['equip-frame']} items={shapes.frames}/><Boxes color={T.brand.primary} items={shapes.belts}/><Boxes color={T.brand.ink} items={shapes.feet}/><Boxes name="waiting-racks" color={T['text-2']} items={shapes.racks}/><Boxes color={T.brand['primary-200']} items={shapes.floor}/><Boxes color={T.line} items={[[[-width/2+1,.1,0],[.08,.02,depth-2]]]} /></group>
+ return <group name={'lanes-'+site.id}>
+  {site.lanes.map((model,index)=><EquipmentLane key={model} site={site} index={index} live={live}/>)}
+  <Boxes color={T.line} items={[[[-width/2+1,.1,0],[.08,.02,depth-2]]]} />
+ </group>
 }
 export function Landscape(){
  const decor=useMemo(()=>{const trees=seededDecorations();const pallets=[],boxes=[],posts=[]

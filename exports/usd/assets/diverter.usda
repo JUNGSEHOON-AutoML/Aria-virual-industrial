@@ -1,0 +1,49 @@
+#usda 1.0
+(
+    defaultPrim = "Asset"
+    metersPerUnit = 1
+    upAxis = "Y"
+)
+
+def Xform "Asset" (
+    customData = {
+        string cad_provenance = '{"source": "assets/cad/diverter/dt_v1", "files": {"model.step": "8980130edeafdfe16882f6add43303fe5e0e134ed070124824e87cb9c9b0ba25", "model.glb": "9d1ac545c9829d2c29f4749cb53c11d36495ca5f3db8eabdec5b35c88021dd6a"}, "dims_sha256": "c9573427386a7eb94c67af2f3ca97fbc73161c4ebfa9d7aebb157bb7ada6d4aa", "meaning": "assumed design dimensions; not datasheet or physical measurement"}'
+    }
+)
+{
+    def "Materials"
+    {
+        def Material "Frame" (
+            customData = {
+                string source_srgb = "#E9ECF5"
+            }
+        )
+        {
+            token outputs:surface.connect = </Asset/Materials/Frame/PreviewSurface.outputs:surface>
+
+            def Shader "PreviewSurface"
+            {
+                uniform token info:id = "UsdPreviewSurface"
+                color3f inputs:diffuseColor = (0.8148466, 0.838799, 0.91309863)
+                color3f inputs:emissiveColor = (0.3096417, 0.31874362, 0.3469775)
+                float inputs:metallic = 0
+                float inputs:opacity = 1
+                float inputs:roughness = 0.85
+                token outputs:surface
+            }
+        }
+    }
+
+    def Mesh "Geometry" (
+        prepend apiSchemas = ["MaterialBindingAPI"]
+    )
+    {
+        uniform bool doubleSided = 1
+        float3[] extent = [(-0.5, 0, -0.3), (0.5, 0.7, 0.3)]
+        int[] faceVertexCounts = [3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3]
+        int[] faceVertexIndices = [0, 1, 2, 2, 1, 3, 4, 5, 6, 4, 6, 7, 5, 4, 0, 0, 4, 1, 7, 6, 2, 7, 2, 3, 2, 5, 0, 2, 6, 5, 4, 3, 1, 7, 3, 4]
+        rel material:binding = </Asset/Materials/Frame>
+        point3f[] points = [(-0.5, 0, 0.3), (-0.5, 0.7, 0.3), (-0.5, 0, -0.3), (-0.5, 0.7, -0.3), (0.5, 0.7, 0.3), (0.5, 0, 0.3), (0.5, 0, -0.3), (0.5, 0.7, -0.3)]
+        uniform token subdivisionScheme = "none"
+    }
+}
