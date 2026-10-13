@@ -1,0 +1,63 @@
+{
+  "scope": "G1–G3 specification integration and inactive configuration contracts; NOT runtime milestone acceptance",
+  "pass": true,
+  "checks": {
+    "attached_body_preserved": {
+      "pass": true
+    },
+    "one_section_12": {
+      "pass": true
+    },
+    "milestone_order": {
+      "pass": true
+    },
+    "budget_order": {
+      "pass": true
+    },
+    "budgets": {
+      "pass": true
+    },
+    "active_order_updated": {
+      "pass": true
+    },
+    "registry_default_deny": {
+      "pass": true
+    },
+    "registry_not_falsely_activated": {
+      "pass": true
+    },
+    "logistics_read_only": {
+      "pass": true
+    },
+    "all_parameters_assumed": {
+      "pass": true
+    },
+    "logistics_not_falsely_enabled": {
+      "pass": true
+    },
+    "legacy_conflicts_recorded": {
+      "pass": true
+    },
+    "runtime_unchanged": {
+      "pass": true
+    }
+  },
+  "milestones": {
+    "G1": "implementation_pending",
+    "G2": "implementation_pending",
+    "G3": "implementation_pending"
+  },
+  "runtime_registration_enforcement": "pending_G1",
+  "logistics_engine": "pending_G2",
+  "metric_lint": "pending_G3",
+  "backend_tests": "not rerun; runtime code unchanged",
+  "golden_trace": "not rerun; DES/evaluation/posthoc unchanged",
+  "gpu": "not used",
+  "source_sha256": "84abe0d0b479ed75f5aa89557b26e3e61b49be4e95e0489c2d5975b14cf03901",
+  "spec_sha256": "5cf332a3268eee5c6e59f1a959559ec036141dc9c39f85916f013241bed071d8",
+  "config_sha256": {
+    "ambient_motion.json": "f6b62f67449b5e3af51b9a0c5f7c56e6080aea6548eec088dd89848e2b2871cc",
+    "logistics.yaml": "7fc19ee330387c719a1877e11f0fa6854e45c52cd987fa811a405bbcdda5f71a"
+  },
+  "at": "2026-10-13T04:29:09.393452+00:00"
+}

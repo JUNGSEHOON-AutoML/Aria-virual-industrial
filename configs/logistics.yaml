@@ -1,0 +1,94 @@
+# G2 input contract only. Not connected to a runtime yet.
+# null is deliberately unset, not a measured zero. G2 must reject unset values.
+schema_version: 1
+status: contract_only_pending_G2
+enabled: false
+mode: downstream_only
+input_policy: inherit_selected_A_or_B
+write_back_to_des: false
+write_back_to_posthoc_b: false
+parameter_tag: assumed
+allocation_tie_break: actor_id
+shipment_boundary: campus_gate_exit
+reinspection: inherit_selected_posthoc_b_config
+parameters:
+  parts_per_box:
+    value: null
+    unit: part/box
+    tag: assumed
+  boxes_per_pallet:
+    value: null
+    unit: box/pallet
+    tag: assumed
+  pallets_per_truck:
+    value: null
+    unit: pallet/truck
+    tag: assumed
+  packing_seconds_per_box:
+    value: null
+    unit: s/box
+    tag: assumed
+  palletizing_seconds_per_pallet:
+    value: null
+    unit: s/pallet
+    tag: assumed
+  forklift_count:
+    value: null
+    unit: vehicle
+    tag: assumed
+  forklift_speed_mps:
+    value: null
+    unit: m/s
+    tag: assumed
+  forklift_load_seconds:
+    value: null
+    unit: s/pallet
+    tag: assumed
+  forklift_unload_seconds:
+    value: null
+    unit: s/pallet
+    tag: assumed
+  outbound_truck_count:
+    value: null
+    unit: vehicle
+    tag: assumed
+  truck_speed_mps:
+    value: null
+    unit: m/s
+    tag: assumed
+  truck_load_seconds_per_pallet:
+    value: null
+    unit: s/pallet
+    tag: assumed
+  inbound_parts_per_pallet:
+    value: null
+    unit: part/pallet
+    tag: assumed
+  inbound_pallets_per_truck:
+    value: null
+    unit: pallet/truck
+    tag: assumed
+  initial_raw_material_pallets:
+    value: null
+    unit: pallet
+    tag: assumed
+  inbound_unload_seconds_per_pallet:
+    value: null
+    unit: s/pallet
+    tag: assumed
+  scrap_bin_capacity:
+    value: null
+    unit: part
+    tag: assumed
+  scrap_cart_count:
+    value: null
+    unit: vehicle
+    tag: assumed
+  scrap_cart_speed_mps:
+    value: null
+    unit: m/s
+    tag: assumed
+  scrap_collection_seconds:
+    value: null
+    unit: s/bin
+    tag: assumed
