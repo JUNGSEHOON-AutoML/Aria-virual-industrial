@@ -1,0 +1,24 @@
+{
+  "deleted_files": 645,
+  "deleted_logical_bytes": 56498463147,
+  "preserved_files": 19734,
+  "preserved_destination": "/userHome/userhome4/sehoon/Aria-virual-industrial-main/archive/ccifps_preserved_20261013",
+  "compatibility_link": "/userHome/userhome4/sehoon/CCIFPS-AutoML",
+  "data_link_verified": true,
+  "all_preserved_inode_size_mtime_mode_verified": true,
+  "git_status_unchanged": true,
+  "free_before": 34254225408,
+  "free_after": 90745069568,
+  "required_paths_verified": [
+    "src/patchcore/sampler.py",
+    "src/patchcore/metrics.py",
+    "experiments/mvtec_golden_recovery_20260914/effective_config.csv",
+    "experiments/ccifps_gpu2_followup_20260916_01/selection_observer.py",
+    "experiments/ccifps_validation_20260915_01/selection_observer.py",
+    "experiments/official_patchcore_15class_20260916_01/official_worker.py",
+    "experiments/official_patchcore_15class_20260916_01/official_source_check.json",
+    "experiments/official_patchcore_15class_20260916_01/EVALUATOR_LOCK.json"
+  ],
+  "official_feature_categories_preserved": 15,
+  "official_source_hashes_verified": true
+}
