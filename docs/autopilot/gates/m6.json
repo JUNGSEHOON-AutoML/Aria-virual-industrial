@@ -1,1 +1,42 @@
-{"milestone":"m6","pass":false,"status":"verification_pending","checks":{}}
+{
+  "milestone": "m6",
+  "pass": true,
+  "checks": {
+    "fresh_clone": {
+      "pass": true,
+      "clone": "/tmp/cnotta-fresh-dc2_kd0h/repo",
+      "returncode": 0,
+      "immediate_restart_pass": true,
+      "output": "Ready: http://127.0.0.1:34873/cnotta.html\n",
+      "dependencies": "existing isolated Python and linked local node_modules; no network",
+      "data": "original verified pilot/P1 read-only paths"
+    },
+    "backend_tests": {
+      "pass": true,
+      "summary": "163 passed, 14 warnings in 22.39s"
+    },
+    "golden": {
+      "pass": true,
+      "output": "[golden_trace] 검증 실행 중…\n[golden_trace] PASS — diff 0건 (무회귀 확인)"
+    },
+    "cpu_build": {
+      "pass": true,
+      "output": "vite v5.4.21 building for production...\ntransforming...\n✓ 635 modules transformed.\nrendering chunks...\ncomputing gzip size...\n../../../../../tmp/aria-cnotta-dist/cnotta.html                     0.42 kB │ gzip:   0.31 kB\n../../../../../tmp/aria-cnotta-dist/assets/cnotta-BBO3SuRZ.css      4.15 kB │ gzip:   1.42 kB\n../../../../../tmp/aria-cnotta-dist/assets/cnotta-CllZGVdX.js   1,081.40 kB │ gzip: 301.07 kB\n\n(!) Some chunks are larger than 500 kB after minification. Consider:\n- Using dynamic import() to code-split the application\n- Use build.rollupOptions.output.manualChunks to improve chunking: https://rollupjs.org/configuration-options/#output-manualchunks\n- Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.\n✓ built in 5.17s\n"
+    },
+    "recording": {
+      "pass": true,
+      "duration_seconds": 60.0,
+      "wall_seconds": 60.220407073007664,
+      "captured_frames": 94,
+      "renderer": "SwiftShader CPU",
+      "presentation_fps": 10,
+      "fps_benchmark": false,
+      "errors": []
+    },
+    "protected_sources": {
+      "pass": true
+    }
+  },
+  "at": "2026-10-13T03:14:29.423469+00:00",
+  "scope": "pilot demo; M5 pending full experiment; actual GPU unverified"
+}
