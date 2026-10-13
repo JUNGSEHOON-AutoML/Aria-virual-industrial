@@ -1,174 +1,186 @@
-# ARIA 디지털 트윈 연구 실행
+# CNOTTA × ARIA
 
-현재 연구 실행 기준은 [재설정 명세 v3](docs/specs/ARIA_DT_Reset_BuildSpec_v3.md)입니다. 정책 A만 DES로 실행하고, 정책 B·재검사 변형은 저장된 A 원자료에서 사후 계산합니다. 불량률 5% 복원추출과 1,000개당 재검사 지표를 사용합니다.
+**비전 이상 탐지 결과를 공정·검사 설비·물류 흐름으로 연결하는 디지털 트윈 연구 워크스페이스입니다.**
 
-[디렉터리 구조·재현 명령·검증 결과](docs/DT_RESET_REPORT.md)를 먼저 확인하세요. 본 실행은 사용자 승인 후 상한 seed0 9개 실측을 마쳤습니다. [비용 게이트](docs/reports/dt_cap_seed0_20261013/REPORT.md)와 [홈 공간 정리](docs/reports/storage_cleanup_20261013/REPORT.md) 결과를 기록하고, 통과한 비용 조건으로 이어서 실행합니다. 아래 소개와 화면 기록은 기존 기능의 역사 자료이며 이번 작업에서 화면을 변경하지 않았습니다.
+ARIA는 CCIFPS, 코어셋, `random_same_k`의 저장 결과를 비교하고, CNOTTA 캠퍼스에서 제품 이동·판정·재검사 대기열을 재생합니다. 별도의 CPU Live 모드에서는 실제 BOTTLE 이미지를 검사합니다. 현재 개발 브랜치는 **`dt-cnotta`**입니다.
 
-# ARIA — Autonomous Industrial Simulation & AI Agent
+[최신 BuildSpec](docs/specs/CNOTTA_ARIA_Autopilot_BuildSpec.md) · [구현·검증 보고서](docs/autopilot/STATIONS_REPORT.md) · [진행 기록](docs/autopilot/PROGRESS.md) · [제약·미완료 항목](docs/autopilot/BLOCKERS.md)
 
-![ARIA 관절 구동·고장·수리·검사 — 실제 브라우저 캡처](docs/images/aria_robot_workflow.gif)
-
-**M0609 관절 구동 → 고장 정지 → 현장 수리 → 검증 후 복구 → CCIFPS 검사 부위 확대**
-
-실행한 브라우저의 주요 단계 캡처를 연결한 반복 미리보기입니다. 연속 시간 영상은 아니며, 검사 화면은 기존 CCIFPS 모델의 실제 추론 결과입니다.
-
-**3D 공정 편집, 이산 사건 시뮬레이션(DES), CCIFPS 검사 연결, 휴머노이드 순찰 및 문제 보고를 통합한 산업 시뮬레이션 워크스페이스입니다.** 상단의 **Factory**에서 공정을 설계·실행하고, **QC Live**에서 기존 비전 검사 화면을 사용할 수 있습니다.
-
-## 관절 제어·입체 검사·자율 수리 — 2026-09-18
-
-**공식 M0609 모델 → 6축 가상 제어 → 집기·검사·놓기 완료 확인 → 고장 정지 → 순찰 로봇 진단·수리 → 시험 동작 → 공정 재개**를 연결했습니다.
-
-- **로봇 구동 모듈**: 공식 두산 M0609 URDF와 10개 형상. 관절 현재/목표값, 속도, TCP, 그리퍼, 7단계 명령 완료 상태를 확인합니다.
-- **입체 검사**: 현재 2D 이미지와 실제 CCIFPS 히트맵을 공간에서 회전·확대하고 최대 반응 픽셀을 확인합니다. 실제 깊이·뒷면을 추정하지 않습니다.
-- **수리 하네스**: 현장 도착 → 센서 진단 → 허용된 가상 도구 → 재검사/손목 시험 → 인터록 해제. 실패·원인 불명 시 정지를 유지합니다.
-- **검증**: 전체 테스트 **74개 통과**. 10개 seed 모두 고장 중 생산 중단 및 복구 후 재개. 복구 중앙값 21.0 제어초. 기존 모델로 실제 이미지 추론 NG 확인(0.7275 / 임계값 0.3996).
-
-![공식 M0609 모델의 가상 구동과 관절 상태](docs/images/robot-module-working.png)
-
-![CCIFPS 근거를 공간에서 확대하는 검사 작업대](docs/images/inspection-heatmap.png)
-
-검사 원본: [MVTec AD](https://www.mvtec.com/research-teaching/datasets/mvtec-ad), bottle / broken_large / 000. 원본·히트맵을 포함한 해당 검사 캡처와 위 GIF는 [CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/) 조건으로 공유합니다. 변형: CCIFPS 히트맵·공간 뷰·UI 합성.
-
-현재 MACHINE-01 선택 → **로봇 구동 모듈 → 1× 공정 실행**으로 볼 수 있습니다. **가상 그리퍼 고장 주입**은 별도의 MTTR 타이머 없이 하네스가 검증한 뒤 복구합니다. Factory의 **입체 검사 → CCIFPS 분석 실행**으로 이미지 근거를 확인합니다.
-
-작업 궤적은 ARIA에서 작성했고, **실기기 운전 로그·두산 컨트롤러·충돌/토크 동역학을 재현한 것은 아닙니다**. [구현·재현·근거·제한 상세](docs/ROBOT_INSPECTION_HARNESS.md)
-
-## 구현된 기능
+## 현재 구성
 
 | 영역 | 구현 내용 |
 |---|---|
-| 공정 설계 | Source / Conveyor / Buffer / Machine / Inspection / Diverter / Sink 배치, 연결, 속성 편집, JSON 저장·불러오기 |
-| 시뮬레이션 | 이벤트 큐 기반 DES, 유한 버퍼, 처리·정체·자재 부족·고장 상태, 실행/정지/단계 진행/배속/초기화 |
-| 공정 분석 | 처리량, 양품 생산량, WIP, 리드타임, 불량률, OEE V1, 자원별 병목 및 시나리오 비교 |
-| 3D 설비 | CNC 하우징, 로봇팔, 안전 펜스, 검사 부스·카메라, 컨베이어, 팔레트·자재함, 공장 전체/평면/셀 확대 보기 |
-| CCIFPS 연결 | 실제 CCIFPS 추론 어댑터와 검사 결과에 따른 분기. 데이터·모델 미준비 시 검사 누락 사유를 기록 |
-| 순찰 로봇 | ARIA-01 / ARIA-02 휴머노이드가 설비 점유 영역을 피해 A* 경로로 이동. 생산 일시정지 중에도 순찰 지속 |
-| 문제 보고 | DOWN, 물류 정체, 자재 부족, 검사 누락 감지. 근거·감지 시각·현장 확인 로봇·복구 상태 기록 및 Markdown 다운로드 |
-| 공정 에이전트 | 병목 분석, 비교 실험, 검토 가능한 변경 제안. 공장 모델 변경은 사용자 승인 후 적용. 채팅/MCP에서 문제 보고 조회 |
+| 캠퍼스 | `campus.layout.json`으로 배치한 3개 공장, 홀 진입·지붕 페이드·미니맵 |
+| 모델 비교 | 각 공장의 코어셋·CCIFPS·`random_same_k` 3개 레인, 총 9개 저장 실행 |
+| 1공장 BOTTLE | 비전 터널, 상부 고정 카메라·링 조명, NG 푸셔, HOLD 게이트 |
+| 2공장 SCREW | 볼 피더, 유리 원판 원호 경로, 상부 카메라, 에어 노즐, OK 통 |
+| 3공장 CARPET | 언와인더, 라인 카메라·조명, 결함 라벨, 리와인더, 롤 등급별 적재 |
+| 검사 근거 | 원본 해상도·모델·임계값, 최근 판정 10개 입력/히트맵, 지연 p50/p95 |
+| 이송 로봇 | 별도 7단계 `TRANSFER`, 박스·통·롤·재검사 부품 ID 추적 |
+| 하류 물류 | 저장 A/B 출구에서 포장·팔레트·지게차·트럭 계산, 제품별 화면 매핑 |
+| CPU Live | BOTTLE CCIFPS 1개 레인의 실제 검사, WebSocket 상태, 순찰·고장·복구 |
 
-기본 공정 데모와 순찰·보고는 API 키 없이 동작합니다. 순찰 보고는 **가상 공장의 실제 DES 신호를 사용하는 규칙 기반 기능**입니다. 보행 애니메이션과 평면 경로 계획을 제공하며, 물리 기반 보행·로봇 간 충돌 회피·실제 설비 진단·실물 수리는 구현하지 않았습니다. 가상 설비의 자율 수리는 위의 명시적 하네스에서 수행합니다. CCIFPS 실검사는 별도 데이터와 모델 준비가 필요합니다.
+카메라는 데이터셋과 같은 **수직 하향 방향**입니다. 검사는 고정 카메라가 담당하고, 로봇은 이송·적재를 담당합니다. 현재 스테이션은 코드로 만든 일반 설비 형상이며 실존 장비 제품의 외형·로고를 복제하지 않습니다. CNOTTA 로고는 교체 가능한 임시 SVG입니다.
 
-## Linux CAD · FreeCAD 연결 1단계
+## Replay와 Live의 차이
 
-실제 FreeCAD 1.1.3 커널로 CNC 본체를 생성하고 ARIA에 적용합니다. **폭·깊이·높이 입력 → CAD 생성·정적 형상 검증 → 변경 검토·Apply → 3D 표시**를 연결했습니다. FCStd·STEP 원본과 검사 보고서를 내려받을 수 있습니다.
+| | Replay | CPU Live |
+|---|---|---|
+| 입력 | 해시 검증된 저장 실행·예측·지연 프로파일 | 로컬 BOTTLE 이미지와 검증된 CCIFPS 모델 번들 |
+| 검사 | 저장 판정과 히트맵을 재생 | 기존 검출기로 실제 CPU 추론 |
+| 범위 | 3개 클래스 × 3개 모델 | BOTTLE CCIFPS 1개 레인 |
+| 시간 | 저장 실행의 공유 sim 시계, 시각 이동·배속 | 별도 시연용 DES의 서버 시계 |
+| 실행 방법 | 홀 선택 후 하단 **재생** | 상단 **Live 운영** → **Live 시작** |
 
-- MCP 도구: `get_cad_status`, `build_cnc_cad`, `get_cad_asset` — 실제 stdio 호출 검증 완료.
-- CNC 본체: **16개 유효 솔리드 · 2,732개 삼각형 · 본체 부품 간 정적 겹침 0건**.
-- 브라우저에서 폭 **2,800mm** 모델 생성·적용·Run/Pause 검증. 전체 테스트 **65개 통과**.
-- 이번 단계는 CNC 본체 형상 연결이며, 로봇 경로 충돌·물리·실제 제조사 설계 검증은 포함하지 않습니다.
+Replay의 3D 장면은 저장 결과의 시각화입니다. Live는 연구 본 실행과 분리된 시연이며, 연구 결과를 생성하거나 수정하지 않습니다. 모델과 입력이 준비되지 않은 검사를 가짜 OK/NG로 대체하지 않습니다.
 
-![실제 FreeCAD CNC를 적용한 공정 실행](docs/images/freecad_cnc_running.png)
+```mermaid
+flowchart LR
+    A[정책 A DES 원자료] --> R[검증된 저장 타임라인]
+    A --> B[정책 B·재검사 변형 사후 계산]
+    R --> P[Replay 대시보드]
+    B --> P
+    R --> L[하류 물류·구간/롤·TRANSFER]
+    B --> L
+    L --> P
+    I[로컬 이미지·CCIFPS 번들] --> C[별도 CPU Live]
+    C --> W[WebSocket·고정 카메라 검사·이송 화면]
+```
 
-[설치·MCP 연결·검증 및 제한 사항](docs/FREECAD_INTEGRATION.md)
+## 실행 준비
 
-## 현재 워크스테이션에서 실행
+검증 환경은 **Python 3.10, Node.js 20, Linux**입니다. Python 의존성이 준비된 격리 환경과 프런트엔드 로컬 의존성을 사용합니다. [requirements.txt](requirements.txt)는 연구·기존 Factory 기능까지 포함하고 `faiss-gpu` 등 환경별 설치가 필요한 항목이 있으므로, 모든 OS에서 동일하게 설치되는 잠금 파일은 아닙니다.
 
-Python 3.10과 Node 20을 사용하는, 이미 구성된 `aria` 환경 기준입니다. 새 환경에서는 Python 의존성(`requirements.txt`)과 프런트엔드 의존성(`frontend/package.json`)을 먼저 설치하세요.
+**Git 클론에는 연구 원자료·데이터셋·모델 가중치가 포함되지 않습니다.** 새 클론에서 데이터가 있는 화면을 실행하려면 아래 자산을 별도로 준비해야 합니다.
+
+| 자산 | 연결 위치 / 설정 |
+|---|---|
+| 검증된 파일럿 A 실행 | `CNOTTA_PILOT` → `runs/*/complete.json`과 원자료가 있는 폴더 |
+| P1 예측·GT·저장 히트맵 | `CNOTTA_P1` → 클래스별 `complete.json`, 모델별 예측·맵 |
+| 본 실험 결과 | `CNOTTA_RESULTS` → 실행 폴더·완료/검증 마커·집계·REPORT |
+| 데이터셋 이미지 | 저장소의 `data/bottle`, `data/screw`, `data/carpet` |
+| Live 모델 | `banks/ccifps/<run_id>/`의 완료 번들과 manifest가 참조하는 가중치 |
+
+Live의 모델 ID는 [configs/live_ops.json](configs/live_ops.json)에 있습니다. 번들의 bank·가중치 해시와 경로가 맞아야 합니다. Live 입력 순서는 시연용이며 연구의 불량률 5% 재샘플링과 구분합니다. 기존 작업 환경의 데이터 기본 경로는 [scripts/demo.sh](scripts/demo.sh)에서 확인할 수 있습니다.
+
+## 대시보드 시작
 
 ```bash
-cd /userHome/userhome4/sehoon/Aria-virual-industrial-main
+git clone --branch dt-cnotta https://github.com/JUNGSEHOON-AutoML/Aria-virual-industrial.git
+cd Aria-virual-industrial
+
+# 프로젝트 Python 의존성이 준비된 격리 환경을 활성화합니다.
 conda activate aria
+
+# 새 체크아웃에서 프런트엔드 의존성 준비
 cd frontend
-npm run build
+npm ci
 cd ..
-python -m uvicorn server.app:app --host 127.0.0.1 --port 8230
+
+export CNOTTA_PYTHON="$(command -v python)"
+export CNOTTA_NODE="$(command -v node)"
+export CNOTTA_PILOT=/absolute/path/to/des_pilot30
+export CNOTTA_P1=/absolute/path/to/p1_verified
+export CNOTTA_RESULTS=/absolute/path/to/completed_policy_a_results
+
+bash scripts/demo.sh
 ```
 
-브라우저에서 <http://localhost:8230/>에 접속합니다.
+- 대시보드: [http://127.0.0.1:5278/cnotta.html](http://127.0.0.1:5278/cnotta.html)
+- Live: [http://127.0.0.1:5278/cnotta.html?mode=live](http://127.0.0.1:5278/cnotta.html?mode=live)
+- API 문서: [http://127.0.0.1:5277/docs](http://127.0.0.1:5277/docs)
 
-1. **Factory → Run**으로 생산 흐름과 KPI를 확인합니다.
-2. 설비를 선택하고 **Cell close-up**으로 로봇팔·검사 부스를 확대합니다.
-3. **Patrol** 탭에서 두 로봇의 이동·관측 상태를 확인합니다.
-4. **자율 수리 시나리오**는 선택한 설비를 가상 고장으로 정지시킵니다. 순찰 로봇이 도착하고 하네스의 수리·재검사가 통과해야 복구합니다. 생산 Run/Pause와 수리 진행은 구분됩니다.
-5. 고장 감지와 로봇 도착 후 현장 확인을 구분해 확인하고, **문제 보고서** 또는 **Download report**로 기록을 조회합니다.
-
-모델·시나리오는 `outputs/factory/factory.json`, 최근 200개 사건은 `outputs/factory/patrol_reports.json`에 저장합니다. `ARIA_FACTORY_STATE_DIR`로 저장 위치를 바꿀 수 있습니다. 런타임 데이터·모델·자격 증명은 Git에 포함하지 않습니다.
-
-## 실제 구동 화면 — 2026-09-17
-
-아래는 실행 중인 앱을 Chrome에서 직접 캡처한 화면입니다. 이번 캡처의 검사 셀은 MOCK 데모 모드이며 CCIFPS 실추론 성능 증거가 아닙니다. 첫 네 장은 생산 실행 중이며, 마지막 장은 누적 사건에 대한 보고 조회입니다. 보고서에는 명시적으로 실행한 가상 고장 시나리오의 기록도 포함됩니다.
-
-### 1. 공장 전체 가동과 순찰 팀
-
-![공장 전체 가동, KPI와 휴머노이드 순찰](docs/images/01-factory-running.png)
-
-### 2. CNC·로봇팔 작업 셀 확대
-
-![CNC 하우징과 로봇팔, 안전 펜스](docs/images/02-cnc-cell.png)
-
-### 3. 비전 검사 셀 확대
-
-![검사 부스와 카메라 구성](docs/images/03-inspection-cell.png)
-
-### 4. 공정 배치 평면 보기
-
-![공장 평면 배치와 연결 흐름](docs/images/04-factory-top.png)
-
-### 5. 순찰 사건과 에이전트 문제 보고
-
-![설비 고장 근거, 현장 확인 및 문제 보고 조회](docs/images/05-patrol-report.png)
-
-## 정량 실험 결과 (30개 시드 × 조건별 1시간)
-
-실제 엔진 반복 실행 결과입니다. MOCK 검사·빈 공장 출발 조건이며 실제 공장 검증이나 상용 도구와의 비교 결과는 아닙니다.
-
-| 조건 | 처리량/h | 리드타임 | 평균 WIP | 기준 대비 처리량 |
-|---|---:|---:|---:|---:|
-| Baseline | 1117.7 | 49.10s | 15.35 | +0.00% |
-| Machine capacity 2 | 1783.4 | 14.54s | 7.22 | +59.61% |
-| Processing time 2s | 1676.6 | 32.91s | 15.40 | +50.01% |
-| Buffer capacity 20 | 1117.7 | 95.05s | 29.92 | +0.00% |
-
-![공정 변경 실험 비교](docs/images/factory_benchmark.png)
-
-가상 고장 30회 중 30회 현장 확인, 모델 내 확인 시간 평균 4.12초. 실제 장비 고장 탐지 정확도를 뜻하지 않습니다.
-
-규모 시험: 10·30개 컴포넌트는 10초 예산 내 1시간 완주(각 3/3), 100개는 0/3. 웹 화면은 소프트웨어 렌더링에서 보기별 평균 **9.5–11.7 FPS**였다.
-
-**판단:** 이 모델 안에서 병목 개선안의 효과를 수치로 비교할 수 있음을 확인했습니다. 물리 기반 로봇 제어·실제 공장 보정·상용 도구 대비 우수성은 아직 검증하지 않았습니다. 소프트웨어 렌더링 성능도 별도 개선·검증이 필요합니다.
-
-[95% 신뢰구간·3D 성능·한계·재현 방법 및 원자료](docs/FACTORY_BENCHMARK_REPORT.md)
-
-## 검증 및 상세 문서
-
-- Python 전체 테스트 **65개 통과**, 프런트엔드 production build 통과(대형 번들 경고 존재).
-- 실제 브라우저에서 **고장 주입 → ARIA-01 현장 확인 → recovered 기록** 검증. 해당 검증의 브라우저 예외·HTTP 오류 0건.
-- [공정 시뮬레이션 구현·API·실험 보고서](docs/INDUSTRIAL_V1_REPORT.md)
-- [순찰·문제 보고 구현 및 검증](docs/PATROL_AGENT_REPORT.md)
-- [공정 에이전트 명세](docs/specs/INDUSTRIAL_SIM_AGENT_V1.md)
-- [작업 진행 기록](docs/CODEX_PROGRESS.md)
-
-주요 코드: `aria/simulation/des/`(엔진·검사·순찰·에이전트), `server/routers/factory.py`(API), `frontend/src/hmi/factory/`(3D/UI), `aria/mcp/servers/factory_mcp.py`(MCP).
-
-
-## CNOTTA 검사 트윈 데모
-
-`dt-cnotta`의 `/cnotta.html`은 기본으로 정책 A 타임라인과 B 사후 계산을 재생합니다. `?mode=live`의 **Live 시작**은 기존 FactoryService·CCIFPS·M0609·순찰·수리 하네스를 연결한 별도 CPU 시연을 시작합니다. 본 실험은 제어하지 않습니다. 임시 로고이며 실제 GPU 화풍·FPS는 미확인입니다.
-
-격리 Python 환경의 기존 프로젝트 의존성과 FastAPI/Uvicorn, Node 20.19+ 및 `frontend/node_modules`가 필요합니다. 새 체크아웃에서는 `cd frontend && npm ci`로 프런트 로컬 의존성을 준비하세요. 설치된 격리 환경을 사용할 수 있으며 시스템 패키지를 변경하지 않습니다.
+스크립트는 `CUDA_VISIBLE_DEVICES=''`로 CPU 실행을 고정하고, API와 웹 서버를 loopback에만 띄웁니다. 사용 중인 포트는 실행을 거절하며, Ctrl+C는 이 스크립트가 시작한 두 서버만 정리합니다. 서버를 원격 머신에서 실행했다면 웹 포트를 전달하세요.
 
 ```bash
-export CNOTTA_PYTHON=/path/to/isolated/env/bin/python
-export CNOTTA_NODE=/path/to/node
-export CNOTTA_PILOT=/path/to/verified/des_pilot30
-export CNOTTA_P1=/path/to/verified/p1_verified
-./scripts/demo.sh
+# 로컬 PC에서 원격 서버의 웹 포트 전달
+ssh -L 5278:127.0.0.1:5278 <user>@<server>
+
+# 다른 포트로 실행하려면 서버에서
+CNOTTA_API_PORT=5287 CNOTTA_WEB_PORT=5288 bash scripts/demo.sh
 ```
 
-기존 작업 폴더의 파일럿·P1은 기본 경로를 사용합니다. 연구 원자료는 Git에 포함하지 않으므로 새 클론은 위 환경변수로 보존된 데이터를 읽기 전용 연결해야 합니다. `CNOTTA_RESULTS`는 검증 완료된 본 실험 폴더를 지정합니다. 결과가 미완료이면 비교 탭은 **실험 진행 중**을 표시합니다.
+원기록 최초 해시 검증·로딩은 60초 이상 걸릴 수 있습니다. **홀 선택 → 재생 → 스테이션 HMI** 순서로 이동하면 판정과 검사 근거를 볼 수 있습니다. Live는 **Live 시작**을 눌러야 시간이 진행됩니다. CPU 추론 중에는 해당 검사 상태를 유지합니다. `bash scripts/demo.sh --check`는 기동·페이지·API를 점검한 뒤 자신이 시작한 서버를 종료합니다.
 
-브라우저: `http://127.0.0.1:5278/cnotta.html`. 원격 사용 시 SSH로 5278 포트를 전달하세요. API는 5277이며 두 서버 모두 loopback에만 바인딩합니다. 다른 프로세스가 점유한 포트는 종료하지 않고 실행을 거절합니다. 대체 포트는 `CNOTTA_WEB_PORT`, `CNOTTA_API_PORT`로 지정합니다. `./scripts/demo.sh --check`는 기동·API/페이지 응답을 검증하고 자신이 시작한 서버만 정리합니다. Ctrl+C도 동일합니다.
+## 연구 계산 계약
 
-실행 선택 → 재생(1/10/60×) 또는 시각 이동 → 부품 ID/설비 검색 → 상세·수명주기 → 자원/재검사/비교 탭 순으로 확인합니다. 초기 예시 부품 ID는 `P0000001`, 설비 검색어는 `VISION`입니다. 판정 전 점수는 숨기고, 저장되지 않은 관절 값·비교 기준·최대 처리량은 —로 표시합니다. 초기 배치와 랙 초과분 1/4 축소 적재는 assumed이며 박스 인스턴스 개수는 실제 사후 대기열과 같습니다. KPI는 [600,t] 관측 창, t≤600은 [0,t]를 사용합니다. 재생 중 KPI는 별도 표기된 시각의 스냅샷입니다.
+- DES는 **정책 A만 실행**하고 정책 B와 재검사 변형은 저장된 A에서 사후 계산합니다.
+- 계획은 기준 A 2,700회 + 상한 확인 270회 = **2,970회**입니다. 기존 유효 A 15회를 재사용하므로 신규 실행은 **2,955회**입니다.
+- B 기본 2,700건 + 단일 요인 변형 1,620건 = **사후 계산 4,320건**입니다.
+- 소스는 불량률 5% 확률로 복원추출하며, 관측 불량률을 강제로 5%에 맞추지 않습니다.
+- 재검사 부하·오탐·인시는 워밍업 이후 본 라인 출구 전체를 분모로 **1,000개당 정규화**합니다.
+- GT는 소스 준비·평가·재검사 oracle에서 사용하며 화면의 AI 판정이나 롤 등급에 피드백하지 않습니다.
 
-검증: `PYTHONPATH=. python -m tools.gates.m0`부터 `m6`까지. 브라우저 측정은 `python -m tools.gates.capture_browser`(Chrome·SwiftShader, 로컬 실행 URL 필요), 전체 테스트는 `python -m pytest tests -q`, 골든 검증은 `python tests/golden_trace.py --verify`입니다. DB 통합 테스트에는 `ARIA_TEST_POSTGRES_DSN`이 필요합니다. 게이트 JSON·진행·결정·제약은 `docs/autopilot/`, 최종 보고서는 `docs/autopilot/REPORT.md`에 있습니다. 녹화·브라우저 캡처는 커밋하지 않는 `docs/autopilot/local/`에 저장합니다.
+본 실험의 완료/검증 마커는 확인됐고, **M5의 실데이터 UI 게이트 재검증은 남아 있습니다.** 완료 원자료와 전체 REPORT는 Git에 포함되지 않습니다. 계산 계약과 재현 경로는 [재설정 명세](docs/specs/ARIA_DT_Reset_BuildSpec_v3.md), [재설정 보고서](docs/DT_RESET_REPORT.md), [최신 진행 기록](docs/autopilot/PROGRESS.md)을 참고하세요. 초기 보고서의 “실행 대기”는 작성 당시 상태입니다.
 
-흐름 확인: 하단 **흐름 연출 (assumed)** 모드에서 **재생 → 1×**를 선택하세요. 저장된 대기·처리 시간에 부품 위치를 맞춘 설명용 연출이며, 실제 이송 속도나 관절 측정값은 아닙니다. 출처 없는 기존 로봇 회전은 G1에서 비활성화했으며, Live의 관절 운동은 서버 운동학 상태만 따릅니다. **기록 위치** 모드는 기존 원시 역 위치를 유지합니다. 검사·분류·출구 시각이 같은 원시 이벤트는 여전히 즉시 완료됩니다. 두 모드 모두 판정·재고 수·KPI·이벤트 시각은 동일하며 일시정지 시 움직임도 멈춥니다.
+CARPET의 이미지 1장은 원단 구간으로 매핑하고, 롤 등급은 제때 부착된 NG 라벨 수로 정합니다. 무라벨 결함·미탐은 별도 사후 평가 항목입니다. 구간 길이·롤 크기·등급 기준·물류 속도·이송 자세와 시간은 **`assumed`** 설정입니다. 물류와 TRANSFER의 대기는 원본 DES/B 시각·처리량을 변경하지 않습니다.
 
-비전 분석: CNOTTA 상단의 **비전 분석**에서 bottle/screw/carpet 및 세 모델을 선택합니다. `docs/reports/vision_audit/<class>/REPORT.md`와 동일한 JSON을 읽으며 점수 분포·결함별 성능·오탐/미탐 갤러리·판정 차이·파일럿 공정 영향을 표시합니다. 원본 이미지와 파생 근거는 Git에서 제외되어 새 클론에서는 `CUDA_VISIBLE_DEVICES="" PYTHONPATH=. python -m tools.build_vision_audit`로 보존된 P1·데이터를 CPU 분석해야 합니다. 기존 EvidenceStore와 사후 계산을 재사용하며 재추론하지 않습니다. 전체 테스트·골든 검증 뒤 `python -m tools.gates.l1`로 CSV 재집계 및 브라우저 일치를 확인합니다.
+## 검증 상태
 
-기본 화면은 3개 공장을 보여 주는 **캠퍼스**입니다. 지붕 또는 공장 간판·상단 홀 선택·미니맵을 누르면 홀 내부 3개 모델 레인이 열립니다. 아래 **재생**을 누르면 같은 sim 시계로 저장된 부품·NG·B 재검사 대기열을 재생합니다. 상단 **캠퍼스**로 돌아옵니다. 기존 단일 실행 화면은 `cnotta.html?view=line` 또는 **단일 실행** 링크로 엽니다. **Live 운영** 또는 `cnotta.html?mode=live`에서 BOTTLE CCIFPS 실검사·M0609 동작·실제 히트맵·고장 주입과 복구를 확인합니다. 첫 화면은 로봇 셀 확대이며 **공정 전체 보기**로 레인과 순찰을 볼 수 있습니다. 다른 클래스·모델은 Replay만 지원합니다. CPU 검사 동안 공정 시간은 대기하며 상태가 표시됩니다. 시작·일시정지 및 1/2/5/20× 속도는 서버에 적용됩니다. 원본 연구 데이터는 읽기 전용이고 시연 출력은 `outputs/cnotta-live/<session>/`에 저장됩니다.
+S1–S3 및 L2 역할 재검증 시점(`f8da8c9`, 2026-10-13)의 결과입니다.
 
-배치는 `frontend/src/campus/campus.layout.json`에서 변경합니다. 로고 경로는 `frontend/public/brand/identity.json` 한 곳에 정의되어 있습니다. 원본이 도착하면 같은 brand 폴더의 `cnotta-mark.svg`·`cnotta-wordmark.svg`를 윤곽선 SVG(fill path, viewBox 포함)로 교체하면 지붕의 두 입체 로고와 상단·입구 마크가 함께 반영됩니다. 교체 후 `tools/gates/capture_campus.py`와 `python -m tools.gates.m7`로 글자 높이·가독성을 재검증합니다.
+| 검증 | 결과 |
+|---|---|
+| 백엔드 전체 | **223 passed, 3 skipped** |
+| 골든 트레이스 | **diff 0** |
+| 기존 DES·평가기·robot.py·기존 테스트 | S1–S3 변경 없음 |
+| 검사 카메라 9대 | 하향 각도 오차 0°, 트리거 제품 전체가 frustum 안 |
+| SCREW / CARPET | 저장 경로 겹침 0, 구간 보존·라벨 기반 등급 일치 |
+| TRANSFER | 출처 이벤트 = 작업 **15,469건**, 물체 ID 일치 |
+| 그리퍼 | OPEN 중 고정 물체 이동 0m, CLOSED 시 TCP 차이 0m |
+| 웹 | CPU 빌드 성공, 브라우저 JS/HTTP 오류 0, 최대 183 draw calls |
+| 실제 CPU Live | 실제 NG 검사·원본/히트맵·일시정지 확인 |
 
-캠퍼스는 클래스·모델·seed 0·inline·0.5 m/s·profile이 일치하는 완료 파일만 읽습니다. 본 실험이 진행 중이어도 `complete.json`이 있는 개별 실행을 기존 hash 검증 후 읽을 수 있습니다. 없는 레인은 **완료 대기**이며 30초마다 목록을 다시 확인합니다. 부분 실행 공개는 최종 요약·95% CI 검증 완료를 뜻하지 않습니다.
+[상세 보고서](docs/autopilot/STATIONS_REPORT.md) · [S1 게이트](docs/autopilot/gates/s1.json) · [S2 게이트](docs/autopilot/gates/s2.json) · [S3 게이트](docs/autopilot/gates/s3.json) · [L2 재검증](docs/autopilot/gates/l2-stations.json)
+
+```bash
+# 준비된 격리 Python 환경, 저장소 루트에서
+CUDA_VISIBLE_DEVICES='' OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1 python -m pytest tests -q
+CUDA_VISIBLE_DEVICES='' python tests/golden_trace.py --verify
+node tools/gates/stations_test.mjs
+
+# CNOTTA 웹 빌드: 기존 Factory의 npm run build와 별도 설정
+cd frontend
+node node_modules/vite/bin/vite.js build --config vite.cnotta.config.js
+```
+
+원자료 기반 테스트에는 검증된 데이터가 필요하고, PostgreSQL 통합 테스트에는 `ARIA_TEST_POSTGRES_DSN`이 필요합니다. CPU 브라우저 게이트의 URL·실행 순서는 [스테이션 보고서](docs/autopilot/STATIONS_REPORT.md)를 따릅니다. 문서만 변경한 커밋에서 과거 테스트를 재실행한 것으로 표시하지 않습니다.
+
+## 구조
+
+```text
+aria/dashboard/          Replay·CPU Live API, 물류·스테이션·TRANSFER
+aria/simulation/des/     기존 DES·로봇 FK·검사·순찰·복구
+aria/simulation/dt/      연구 계획·정책 B 사후 계산·평가기
+aria/inspection/         기존 이상 탐지 어댑터
+aria/mcp/servers/        파일·추론·공정 등 MCP 도구
+frontend/src/campus/     3개 홀·카메라·Replay·물류 화면
+frontend/src/stations/   제품별 설비·검사 카드·이송·롤 표현
+frontend/src/live/       CPU Live 상태·입력/히트맵·순찰 UI
+configs/                캠퍼스·움직임 출처·물류·스테이션 설정
+docs/specs/             BuildSpec 및 추가 명세
+docs/autopilot/          진행·결정·제약·검증 게이트
+exports/usd/            O1 시점의 정적 OpenUSD 스냅샷
+tools/                  연구 도구·CPU 검증·USD 내보내기
+scripts/demo.sh         CPU 대시보드 실행
+```
+
+모든 새 움직임은 [ambient_motion.json](configs/ambient_motion.json)에 출처와 시계를 등록합니다. 임의 타이머나 난수로 판정·대기열을 만들지 않습니다. 실행 결과·모델·토큰·내부 참고 프레임·로컬 캡처는 Git에서 제외합니다. 대용량 연구 자료의 보존 목록은 [provenance](docs/provenance/dt-wip-20261013/external_artifacts.json)에 있습니다.
+
+## 다음 단계와 한계
+
+- 다음 웹 순서: **L3 → L4 → V1–V3 → M3/M4 재검증 → G3 → M5 → M6 재검증**. S1–S3와 L2 역할 재검증은 완료했습니다.
+- 실제 GPU 화풍·FPS는 미확인입니다. 현재 브라우저 검증은 **SwiftShader**입니다.
+- O0 환경 게이트 미달로 Omniverse O2/O3는 보류입니다. 기존 O1 USD는 S1–S3 이전 정적 장면으로, 현재 웹 설비와의 일치는 다시 검증해야 합니다. [O1 보고서](docs/autopilot/O1_REPORT.md)
+- V2/V3의 추가 입력은 승인된 L1 이미지 범위와 충돌해 보류입니다. 모델 코드·가중치 라이선스를 각각 확인하기 전에는 다운로드하지 않으며 Hunyuan3D는 사용하지 않습니다.
+- 로봇 운동은 가상 운동학과 assumed 작업 매핑입니다. 실장비 제어·충돌/토크 동역학·실제 공장 생산성 검증을 의미하지 않습니다.
+
+상세 결정은 [DECISIONS](docs/autopilot/DECISIONS.md), 미완료 사유는 [BLOCKERS](docs/autopilot/BLOCKERS.md)에 기록합니다.
+
+## 기존 Factory와 자료
+
+기존 공정 편집기·CAD·순찰 기능은 보존되어 있습니다. 준비된 환경에서 `frontend`의 `npm run build` 후 저장소 루트에서 `python -m uvicorn server.app:app --host 127.0.0.1 --port 8230`으로 실행하며, 현재 CNOTTA 데모와 별도 진입점입니다.
+
+[공정 시뮬레이터](docs/INDUSTRIAL_V1_REPORT.md) · [순찰·보고](docs/PATROL_AGENT_REPORT.md) · [기존 로봇 검사 하네스](docs/ROBOT_INSPECTION_HARNESS.md) · [FreeCAD](docs/FREECAD_INTEGRATION.md) · [이전 README 기록](https://github.com/JUNGSEHOON-AutoML/Aria-virual-industrial/blob/f8da8c9/README.md)
+
+데이터셋·모델 가중치·폰트·HDR·로봇 자산의 라이선스는 각각의 원본 조건과 저장소 내 출처 기록을 따릅니다. 기존 MVTec 이미지가 포함된 역사 자료의 출처·이용 조건은 이전 README 및 해당 보고서에 보존했습니다. 제3자 참고 영상 프레임은 내부 참고용이며 공개 저장소에 포함하지 않습니다.

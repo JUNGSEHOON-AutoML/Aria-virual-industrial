@@ -57,3 +57,6 @@ S2 완료: `gates/s2.json` 통과. BOTTLE 터널·SCREW 원판·CARPET 롤 투 �
 S3 및 L2 역할 재검증 완료: `gates/s3.json`, `gates/l2-stations.json`. 별도 7단계 TRANSFER에서 9개 레인의 이벤트/작업 각각 15,469건·ID 일치, OPEN 고정 물체 이동 0m, CLOSED TCP 차이 0m. 등급별 놓기 자세 구분. 기존 robot.py 및 기존 테스트 26개 파일은 d64e815와 바이트 동일, DES/DT 평가/사후 계산 코드 변경 0. 전체 223 passed·3 skipped·골든 diff 0·CPU 빌드 통과. 실제 BOTTLE CCIFPS CPU NG 1건 및 입력/히트맵 연결·정지 고정 확인. UI는 고정 카메라 검사와 일반 형상 이송 로봇으로 변경했으며 이전 CAD 검사팔 표시는 INVALID 보존. 9건의 결정은 DECISIONS, 범위/명령은 STATIONS_REPORT에 기록했다.
 
 현재 웹 순서: S1→S2→S3→L2 재검증 완료 → L3 → L4 → V1–V3 → M3 → M4 → G3 → M5 → M6. 본 실험의 완료 마커가 확인되어 M5는 실험 대기가 아닌 실데이터 UI 재검증 대기다. O1 USD는 이전 정적 스냅샷이며 새 스테이션과의 일치 재검증 전에는 최신이라고 취급하지 않는다. O2/O3 환경 차단·실제 GPU 미확인은 유지한다. CPU 미리보기 5288은 검사 결과를 보존한 일시정지 상태이며 Live 시작으로 재개한다.
+
+README 공개 준비: S1–S3 캠퍼스·고정 카메라·TRANSFER·CPU Live를 첫 진입점으로 재작성. 실행 명령, 데이터/번들 별도 준비, 기존 검증 시점과 실제 GPU/O1/M5 제한을 명시하고 이전 README는 Git 이력 링크로 보존. dt-cnotta 게시 준비; 원격 커밋 확인 후 푸시 완료를 보고한다. 이번 변경은 문서만이며 본 실험·실행 서버는 변경하지 않는다.
+README 문서 게이트: `gates/readme.json` 통과. 상대 링크 25개·코드 블록 균형·기존 검증 수치 대조 완료. 실행 코드 변경이 없어 백엔드 테스트를 다시 실행하지 않았다.

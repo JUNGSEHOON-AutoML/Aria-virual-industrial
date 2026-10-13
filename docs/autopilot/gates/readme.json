@@ -1,0 +1,24 @@
+{
+  "milestone": "M6 README publication",
+  "passed": true,
+  "branch": "dt-cnotta",
+  "checks": {
+    "local_links_checked": 25,
+    "missing_links": [],
+    "fences_balanced": true,
+    "reported_backend_passed": 223,
+    "reported_backend_skipped": 3,
+    "reported_golden_diff": 0,
+    "verification_source": "docs/autopilot/gates/s3.json",
+    "runtime_changes": false,
+    "new_test_execution": false
+  },
+  "publication": {
+    "target": "https://github.com/JUNGSEHOON-AutoML/Aria-virual-industrial",
+    "branch": "dt-cnotta",
+    "main_update": false,
+    "force_push": false,
+    "previous_readme": "f8da8c9:README.md"
+  },
+  "note": "Documentation verification only. Push success is verified against the remote ref after publication; credentials are never recorded."
+}
