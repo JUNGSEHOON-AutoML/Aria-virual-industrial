@@ -51,3 +51,5 @@ O1 완료: `exports/usd/cnotta_campus.usda` 생성, `gates/o1.json` 전부 통�
 S1–S3 등록: BuildSpec 14절 및 5절 게이트/6절 예산 반영. O1 완료 다음 S1→S2→S3→기존 L2 재검증, 이후 순서 유지. 기존 L2/O1 증거는 보존. S1 3h·S2 6h·S3 3h; 구현 게이트는 아직 통과로 표시하지 않는다.
 
 S1 완료: `gates/s1.json` 통과. 저장 이벤트 기반 벨트/롤러·센서·상태 램프와 공통 스테이션 기반을 연결했다. 속도 적분 오차 0·정지 고정·트리거 점등 일치. S2/S3 결합 구현에 대한 단계별 증거를 이어서 기록한다.
+
+S2 완료: `gates/s2.json` 통과. BOTTLE 터널·SCREW 원판·CARPET 롤 투 롤, 9대의 수직 하향 카메라·원본/히트맵 카드·라벨 기반 롤 등급 연결. 카메라 각도 오차 0°·frustum 포함·배출 도착 일치·SCREW 겹침 0·CARPET 모든 구간 보존. 최대 183 draw calls, JS/HTTP 오류 0. SwiftShader에서 Live 상세 카드 가림을 독립 합성 레이어로 수정하고 실제 캡처 재확인. 실제 GPU 미확인.
