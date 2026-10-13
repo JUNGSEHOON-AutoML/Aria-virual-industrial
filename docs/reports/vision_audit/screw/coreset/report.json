@@ -1,0 +1,2159 @@
+{
+  "class": "screw",
+  "model": "coreset",
+  "images": 160,
+  "counts": {
+    "TP": 37,
+    "FN": 82,
+    "FP": 0,
+    "TN": 41
+  },
+  "threshold": 0.10270808544009924,
+  "histogram": {
+    "edges": [
+      0.05966848134994507,
+      0.06353424787521363,
+      0.06740001440048218,
+      0.07126578092575073,
+      0.07513154745101928,
+      0.07899731397628784,
+      0.0828630805015564,
+      0.08672884702682496,
+      0.0905946135520935,
+      0.09446038007736207,
+      0.09832614660263062,
+      0.10219191312789917,
+      0.10605767965316773,
+      0.10992344617843627,
+      0.11378921270370485,
+      0.11765497922897339,
+      0.12152074575424195,
+      0.1253865122795105,
+      0.12925227880477907,
+      0.13311804533004762,
+      0.13698381185531616,
+      0.1408495783805847,
+      0.14471534490585328,
+      0.14858111143112185,
+      0.1524468779563904,
+      0.15631264448165894,
+      0.16017841100692748,
+      0.16404417753219605,
+      0.16790994405746462,
+      0.17177571058273317,
+      0.1756414771080017
+    ],
+    "normal": [
+      6,
+      8,
+      4,
+      6,
+      10,
+      4,
+      0,
+      2,
+      1,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    "defect": [
+      0,
+      0,
+      6,
+      8,
+      9,
+      14,
+      13,
+      9,
+      7,
+      7,
+      9,
+      7,
+      3,
+      4,
+      3,
+      3,
+      2,
+      2,
+      1,
+      3,
+      3,
+      2,
+      0,
+      1,
+      1,
+      1,
+      0,
+      0,
+      0,
+      1
+    ]
+  },
+  "overlap": {
+    "definition": "intersection of empirical normal/defect score ranges (inclusive)",
+    "range": [
+      0.06741929054260254,
+      0.09416460990905762
+    ],
+    "normal_count": 27,
+    "defect_count": 63
+  },
+  "defect_types": [
+    {
+      "type": "good",
+      "images": 41,
+      "ng_count": 0,
+      "detection_rate": 0.0,
+      "mean_score": 0.07289385650216079
+    },
+    {
+      "type": "manipulated_front",
+      "images": 24,
+      "ng_count": 7,
+      "detection_rate": 0.2916666666666667,
+      "mean_score": 0.09501410772403081
+    },
+    {
+      "type": "scratch_head",
+      "images": 24,
+      "ng_count": 6,
+      "detection_rate": 0.25,
+      "mean_score": 0.09031184514363606
+    },
+    {
+      "type": "scratch_neck",
+      "images": 25,
+      "ng_count": 19,
+      "detection_rate": 0.76,
+      "mean_score": 0.12212713718414307
+    },
+    {
+      "type": "thread_side",
+      "images": 23,
+      "ng_count": 0,
+      "detection_rate": 0.0,
+      "mean_score": 0.08122862421947977
+    },
+    {
+      "type": "thread_top",
+      "images": 23,
+      "ng_count": 5,
+      "detection_rate": 0.21739130434782608,
+      "mean_score": 0.09481114926545517
+    }
+  ],
+  "gallery": [
+    {
+      "image_id": "screw/test/manipulated_front/000.png",
+      "image_sha256": "e9bdcdd0ef90d82b13a97a0b6b2ab0e0bf0c894408a9bc4dbb8c4b6503186eab",
+      "score": 0.09646350145339966,
+      "threshold": 0.10270808544009924,
+      "verdict": "OK",
+      "is_defect": 1,
+      "defect_type": "manipulated_front",
+      "kind": "FN",
+      "evidence_id": "f4102c7813f04584251ec93cfa6b6d4e",
+      "peak_patch": [
+        27,
+        11
+      ],
+      "smoothed_peak_uv": [
+        0.9977678571428571,
+        0.40848214285714285
+      ],
+      "source_url": "/api/dt/vision/screw/coreset/assets/f4102c7813f04584251ec93cfa6b6d4e/source.png",
+      "original_url": "/api/dt/vision/screw/coreset/assets/f4102c7813f04584251ec93cfa6b6d4e/original.png",
+      "overlay_url": "/api/dt/vision/screw/coreset/assets/f4102c7813f04584251ec93cfa6b6d4e/overlay.png",
+      "mask_url": "/api/dt/vision/screw/coreset/assets/f4102c7813f04584251ec93cfa6b6d4e/gt_mask.png",
+      "object_proxy_url": "/api/dt/vision/screw/coreset/assets/f4102c7813f04584251ec93cfa6b6d4e/object_proxy.png"
+    },
+    {
+      "image_id": "screw/test/manipulated_front/001.png",
+      "image_sha256": "91d89f66c4db3ec0104682f37e580f6c11fbd1bfe14f249346dc74760bf4eef8",
+      "score": 0.09419858455657959,
+      "threshold": 0.10270808544009924,
+      "verdict": "OK",
+      "is_defect": 1,
+      "defect_type": "manipulated_front",
+      "kind": "FN",
+      "evidence_id": "f5e2490f6535da41aa6134aa7b7fa31a",
+      "peak_patch": [
+        24,
+        25
+      ],
+      "smoothed_peak_uv": [
+        0.8683035714285714,
+        0.9084821428571429
+      ],
+      "source_url": "/api/dt/vision/screw/coreset/assets/f5e2490f6535da41aa6134aa7b7fa31a/source.png",
+      "original_url": "/api/dt/vision/screw/coreset/assets/f5e2490f6535da41aa6134aa7b7fa31a/original.png",
+      "overlay_url": "/api/dt/vision/screw/coreset/assets/f5e2490f6535da41aa6134aa7b7fa31a/overlay.png",
+      "mask_url": "/api/dt/vision/screw/coreset/assets/f5e2490f6535da41aa6134aa7b7fa31a/gt_mask.png",
+      "object_proxy_url": "/api/dt/vision/screw/coreset/assets/f5e2490f6535da41aa6134aa7b7fa31a/object_proxy.png"
+    },
+    {
+      "image_id": "screw/test/manipulated_front/003.png",
+      "image_sha256": "5e79071bf4e3d9914becdce9f6c106fd1c3c3029f07a2937a46b3b6b4f3f8561",
+      "score": 0.08661746978759766,
+      "threshold": 0.10270808544009924,
+      "verdict": "OK",
+      "is_defect": 1,
+      "defect_type": "manipulated_front",
+      "kind": "FN",
+      "evidence_id": "f0afdaf9f3fda452bf2b3106a5120585",
+      "peak_patch": [
+        2,
+        7
+      ],
+      "smoothed_peak_uv": [
+        0.002232142857142857,
+        0.28348214285714285
+      ],
+      "source_url": "/api/dt/vision/screw/coreset/assets/f0afdaf9f3fda452bf2b3106a5120585/source.png",
+      "original_url": "/api/dt/vision/screw/coreset/assets/f0afdaf9f3fda452bf2b3106a5120585/original.png",
+      "overlay_url": "/api/dt/vision/screw/coreset/assets/f0afdaf9f3fda452bf2b3106a5120585/overlay.png",
+      "mask_url": "/api/dt/vision/screw/coreset/assets/f0afdaf9f3fda452bf2b3106a5120585/gt_mask.png",
+      "object_proxy_url": "/api/dt/vision/screw/coreset/assets/f0afdaf9f3fda452bf2b3106a5120585/object_proxy.png"
+    },
+    {
+      "image_id": "screw/test/manipulated_front/004.png",
+      "image_sha256": "11868607a9ac96eaa6d7d024a4784b60ed63de4e977d9ada75a488d51a8ed86b",
+      "score": 0.09417349100112915,
+      "threshold": 0.10270808544009924,
+      "verdict": "OK",
+      "is_defect": 1,
+      "defect_type": "manipulated_front",
+      "kind": "FN",
+      "evidence_id": "fd7d96913eb73b1f93ab83bbc39c2868",
+      "peak_patch": [
+        22,
+        2
+      ],
+      "smoothed_peak_uv": [
+        0.8058035714285714,
+        0.07366071428571429
+      ],
+      "source_url": "/api/dt/vision/screw/coreset/assets/fd7d96913eb73b1f93ab83bbc39c2868/source.png",
+      "original_url": "/api/dt/vision/screw/coreset/assets/fd7d96913eb73b1f93ab83bbc39c2868/original.png",
+      "overlay_url": "/api/dt/vision/screw/coreset/assets/fd7d96913eb73b1f93ab83bbc39c2868/overlay.png",
+      "mask_url": "/api/dt/vision/screw/coreset/assets/fd7d96913eb73b1f93ab83bbc39c2868/gt_mask.png",
+      "object_proxy_url": "/api/dt/vision/screw/coreset/assets/fd7d96913eb73b1f93ab83bbc39c2868/object_proxy.png"
+    },
+    {
+      "image_id": "screw/test/manipulated_front/006.png",
+      "image_sha256": "56727ab021e5f981ca69e8f0fa40f675be1ee41bcf1f8e854a9d8a5d56210dc9",
+      "score": 0.07625174522399902,
+      "threshold": 0.10270808544009924,
+      "verdict": "OK",
+      "is_defect": 1,
+      "defect_type": "manipulated_front",
+      "kind": "FN",
+      "evidence_id": "3a5fab1ee5fd9a321555954a9317d0a7",
+      "peak_patch": [
+        2,
+        24
+      ],
+      "smoothed_peak_uv": [
+        0.09151785714285714,
+        0.8727678571428571
+      ],
+      "source_url": "/api/dt/vision/screw/coreset/assets/3a5fab1ee5fd9a321555954a9317d0a7/source.png",
+      "original_url": "/api/dt/vision/screw/coreset/assets/3a5fab1ee5fd9a321555954a9317d0a7/original.png",
+      "overlay_url": "/api/dt/vision/screw/coreset/assets/3a5fab1ee5fd9a321555954a9317d0a7/overlay.png",
+      "mask_url": "/api/dt/vision/screw/coreset/assets/3a5fab1ee5fd9a321555954a9317d0a7/gt_mask.png",
+      "object_proxy_url": "/api/dt/vision/screw/coreset/assets/3a5fab1ee5fd9a321555954a9317d0a7/object_proxy.png"
+    },
+    {
+      "image_id": "screw/test/manipulated_front/007.png",
+      "image_sha256": "c43884f30cf2c9a00d65fc97fd7eb4e9ee95315c763cee9af0cf1a0e77e51229",
+      "score": 0.08632200956344604,
+      "threshold": 0.10270808544009924,
+      "verdict": "OK",
+      "is_defect": 1,
+      "defect_type": "manipulated_front",
+      "kind": "FN",
+      "evidence_id": "f78653cab0b0dae4035b348c660d009c",
+      "peak_patch": [
+        2,
+        21
+      ],
+      "smoothed_peak_uv": [
+        0.078125,
+        0.7745535714285714
+      ],
+      "source_url": "/api/dt/vision/screw/coreset/assets/f78653cab0b0dae4035b348c660d009c/source.png",
+      "original_url": "/api/dt/vision/screw/coreset/assets/f78653cab0b0dae4035b348c660d009c/original.png",
+      "overlay_url": "/api/dt/vision/screw/coreset/assets/f78653cab0b0dae4035b348c660d009c/overlay.png",
+      "mask_url": "/api/dt/vision/screw/coreset/assets/f78653cab0b0dae4035b348c660d009c/gt_mask.png",
+      "object_proxy_url": "/api/dt/vision/screw/coreset/assets/f78653cab0b0dae4035b348c660d009c/object_proxy.png"
+    },
+    {
+      "image_id": "screw/test/manipulated_front/009.png",
+      "image_sha256": "253e8413c476ceb69edc2b4735b2a395a70b5699cb2e527bf7a193741f22a081",
+      "score": 0.09018498659133911,
+      "threshold": 0.10270808544009924,
+      "verdict": "OK",
+      "is_defect": 1,
+      "defect_type": "manipulated_front",
+      "kind": "FN",
+      "evidence_id": "75e84e519f15df0a3985ce4e7dcea012",
+      "peak_patch": [
+        2,
+        24
+      ],
+      "smoothed_peak_uv": [
+        0.390625,
+        0.9977678571428571
+      ],
+      "source_url": "/api/dt/vision/screw/coreset/assets/75e84e519f15df0a3985ce4e7dcea012/source.png",
+      "original_url": "/api/dt/vision/screw/coreset/assets/75e84e519f15df0a3985ce4e7dcea012/original.png",
+      "overlay_url": "/api/dt/vision/screw/coreset/assets/75e84e519f15df0a3985ce4e7dcea012/overlay.png",
+      "mask_url": "/api/dt/vision/screw/coreset/assets/75e84e519f15df0a3985ce4e7dcea012/gt_mask.png",
+      "object_proxy_url": "/api/dt/vision/screw/coreset/assets/75e84e519f15df0a3985ce4e7dcea012/object_proxy.png"
+    },
+    {
+      "image_id": "screw/test/manipulated_front/011.png",
+      "image_sha256": "360764e7e1c23611ed46a26dc4ad970a7f6963bb788fc7b5c79510183eaa5e07",
+      "score": 0.09827065467834473,
+      "threshold": 0.10270808544009924,
+      "verdict": "OK",
+      "is_defect": 1,
+      "defect_type": "manipulated_front",
+      "kind": "FN",
+      "evidence_id": "86f0c319de42bd10f5d4a4f485e23750",
+      "peak_patch": [
+        27,
+        6
+      ],
+      "smoothed_peak_uv": [
+        0.9977678571428571,
+        0.234375
+      ],
+      "source_url": "/api/dt/vision/screw/coreset/assets/86f0c319de42bd10f5d4a4f485e23750/source.png",
+      "original_url": "/api/dt/vision/screw/coreset/assets/86f0c319de42bd10f5d4a4f485e23750/original.png",
+      "overlay_url": "/api/dt/vision/screw/coreset/assets/86f0c319de42bd10f5d4a4f485e23750/overlay.png",
+      "mask_url": "/api/dt/vision/screw/coreset/assets/86f0c319de42bd10f5d4a4f485e23750/gt_mask.png",
+      "object_proxy_url": "/api/dt/vision/screw/coreset/assets/86f0c319de42bd10f5d4a4f485e23750/object_proxy.png"
+    },
+    {
+      "image_id": "screw/test/manipulated_front/012.png",
+      "image_sha256": "a7cf576939c22e42d90d579e293ad597f8b4c04318dd7052e30fa3509f1850e9",
+      "score": 0.09876424074172974,
+      "threshold": 0.10270808544009924,
+      "verdict": "OK",
+      "is_defect": 1,
+      "defect_type": "manipulated_front",
+      "kind": "FN",
+      "evidence_id": "ce1e13279de350a24661e363fb82aa84",
+      "peak_patch": [
+        13,
+        0
+      ],
+      "smoothed_peak_uv": [
+        0.484375,
+        0.002232142857142857
+      ],
+      "source_url": "/api/dt/vision/screw/coreset/assets/ce1e13279de350a24661e363fb82aa84/source.png",
+      "original_url": "/api/dt/vision/screw/coreset/assets/ce1e13279de350a24661e363fb82aa84/original.png",
+      "overlay_url": "/api/dt/vision/screw/coreset/assets/ce1e13279de350a24661e363fb82aa84/overlay.png",
+      "mask_url": "/api/dt/vision/screw/coreset/assets/ce1e13279de350a24661e363fb82aa84/gt_mask.png",
+      "object_proxy_url": "/api/dt/vision/screw/coreset/assets/ce1e13279de350a24661e363fb82aa84/object_proxy.png"
+    },
+    {
+      "image_id": "screw/test/manipulated_front/013.png",
+      "image_sha256": "cbab23ebcaf22c243271471af502216b9ec4a1ba9fde21b37419e826341d2eff",
+      "score": 0.07159656286239624,
+      "threshold": 0.10270808544009924,
+      "verdict": "OK",
+      "is_defect": 1,
+      "defect_type": "manipulated_front",
+      "kind": "FN",
+      "evidence_id": "ef7a5767e44e7656e8a50fb2c0686cda",
+      "peak_patch": [
+        23,
+        25
+      ],
+      "smoothed_peak_uv": [
+        0.22098214285714285,
+        0.8683035714285714
+      ],
+      "source_url": "/api/dt/vision/screw/coreset/assets/ef7a5767e44e7656e8a50fb2c0686cda/source.png",
+      "original_url": "/api/dt/vision/screw/coreset/assets/ef7a5767e44e7656e8a50fb2c0686cda/original.png",
+      "overlay_url": "/api/dt/vision/screw/coreset/assets/ef7a5767e44e7656e8a50fb2c0686cda/overlay.png",
+      "mask_url": "/api/dt/vision/screw/coreset/assets/ef7a5767e44e7656e8a50fb2c0686cda/gt_mask.png",
+      "object_proxy_url": "/api/dt/vision/screw/coreset/assets/ef7a5767e44e7656e8a50fb2c0686cda/object_proxy.png"
+    },
+    {
+      "image_id": "screw/test/manipulated_front/014.png",
+      "image_sha256": "01a8b39956552d1df72996f424cf23315a3c8c6572a4067d576db1dc85caa586",
+      "score": 0.08465743064880371,
+      "threshold": 0.10270808544009924,
+      "verdict": "OK",
+      "is_defect": 1,
+      "defect_type": "manipulated_front",
+      "kind": "FN",
+      "evidence_id": "ba6865b622b393a89fb53a4dc90219de",
+      "peak_patch": [
+        5,
+        2
+      ],
+      "smoothed_peak_uv": [
+        0.18973214285714285,
+        0.08705357142857142
+      ],
+      "source_url": "/api/dt/vision/screw/coreset/assets/ba6865b622b393a89fb53a4dc90219de/source.png",
+      "original_url": "/api/dt/vision/screw/coreset/assets/ba6865b622b393a89fb53a4dc90219de/original.png",
+      "overlay_url": "/api/dt/vision/screw/coreset/assets/ba6865b622b393a89fb53a4dc90219de/overlay.png",
+      "mask_url": "/api/dt/vision/screw/coreset/assets/ba6865b622b393a89fb53a4dc90219de/gt_mask.png",
+      "object_proxy_url": "/api/dt/vision/screw/coreset/assets/ba6865b622b393a89fb53a4dc90219de/object_proxy.png"
+    },
+    {
+      "image_id": "screw/test/manipulated_front/016.png",
+      "image_sha256": "009fc237ec9be42a173fa9ee7bd78a01d90579cb66756e59f5e1910318876d4d",
+      "score": 0.09432655572891235,
+      "threshold": 0.10270808544009924,
+      "verdict": "OK",
+      "is_defect": 1,
+      "defect_type": "manipulated_front",
+      "kind": "FN",
+      "evidence_id": "836a507beeb199556721d7738603474d",
+      "peak_patch": [
+        11,
+        27
+      ],
+      "smoothed_peak_uv": [
+        0.40401785714285715,
+        0.9977678571428571
+      ],
+      "source_url": "/api/dt/vision/screw/coreset/assets/836a507beeb199556721d7738603474d/source.png",
+      "original_url": "/api/dt/vision/screw/coreset/assets/836a507beeb199556721d7738603474d/original.png",
+      "overlay_url": "/api/dt/vision/screw/coreset/assets/836a507beeb199556721d7738603474d/overlay.png",
+      "mask_url": "/api/dt/vision/screw/coreset/assets/836a507beeb199556721d7738603474d/gt_mask.png",
+      "object_proxy_url": "/api/dt/vision/screw/coreset/assets/836a507beeb199556721d7738603474d/object_proxy.png"
+    },
+    {
+      "image_id": "screw/test/manipulated_front/017.png",
+      "image_sha256": "90d548ee9009f9c1c1f829121a92b690cb394124c8bdcf9e18ae574d9c2faae5",
+      "score": 0.07879680395126343,
+      "threshold": 0.10270808544009924,
+      "verdict": "OK",
+      "is_defect": 1,
+      "defect_type": "manipulated_front",
+      "kind": "FN",
+      "evidence_id": "e47040a68926f0af34e007bb29c5de25",
+      "peak_patch": [
+        27,
+        6
+      ],
+      "smoothed_peak_uv": [
+        0.9977678571428571,
+        0.22991071428571427
+      ],
+      "source_url": "/api/dt/vision/screw/coreset/assets/e47040a68926f0af34e007bb29c5de25/source.png",
+      "original_url": "/api/dt/vision/screw/coreset/assets/e47040a68926f0af34e007bb29c5de25/original.png",
+      "overlay_url": "/api/dt/vision/screw/coreset/assets/e47040a68926f0af34e007bb29c5de25/overlay.png",
+      "mask_url": "/api/dt/vision/screw/coreset/assets/e47040a68926f0af34e007bb29c5de25/gt_mask.png",
+      "object_proxy_url": "/api/dt/vision/screw/coreset/assets/e47040a68926f0af34e007bb29c5de25/object_proxy.png"
+    },
+    {
+      "image_id": "screw/test/manipulated_front/018.png",
+      "image_sha256": "fe472852c8a3314ca44938d3addedeeb0a8fe106107b082027f941694e247f72",
+      "score": 0.09891325235366821,
+      "threshold": 0.10270808544009924,
+      "verdict": "OK",
+      "is_defect": 1,
+      "defect_type": "manipulated_front",
+      "kind": "FN",
+      "evidence_id": "a43493edfe2d20b7779442f5f6135b26",
+      "peak_patch": [
+        0,
+        15
+      ],
+      "smoothed_peak_uv": [
+        0.002232142857142857,
+        0.5424107142857143
+      ],
+      "source_url": "/api/dt/vision/screw/coreset/assets/a43493edfe2d20b7779442f5f6135b26/source.png",
+      "original_url": "/api/dt/vision/screw/coreset/assets/a43493edfe2d20b7779442f5f6135b26/original.png",
+      "overlay_url": "/api/dt/vision/screw/coreset/assets/a43493edfe2d20b7779442f5f6135b26/overlay.png",
+      "mask_url": "/api/dt/vision/screw/coreset/assets/a43493edfe2d20b7779442f5f6135b26/gt_mask.png",
+      "object_proxy_url": "/api/dt/vision/screw/coreset/assets/a43493edfe2d20b7779442f5f6135b26/object_proxy.png"
+    },
+    {
+      "image_id": "screw/test/manipulated_front/020.png",
+      "image_sha256": "5aa6acb6f916d1f9191092a7a0b7350cbdb0283caaae6122f6ee5e4e63377f7b",
+      "score": 0.07138359546661377,
+      "threshold": 0.10270808544009924,
+      "verdict": "OK",
+      "is_defect": 1,
+      "defect_type": "manipulated_front",
+      "kind": "FN",
+      "evidence_id": "9d8d645747151ba0ce422b6366dee615",
+      "peak_patch": [
+        3,
+        25
+      ],
+      "smoothed_peak_uv": [
+        0.13169642857142858,
+        0.8995535714285714
+      ],
+      "source_url": "/api/dt/vision/screw/coreset/assets/9d8d645747151ba0ce422b6366dee615/source.png",
+      "original_url": "/api/dt/vision/screw/coreset/assets/9d8d645747151ba0ce422b6366dee615/original.png",
+      "overlay_url": "/api/dt/vision/screw/coreset/assets/9d8d645747151ba0ce422b6366dee615/overlay.png",
+      "mask_url": "/api/dt/vision/screw/coreset/assets/9d8d645747151ba0ce422b6366dee615/gt_mask.png",
+      "object_proxy_url": "/api/dt/vision/screw/coreset/assets/9d8d645747151ba0ce422b6366dee615/object_proxy.png"
+    },
+    {
+      "image_id": "screw/test/manipulated_front/021.png",
+      "image_sha256": "c25d433d9347a6172220165be4bf93663d941040e6ddc8bdb1f2475b25a7e408",
+      "score": 0.0944821834564209,
+      "threshold": 0.10270808544009924,
+      "verdict": "OK",
+      "is_defect": 1,
+      "defect_type": "manipulated_front",
+      "kind": "FN",
+      "evidence_id": "3acb58d37e103653cbc9f4bd15498648",
+      "peak_patch": [
+        27,
+        27
+      ],
+      "smoothed_peak_uv": [
+        0.9977678571428571,
+        0.9977678571428571
+      ],
+      "source_url": "/api/dt/vision/screw/coreset/assets/3acb58d37e103653cbc9f4bd15498648/source.png",
+      "original_url": "/api/dt/vision/screw/coreset/assets/3acb58d37e103653cbc9f4bd15498648/original.png",
+      "overlay_url": "/api/dt/vision/screw/coreset/assets/3acb58d37e103653cbc9f4bd15498648/overlay.png",
+      "mask_url": "/api/dt/vision/screw/coreset/assets/3acb58d37e103653cbc9f4bd15498648/gt_mask.png",
+      "object_proxy_url": "/api/dt/vision/screw/coreset/assets/3acb58d37e103653cbc9f4bd15498648/object_proxy.png"
+    },
+    {
+      "image_id": "screw/test/manipulated_front/023.png",
+      "image_sha256": "a7425bacf1e2291a73023f3d148de66714b56d6650dcf46966c9c4d623037d0c",
+      "score": 0.0832679271697998,
+      "threshold": 0.10270808544009924,
+      "verdict": "OK",
+      "is_defect": 1,
+      "defect_type": "manipulated_front",
+      "kind": "FN",
+      "evidence_id": "6054e053857b52324e9fca509f7ed720",
+      "peak_patch": [
+        0,
+        19
+      ],
+      "smoothed_peak_uv": [
+        0.002232142857142857,
+        0.6897321428571429
+      ],
+      "source_url": "/api/dt/vision/screw/coreset/assets/6054e053857b52324e9fca509f7ed720/source.png",
+      "original_url": "/api/dt/vision/screw/coreset/assets/6054e053857b52324e9fca509f7ed720/original.png",
+      "overlay_url": "/api/dt/vision/screw/coreset/assets/6054e053857b52324e9fca509f7ed720/overlay.png",
+      "mask_url": "/api/dt/vision/screw/coreset/assets/6054e053857b52324e9fca509f7ed720/gt_mask.png",
+      "object_proxy_url": "/api/dt/vision/screw/coreset/assets/6054e053857b52324e9fca509f7ed720/object_proxy.png"
+    },
+    {
+      "image_id": "screw/test/scratch_head/000.png",
+      "image_sha256": "712bcbfce3d682aa27ecc0513c0d00fde8fba5b235a8daa990b9f1a4cc4d8352",
+      "score": 0.07969588041305542,
+      "threshold": 0.10270808544009924,
+      "verdict": "OK",
+      "is_defect": 1,
+      "defect_type": "scratch_head",
+      "kind": "FN",
+      "evidence_id": "8e828cdd65d0f4101bcc54c2662a28ad",
+      "peak_patch": [
+        27,
+        18
+      ],
+      "smoothed_peak_uv": [
+        0.9977678571428571,
+        0.6629464285714286
+      ],
+      "source_url": "/api/dt/vision/screw/coreset/assets/8e828cdd65d0f4101bcc54c2662a28ad/source.png",
+      "original_url": "/api/dt/vision/screw/coreset/assets/8e828cdd65d0f4101bcc54c2662a28ad/original.png",
+      "overlay_url": "/api/dt/vision/screw/coreset/assets/8e828cdd65d0f4101bcc54c2662a28ad/overlay.png",
+      "mask_url": "/api/dt/vision/screw/coreset/assets/8e828cdd65d0f4101bcc54c2662a28ad/gt_mask.png",
+      "object_proxy_url": "/api/dt/vision/screw/coreset/assets/8e828cdd65d0f4101bcc54c2662a28ad/object_proxy.png"
+    },
+    {
+      "image_id": "screw/test/scratch_head/001.png",
+      "image_sha256": "f4b405666ffeff9093d1d9775f5db4f549e90dd6bc808964bde860c96216ce31",
+      "score": 0.08506667613983154,
+      "threshold": 0.10270808544009924,
+      "verdict": "OK",
+      "is_defect": 1,
+      "defect_type": "scratch_head",
+      "kind": "FN",
+      "evidence_id": "9ee33f221846afa043f4a2005e6922da",
+      "peak_patch": [
+        25,
+        15
+      ],
+      "smoothed_peak_uv": [
+        0.9977678571428571,
+        0.9977678571428571
+      ],
+      "source_url": "/api/dt/vision/screw/coreset/assets/9ee33f221846afa043f4a2005e6922da/source.png",
+      "original_url": "/api/dt/vision/screw/coreset/assets/9ee33f221846afa043f4a2005e6922da/original.png",
+      "overlay_url": "/api/dt/vision/screw/coreset/assets/9ee33f221846afa043f4a2005e6922da/overlay.png",
+      "mask_url": "/api/dt/vision/screw/coreset/assets/9ee33f221846afa043f4a2005e6922da/gt_mask.png",
+      "object_proxy_url": "/api/dt/vision/screw/coreset/assets/9ee33f221846afa043f4a2005e6922da/object_proxy.png"
+    },
+    {
+      "image_id": "screw/test/scratch_head/002.png",
+      "image_sha256": "6b302c41816ba33efb31b4d725c1ee4d558519cfc8489f790df5bb0cf41a0aee",
+      "score": 0.07920455932617188,
+      "threshold": 0.10270808544009924,
+      "verdict": "OK",
+      "is_defect": 1,
+      "defect_type": "scratch_head",
+      "kind": "FN",
+      "evidence_id": "86be7ba4b44c2f123982b58287a38518",
+      "peak_patch": [
+        19,
+        0
+      ],
+      "smoothed_peak_uv": [
+        0.6986607142857143,
+        0.002232142857142857
+      ],
+      "source_url": "/api/dt/vision/screw/coreset/assets/86be7ba4b44c2f123982b58287a38518/source.png",
+      "original_url": "/api/dt/vision/screw/coreset/assets/86be7ba4b44c2f123982b58287a38518/original.png",
+      "overlay_url": "/api/dt/vision/screw/coreset/assets/86be7ba4b44c2f123982b58287a38518/overlay.png",
+      "mask_url": "/api/dt/vision/screw/coreset/assets/86be7ba4b44c2f123982b58287a38518/gt_mask.png",
+      "object_proxy_url": "/api/dt/vision/screw/coreset/assets/86be7ba4b44c2f123982b58287a38518/object_proxy.png"
+    },
+    {
+      "image_id": "screw/test/scratch_head/003.png",
+      "image_sha256": "58a97e687c7980c0cddbd736d1650d4c0979ed14788f366cc01455fcdf0f6cc2",
+      "score": 0.07817232608795166,
+      "threshold": 0.10270808544009924,
+      "verdict": "OK",
+      "is_defect": 1,
+      "defect_type": "scratch_head",
+      "kind": "FN",
+      "evidence_id": "f9621896a537aebf592c938a6b154363",
+      "peak_patch": [
+        6,
+        12
+      ],
+      "smoothed_peak_uv": [
+        0.22544642857142858,
+        0.4486607142857143
+      ],
+      "source_url": "/api/dt/vision/screw/coreset/assets/f9621896a537aebf592c938a6b154363/source.png",
+      "original_url": "/api/dt/vision/screw/coreset/assets/f9621896a537aebf592c938a6b154363/original.png",
+      "overlay_url": "/api/dt/vision/screw/coreset/assets/f9621896a537aebf592c938a6b154363/overlay.png",
+      "mask_url": "/api/dt/vision/screw/coreset/assets/f9621896a537aebf592c938a6b154363/gt_mask.png",
+      "object_proxy_url": "/api/dt/vision/screw/coreset/assets/f9621896a537aebf592c938a6b154363/object_proxy.png"
+    },
+    {
+      "image_id": "screw/test/scratch_head/004.png",
+      "image_sha256": "a92d1fe9a84ffa0a2183cfce6ac80148af16e68b83ede881d8b41e5f1f1bc740",
+      "score": 0.08061826229095459,
+      "threshold": 0.10270808544009924,
+      "verdict": "OK",
+      "is_defect": 1,
+      "defect_type": "scratch_head",
+      "kind": "FN",
+      "evidence_id": "5e4d71f40e84e419df8845a916fa063f",
+      "peak_patch": [
+        0,
+        27
+      ],
+      "smoothed_peak_uv": [
+        0.002232142857142857,
+        0.9977678571428571
+      ],
+      "source_url": "/api/dt/vision/screw/coreset/assets/5e4d71f40e84e419df8845a916fa063f/source.png",
+      "original_url": "/api/dt/vision/screw/coreset/assets/5e4d71f40e84e419df8845a916fa063f/original.png",
+      "overlay_url": "/api/dt/vision/screw/coreset/assets/5e4d71f40e84e419df8845a916fa063f/overlay.png",
+      "mask_url": "/api/dt/vision/screw/coreset/assets/5e4d71f40e84e419df8845a916fa063f/gt_mask.png",
+      "object_proxy_url": "/api/dt/vision/screw/coreset/assets/5e4d71f40e84e419df8845a916fa063f/object_proxy.png"
+    },
+    {
+      "image_id": "screw/test/scratch_head/005.png",
+      "image_sha256": "38fb18f05fcee7b245ab39e4490d560963c804b91e1e287c76a8b682befe0790",
+      "score": 0.07357597351074219,
+      "threshold": 0.10270808544009924,
+      "verdict": "OK",
+      "is_defect": 1,
+      "defect_type": "scratch_head",
+      "kind": "FN",
+      "evidence_id": "9a9470af358a5544f7a50a9c793d9d69",
+      "peak_patch": [
+        27,
+        27
+      ],
+      "smoothed_peak_uv": [
+        0.9977678571428571,
+        0.9977678571428571
+      ],
+      "source_url": "/api/dt/vision/screw/coreset/assets/9a9470af358a5544f7a50a9c793d9d69/source.png",
+      "original_url": "/api/dt/vision/screw/coreset/assets/9a9470af358a5544f7a50a9c793d9d69/original.png",
+      "overlay_url": "/api/dt/vision/screw/coreset/assets/9a9470af358a5544f7a50a9c793d9d69/overlay.png",
+      "mask_url": "/api/dt/vision/screw/coreset/assets/9a9470af358a5544f7a50a9c793d9d69/gt_mask.png",
+      "object_proxy_url": "/api/dt/vision/screw/coreset/assets/9a9470af358a5544f7a50a9c793d9d69/object_proxy.png"
+    },
+    {
+      "image_id": "screw/test/scratch_head/006.png",
+      "image_sha256": "7d83201bbdf9c091edcf311ac6e78a3c9d539c4e2bf9dd030b4140bb6e305418",
+      "score": 0.0745701789855957,
+      "threshold": 0.10270808544009924,
+      "verdict": "OK",
+      "is_defect": 1,
+      "defect_type": "scratch_head",
+      "kind": "FN",
+      "evidence_id": "299017489cd8c8d58e7fe2c0ad7876ff",
+      "peak_patch": [
+        9,
+        24
+      ],
+      "smoothed_peak_uv": [
+        0.33705357142857145,
+        0.8638392857142857
+      ],
+      "source_url": "/api/dt/vision/screw/coreset/assets/299017489cd8c8d58e7fe2c0ad7876ff/source.png",
+      "original_url": "/api/dt/vision/screw/coreset/assets/299017489cd8c8d58e7fe2c0ad7876ff/original.png",
+      "overlay_url": "/api/dt/vision/screw/coreset/assets/299017489cd8c8d58e7fe2c0ad7876ff/overlay.png",
+      "mask_url": "/api/dt/vision/screw/coreset/assets/299017489cd8c8d58e7fe2c0ad7876ff/gt_mask.png",
+      "object_proxy_url": "/api/dt/vision/screw/coreset/assets/299017489cd8c8d58e7fe2c0ad7876ff/object_proxy.png"
+    },
+    {
+      "image_id": "screw/test/scratch_head/008.png",
+      "image_sha256": "c7eedcb5deed82be8c59d560cf1a3e2e022c7e9e7e6faab3d9e234b0996d84d7",
+      "score": 0.06741929054260254,
+      "threshold": 0.10270808544009924,
+      "verdict": "OK",
+      "is_defect": 1,
+      "defect_type": "scratch_head",
+      "kind": "FN",
+      "evidence_id": "e0bb66a033348f72feba103878c94571",
+      "peak_patch": [
+        5,
+        7
+      ],
+      "smoothed_peak_uv": [
+        0.18526785714285715,
+        0.28794642857142855
+      ],
+      "source_url": "/api/dt/vision/screw/coreset/assets/e0bb66a033348f72feba103878c94571/source.png",
+      "original_url": "/api/dt/vision/screw/coreset/assets/e0bb66a033348f72feba103878c94571/original.png",
+      "overlay_url": "/api/dt/vision/screw/coreset/assets/e0bb66a033348f72feba103878c94571/overlay.png",
+      "mask_url": "/api/dt/vision/screw/coreset/assets/e0bb66a033348f72feba103878c94571/gt_mask.png",
+      "object_proxy_url": "/api/dt/vision/screw/coreset/assets/e0bb66a033348f72feba103878c94571/object_proxy.png"
+    },
+    {
+      "image_id": "screw/test/scratch_head/009.png",
+      "image_sha256": "ee49c8efaace5c4ff3f64a696c327498c8b27fb4dc2e53df963961f9f622daff",
+      "score": 0.08325326442718506,
+      "threshold": 0.10270808544009924,
+      "verdict": "OK",
+      "is_defect": 1,
+      "defect_type": "scratch_head",
+      "kind": "FN",
+      "evidence_id": "217b4dfa33ff155ff1e6eb64d6e66b08",
+      "peak_patch": [
+        13,
+        0
+      ],
+      "smoothed_peak_uv": [
+        0.4799107142857143,
+        0.002232142857142857
+      ],
+      "source_url": "/api/dt/vision/screw/coreset/assets/217b4dfa33ff155ff1e6eb64d6e66b08/source.png",
+      "original_url": "/api/dt/vision/screw/coreset/assets/217b4dfa33ff155ff1e6eb64d6e66b08/original.png",
+      "overlay_url": "/api/dt/vision/screw/coreset/assets/217b4dfa33ff155ff1e6eb64d6e66b08/overlay.png",
+      "mask_url": "/api/dt/vision/screw/coreset/assets/217b4dfa33ff155ff1e6eb64d6e66b08/gt_mask.png",
+      "object_proxy_url": "/api/dt/vision/screw/coreset/assets/217b4dfa33ff155ff1e6eb64d6e66b08/object_proxy.png"
+    },
+    {
+      "image_id": "screw/test/scratch_head/010.png",
+      "image_sha256": "5c364a035829211026a8a4820b418bf4d868bec2af191f1d79e92f63140889a3",
+      "score": 0.08196693658828735,
+      "threshold": 0.10270808544009924,
+      "verdict": "OK",
+      "is_defect": 1,
+      "defect_type": "scratch_head",
+      "kind": "FN",
+      "evidence_id": "b91f6272bb05eee14ec4466e6c8e20b6",
+      "peak_patch": [
+        0,
+        3
+      ],
+      "smoothed_peak_uv": [
+        0.002232142857142857,
+        0.13169642857142858
+      ],
+      "source_url": "/api/dt/vision/screw/coreset/assets/b91f6272bb05eee14ec4466e6c8e20b6/source.png",
+      "original_url": "/api/dt/vision/screw/coreset/assets/b91f6272bb05eee14ec4466e6c8e20b6/original.png",
+      "overlay_url": "/api/dt/vision/screw/coreset/assets/b91f6272bb05eee14ec4466e6c8e20b6/overlay.png",
+      "mask_url": "/api/dt/vision/screw/coreset/assets/b91f6272bb05eee14ec4466e6c8e20b6/gt_mask.png",
+      "object_proxy_url": "/api/dt/vision/screw/coreset/assets/b91f6272bb05eee14ec4466e6c8e20b6/object_proxy.png"
+    },
+    {
+      "image_id": "screw/test/scratch_head/012.png",
+      "image_sha256": "199a211bbe529f1304f8d8e6182b00a0d584c0ca170eccbdab2e463156e044e8",
+      "score": 0.08963245153427124,
+      "threshold": 0.10270808544009924,
+      "verdict": "OK",
+      "is_defect": 1,
+      "defect_type": "scratch_head",
+      "kind": "FN",
+      "evidence_id": "9624ed6540793a91e0a8c85c60598e33",
+      "peak_patch": [
+        7,
+        5
+      ],
+      "smoothed_peak_uv": [
+        0.27455357142857145,
+        0.19866071428571427
+      ],
+      "source_url": "/api/dt/vision/screw/coreset/assets/9624ed6540793a91e0a8c85c60598e33/source.png",
+      "original_url": "/api/dt/vision/screw/coreset/assets/9624ed6540793a91e0a8c85c60598e33/original.png",
+      "overlay_url": "/api/dt/vision/screw/coreset/assets/9624ed6540793a91e0a8c85c60598e33/overlay.png",
+      "mask_url": "/api/dt/vision/screw/coreset/assets/9624ed6540793a91e0a8c85c60598e33/gt_mask.png",
+      "object_proxy_url": "/api/dt/vision/screw/coreset/assets/9624ed6540793a91e0a8c85c60598e33/object_proxy.png"
+    },
+    {
+      "image_id": "screw/test/scratch_head/013.png",
+      "image_sha256": "625cafb85f11c104c101bf181f20502f9e82ad1b42eb7f232db0ece9461e9c50",
+      "score": 0.08976733684539795,
+      "threshold": 0.10270808544009924,
+      "verdict": "OK",
+      "is_defect": 1,
+      "defect_type": "scratch_head",
+      "kind": "FN",
+      "evidence_id": "89951c400e374ba767f1676587168281",
+      "peak_patch": [
+        0,
+        5
+      ],
+      "smoothed_peak_uv": [
+        0.002232142857142857,
+        0.18973214285714285
+      ],
+      "source_url": "/api/dt/vision/screw/coreset/assets/89951c400e374ba767f1676587168281/source.png",
+      "original_url": "/api/dt/vision/screw/coreset/assets/89951c400e374ba767f1676587168281/original.png",
+      "overlay_url": "/api/dt/vision/screw/coreset/assets/89951c400e374ba767f1676587168281/overlay.png",
+      "mask_url": "/api/dt/vision/screw/coreset/assets/89951c400e374ba767f1676587168281/gt_mask.png",
+      "object_proxy_url": "/api/dt/vision/screw/coreset/assets/89951c400e374ba767f1676587168281/object_proxy.png"
+    },
+    {
+      "image_id": "screw/test/scratch_head/014.png",
+      "image_sha256": "36a262d9f6506f292ddfbf0d2ff2dca1d5c363101563c1460e5cf3d3cbdc824a",
+      "score": 0.08169710636138916,
+      "threshold": 0.10270808544009924,
+      "verdict": "OK",
+      "is_defect": 1,
+      "defect_type": "scratch_head",
+      "kind": "FN",
+      "evidence_id": "a3689367c3e7ab6f6f906ea41a684c5b",
+      "peak_patch": [
+        2,
+        10
+      ],
+      "smoothed_peak_uv": [
+        0.09151785714285714,
+        0.3861607142857143
+      ],
+      "source_url": "/api/dt/vision/screw/coreset/assets/a3689367c3e7ab6f6f906ea41a684c5b/source.png",
+      "original_url": "/api/dt/vision/screw/coreset/assets/a3689367c3e7ab6f6f906ea41a684c5b/original.png",
+      "overlay_url": "/api/dt/vision/screw/coreset/assets/a3689367c3e7ab6f6f906ea41a684c5b/overlay.png",
+      "mask_url": "/api/dt/vision/screw/coreset/assets/a3689367c3e7ab6f6f906ea41a684c5b/gt_mask.png",
+      "object_proxy_url": "/api/dt/vision/screw/coreset/assets/a3689367c3e7ab6f6f906ea41a684c5b/object_proxy.png"
+    },
+    {
+      "image_id": "screw/test/scratch_head/016.png",
+      "image_sha256": "740b608b7950d2d043ed30004de03068994d2e1b388be381287746ebe7549600",
+      "score": 0.08441507816314697,
+      "threshold": 0.10270808544009924,
+      "verdict": "OK",
+      "is_defect": 1,
+      "defect_type": "scratch_head",
+      "kind": "FN",
+      "evidence_id": "65bfcbf5a67db4a1a9e63e4fad95aa1d",
+      "peak_patch": [
+        18,
+        0
+      ],
+      "smoothed_peak_uv": [
+        0.6540178571428571,
+        0.002232142857142857
+      ],
+      "source_url": "/api/dt/vision/screw/coreset/assets/65bfcbf5a67db4a1a9e63e4fad95aa1d/source.png",
+      "original_url": "/api/dt/vision/screw/coreset/assets/65bfcbf5a67db4a1a9e63e4fad95aa1d/original.png",
+      "overlay_url": "/api/dt/vision/screw/coreset/assets/65bfcbf5a67db4a1a9e63e4fad95aa1d/overlay.png",
+      "mask_url": "/api/dt/vision/screw/coreset/assets/65bfcbf5a67db4a1a9e63e4fad95aa1d/gt_mask.png",
+      "object_proxy_url": "/api/dt/vision/screw/coreset/assets/65bfcbf5a67db4a1a9e63e4fad95aa1d/object_proxy.png"
+    },
+    {
+      "image_id": "screw/test/scratch_head/019.png",
+      "image_sha256": "2e3cf82bd4d5e8d0ab694113c900498d7cd571577cb2e26bfb67ebe9024817b9",
+      "score": 0.09947794675827026,
+      "threshold": 0.10270808544009924,
+      "verdict": "OK",
+      "is_defect": 1,
+      "defect_type": "scratch_head",
+      "kind": "FN",
+      "evidence_id": "c52713430c8add554a8bb2db06454adb",
+      "peak_patch": [
+        9,
+        19
+      ],
+      "smoothed_peak_uv": [
+        0.34151785714285715,
+        0.6897321428571429
+      ],
+      "source_url": "/api/dt/vision/screw/coreset/assets/c52713430c8add554a8bb2db06454adb/source.png",
+      "original_url": "/api/dt/vision/screw/coreset/assets/c52713430c8add554a8bb2db06454adb/original.png",
+      "overlay_url": "/api/dt/vision/screw/coreset/assets/c52713430c8add554a8bb2db06454adb/overlay.png",
+      "mask_url": "/api/dt/vision/screw/coreset/assets/c52713430c8add554a8bb2db06454adb/gt_mask.png",
+      "object_proxy_url": "/api/dt/vision/screw/coreset/assets/c52713430c8add554a8bb2db06454adb/object_proxy.png"
+    },
+    {
+      "image_id": "screw/test/scratch_head/020.png",
+      "image_sha256": "1ead0e5610d5fc9483dd2429af21a3309e5494c9281ae5fda8284a75418abdca",
+      "score": 0.08751291036605835,
+      "threshold": 0.10270808544009924,
+      "verdict": "OK",
+      "is_defect": 1,
+      "defect_type": "scratch_head",
+      "kind": "FN",
+      "evidence_id": "3dafc8b255a4ef269b42e57956ab20b4",
+      "peak_patch": [
+        2,
+        13
+      ],
+      "smoothed_peak_uv": [
+        0.08705357142857142,
+        0.47098214285714285
+      ],
+      "source_url": "/api/dt/vision/screw/coreset/assets/3dafc8b255a4ef269b42e57956ab20b4/source.png",
+      "original_url": "/api/dt/vision/screw/coreset/assets/3dafc8b255a4ef269b42e57956ab20b4/original.png",
+      "overlay_url": "/api/dt/vision/screw/coreset/assets/3dafc8b255a4ef269b42e57956ab20b4/overlay.png",
+      "mask_url": "/api/dt/vision/screw/coreset/assets/3dafc8b255a4ef269b42e57956ab20b4/gt_mask.png",
+      "object_proxy_url": "/api/dt/vision/screw/coreset/assets/3dafc8b255a4ef269b42e57956ab20b4/object_proxy.png"
+    },
+    {
+      "image_id": "screw/test/scratch_head/021.png",
+      "image_sha256": "9222a45524e5ef3506e989942f837da5a2c9082a5caa1a4b1a11d819d8fd400b",
+      "score": 0.09318727254867554,
+      "threshold": 0.10270808544009924,
+      "verdict": "OK",
+      "is_defect": 1,
+      "defect_type": "scratch_head",
+      "kind": "FN",
+      "evidence_id": "3ea1b8eb38c237ad57da186c14ffd4d2",
+      "peak_patch": [
+        23,
+        3
+      ],
+      "smoothed_peak_uv": [
+        0.8415178571428571,
+        0.11383928571428571
+      ],
+      "source_url": "/api/dt/vision/screw/coreset/assets/3ea1b8eb38c237ad57da186c14ffd4d2/source.png",
+      "original_url": "/api/dt/vision/screw/coreset/assets/3ea1b8eb38c237ad57da186c14ffd4d2/original.png",
+      "overlay_url": "/api/dt/vision/screw/coreset/assets/3ea1b8eb38c237ad57da186c14ffd4d2/overlay.png",
+      "mask_url": "/api/dt/vision/screw/coreset/assets/3ea1b8eb38c237ad57da186c14ffd4d2/gt_mask.png",
+      "object_proxy_url": "/api/dt/vision/screw/coreset/assets/3ea1b8eb38c237ad57da186c14ffd4d2/object_proxy.png"
+    },
+    {
+      "image_id": "screw/test/scratch_head/023.png",
+      "image_sha256": "22aced520a5c8f20321085bc6346f39cb4705215f90d75967305cf0f4b9963b3",
+      "score": 0.08011627197265625,
+      "threshold": 0.10270808544009924,
+      "verdict": "OK",
+      "is_defect": 1,
+      "defect_type": "scratch_head",
+      "kind": "FN",
+      "evidence_id": "22ce2feaeeed8c36365c0863ba9fa144",
+      "peak_patch": [
+        9,
+        24
+      ],
+      "smoothed_peak_uv": [
+        0.34151785714285715,
+        0.8727678571428571
+      ],
+      "source_url": "/api/dt/vision/screw/coreset/assets/22ce2feaeeed8c36365c0863ba9fa144/source.png",
+      "original_url": "/api/dt/vision/screw/coreset/assets/22ce2feaeeed8c36365c0863ba9fa144/original.png",
+      "overlay_url": "/api/dt/vision/screw/coreset/assets/22ce2feaeeed8c36365c0863ba9fa144/overlay.png",
+      "mask_url": "/api/dt/vision/screw/coreset/assets/22ce2feaeeed8c36365c0863ba9fa144/gt_mask.png",
+      "object_proxy_url": "/api/dt/vision/screw/coreset/assets/22ce2feaeeed8c36365c0863ba9fa144/object_proxy.png"
+    },
+    {
+      "image_id": "screw/test/scratch_neck/000.png",
+      "image_sha256": "608a17e6067b8b990f44169bab76de407bddece19d0a396acaa4d00f71eb19ba",
+      "score": 0.08146035671234131,
+      "threshold": 0.10270808544009924,
+      "verdict": "OK",
+      "is_defect": 1,
+      "defect_type": "scratch_neck",
+      "kind": "FN",
+      "evidence_id": "af39844007bca2e7fff90a3f9aebba67",
+      "peak_patch": [
+        8,
+        12
+      ],
+      "smoothed_peak_uv": [
+        0.27455357142857145,
+        0.4174107142857143
+      ],
+      "source_url": "/api/dt/vision/screw/coreset/assets/af39844007bca2e7fff90a3f9aebba67/source.png",
+      "original_url": "/api/dt/vision/screw/coreset/assets/af39844007bca2e7fff90a3f9aebba67/original.png",
+      "overlay_url": "/api/dt/vision/screw/coreset/assets/af39844007bca2e7fff90a3f9aebba67/overlay.png",
+      "mask_url": "/api/dt/vision/screw/coreset/assets/af39844007bca2e7fff90a3f9aebba67/gt_mask.png",
+      "object_proxy_url": "/api/dt/vision/screw/coreset/assets/af39844007bca2e7fff90a3f9aebba67/object_proxy.png"
+    },
+    {
+      "image_id": "screw/test/scratch_neck/002.png",
+      "image_sha256": "02016d1999bfc0e6cb201e08c297cc6e73d56c6d098b4df47073ad0a3833087d",
+      "score": 0.09734910726547241,
+      "threshold": 0.10270808544009924,
+      "verdict": "OK",
+      "is_defect": 1,
+      "defect_type": "scratch_neck",
+      "kind": "FN",
+      "evidence_id": "b5db41154d685a8ca67c8cd5da143e8e",
+      "peak_patch": [
+        11,
+        13
+      ],
+      "smoothed_peak_uv": [
+        0.40848214285714285,
+        0.484375
+      ],
+      "source_url": "/api/dt/vision/screw/coreset/assets/b5db41154d685a8ca67c8cd5da143e8e/source.png",
+      "original_url": "/api/dt/vision/screw/coreset/assets/b5db41154d685a8ca67c8cd5da143e8e/original.png",
+      "overlay_url": "/api/dt/vision/screw/coreset/assets/b5db41154d685a8ca67c8cd5da143e8e/overlay.png",
+      "mask_url": "/api/dt/vision/screw/coreset/assets/b5db41154d685a8ca67c8cd5da143e8e/gt_mask.png",
+      "object_proxy_url": "/api/dt/vision/screw/coreset/assets/b5db41154d685a8ca67c8cd5da143e8e/object_proxy.png"
+    },
+    {
+      "image_id": "screw/test/scratch_neck/005.png",
+      "image_sha256": "94cdc70e8cba36f00b40a8fbe71b09cff919e5314326f6d5b495d180f809b973",
+      "score": 0.08262079954147339,
+      "threshold": 0.10270808544009924,
+      "verdict": "OK",
+      "is_defect": 1,
+      "defect_type": "scratch_neck",
+      "kind": "FN",
+      "evidence_id": "9333230cf3fbdb67ab44c093f544c671",
+      "peak_patch": [
+        27,
+        0
+      ],
+      "smoothed_peak_uv": [
+        0.9977678571428571,
+        0.002232142857142857
+      ],
+      "source_url": "/api/dt/vision/screw/coreset/assets/9333230cf3fbdb67ab44c093f544c671/source.png",
+      "original_url": "/api/dt/vision/screw/coreset/assets/9333230cf3fbdb67ab44c093f544c671/original.png",
+      "overlay_url": "/api/dt/vision/screw/coreset/assets/9333230cf3fbdb67ab44c093f544c671/overlay.png",
+      "mask_url": "/api/dt/vision/screw/coreset/assets/9333230cf3fbdb67ab44c093f544c671/gt_mask.png",
+      "object_proxy_url": "/api/dt/vision/screw/coreset/assets/9333230cf3fbdb67ab44c093f544c671/object_proxy.png"
+    },
+    {
+      "image_id": "screw/test/scratch_neck/011.png",
+      "image_sha256": "e8a5aa925741f7e5c67dd39eb158983cadd0113f6d5176502ee802a656bfb21d",
+      "score": 0.07971745729446411,
+      "threshold": 0.10270808544009924,
+      "verdict": "OK",
+      "is_defect": 1,
+      "defect_type": "scratch_neck",
+      "kind": "FN",
+      "evidence_id": "f08b49263c2c6b1753b341afadcfbcd0",
+      "peak_patch": [
+        27,
+        9
+      ],
+      "smoothed_peak_uv": [
+        0.9977678571428571,
+        0.34151785714285715
+      ],
+      "source_url": "/api/dt/vision/screw/coreset/assets/f08b49263c2c6b1753b341afadcfbcd0/source.png",
+      "original_url": "/api/dt/vision/screw/coreset/assets/f08b49263c2c6b1753b341afadcfbcd0/original.png",
+      "overlay_url": "/api/dt/vision/screw/coreset/assets/f08b49263c2c6b1753b341afadcfbcd0/overlay.png",
+      "mask_url": "/api/dt/vision/screw/coreset/assets/f08b49263c2c6b1753b341afadcfbcd0/gt_mask.png",
+      "object_proxy_url": "/api/dt/vision/screw/coreset/assets/f08b49263c2c6b1753b341afadcfbcd0/object_proxy.png"
+    },
+    {
+      "image_id": "screw/test/scratch_neck/021.png",
+      "image_sha256": "5038f6584a48f5cf9ecea05c4b41e93273a36aac684d495ea3c5617c1945aac1",
+      "score": 0.08406811952590942,
+      "threshold": 0.10270808544009924,
+      "verdict": "OK",
+      "is_defect": 1,
+      "defect_type": "scratch_neck",
+      "kind": "FN",
+      "evidence_id": "bdbde94f1d7ab800c39ae15236bee0da",
+      "peak_patch": [
+        15,
+        14
+      ],
+      "smoothed_peak_uv": [
+        0.5647321428571429,
+        0.5200892857142857
+      ],
+      "source_url": "/api/dt/vision/screw/coreset/assets/bdbde94f1d7ab800c39ae15236bee0da/source.png",
+      "original_url": "/api/dt/vision/screw/coreset/assets/bdbde94f1d7ab800c39ae15236bee0da/original.png",
+      "overlay_url": "/api/dt/vision/screw/coreset/assets/bdbde94f1d7ab800c39ae15236bee0da/overlay.png",
+      "mask_url": "/api/dt/vision/screw/coreset/assets/bdbde94f1d7ab800c39ae15236bee0da/gt_mask.png",
+      "object_proxy_url": "/api/dt/vision/screw/coreset/assets/bdbde94f1d7ab800c39ae15236bee0da/object_proxy.png"
+    },
+    {
+      "image_id": "screw/test/scratch_neck/023.png",
+      "image_sha256": "f6edb7c130a03da3c2fb738dc0ef46d43daf9e990494a020cb447577e53f7ef9",
+      "score": 0.10068720579147339,
+      "threshold": 0.10270808544009924,
+      "verdict": "OK",
+      "is_defect": 1,
+      "defect_type": "scratch_neck",
+      "kind": "FN",
+      "evidence_id": "372ebd4b32ee74a8f2399a041e5e97b1",
+      "peak_patch": [
+        10,
+        10
+      ],
+      "smoothed_peak_uv": [
+        0.38169642857142855,
+        0.37723214285714285
+      ],
+      "source_url": "/api/dt/vision/screw/coreset/assets/372ebd4b32ee74a8f2399a041e5e97b1/source.png",
+      "original_url": "/api/dt/vision/screw/coreset/assets/372ebd4b32ee74a8f2399a041e5e97b1/original.png",
+      "overlay_url": "/api/dt/vision/screw/coreset/assets/372ebd4b32ee74a8f2399a041e5e97b1/overlay.png",
+      "mask_url": "/api/dt/vision/screw/coreset/assets/372ebd4b32ee74a8f2399a041e5e97b1/gt_mask.png",
+      "object_proxy_url": "/api/dt/vision/screw/coreset/assets/372ebd4b32ee74a8f2399a041e5e97b1/object_proxy.png"
+    },
+    {
+      "image_id": "screw/test/thread_side/000.png",
+      "image_sha256": "5c647f0782864e6a95a3345b4b5094c6c7f0f442fd340267155a5f2794a2ee61",
+      "score": 0.08314663171768188,
+      "threshold": 0.10270808544009924,
+      "verdict": "OK",
+      "is_defect": 1,
+      "defect_type": "thread_side",
+      "kind": "FN",
+      "evidence_id": "892218fc1f0d0c0aac5c7f528989551d",
+      "peak_patch": [
+        0,
+        27
+      ],
+      "smoothed_peak_uv": [
+        0.002232142857142857,
+        0.9977678571428571
+      ],
+      "source_url": "/api/dt/vision/screw/coreset/assets/892218fc1f0d0c0aac5c7f528989551d/source.png",
+      "original_url": "/api/dt/vision/screw/coreset/assets/892218fc1f0d0c0aac5c7f528989551d/original.png",
+      "overlay_url": "/api/dt/vision/screw/coreset/assets/892218fc1f0d0c0aac5c7f528989551d/overlay.png",
+      "mask_url": "/api/dt/vision/screw/coreset/assets/892218fc1f0d0c0aac5c7f528989551d/gt_mask.png",
+      "object_proxy_url": "/api/dt/vision/screw/coreset/assets/892218fc1f0d0c0aac5c7f528989551d/object_proxy.png"
+    },
+    {
+      "image_id": "screw/test/thread_side/001.png",
+      "image_sha256": "d62afd02f682db2b0f8db4c728354c5a259d3d0f6197f1ede655806e93289011",
+      "score": 0.06966817378997803,
+      "threshold": 0.10270808544009924,
+      "verdict": "OK",
+      "is_defect": 1,
+      "defect_type": "thread_side",
+      "kind": "FN",
+      "evidence_id": "a9ebd8158e25e5f2d447a210b02a2724",
+      "peak_patch": [
+        17,
+        13
+      ],
+      "smoothed_peak_uv": [
+        0.11383928571428571,
+        0.21651785714285715
+      ],
+      "source_url": "/api/dt/vision/screw/coreset/assets/a9ebd8158e25e5f2d447a210b02a2724/source.png",
+      "original_url": "/api/dt/vision/screw/coreset/assets/a9ebd8158e25e5f2d447a210b02a2724/original.png",
+      "overlay_url": "/api/dt/vision/screw/coreset/assets/a9ebd8158e25e5f2d447a210b02a2724/overlay.png",
+      "mask_url": "/api/dt/vision/screw/coreset/assets/a9ebd8158e25e5f2d447a210b02a2724/gt_mask.png",
+      "object_proxy_url": "/api/dt/vision/screw/coreset/assets/a9ebd8158e25e5f2d447a210b02a2724/object_proxy.png"
+    },
+    {
+      "image_id": "screw/test/thread_side/002.png",
+      "image_sha256": "bd1bff0e6bef321e8eea8ae09b697442c436f2a4cd439c8c6a2965123c521651",
+      "score": 0.08556640148162842,
+      "threshold": 0.10270808544009924,
+      "verdict": "OK",
+      "is_defect": 1,
+      "defect_type": "thread_side",
+      "kind": "FN",
+      "evidence_id": "5c1584fae000a9ea6bf1575d718e15fa",
+      "peak_patch": [
+        13,
+        0
+      ],
+      "smoothed_peak_uv": [
+        0.484375,
+        0.002232142857142857
+      ],
+      "source_url": "/api/dt/vision/screw/coreset/assets/5c1584fae000a9ea6bf1575d718e15fa/source.png",
+      "original_url": "/api/dt/vision/screw/coreset/assets/5c1584fae000a9ea6bf1575d718e15fa/original.png",
+      "overlay_url": "/api/dt/vision/screw/coreset/assets/5c1584fae000a9ea6bf1575d718e15fa/overlay.png",
+      "mask_url": "/api/dt/vision/screw/coreset/assets/5c1584fae000a9ea6bf1575d718e15fa/gt_mask.png",
+      "object_proxy_url": "/api/dt/vision/screw/coreset/assets/5c1584fae000a9ea6bf1575d718e15fa/object_proxy.png"
+    },
+    {
+      "image_id": "screw/test/thread_side/003.png",
+      "image_sha256": "d280670b38eb475a4cc781876a108b2ef7b5569e78b54c4f8dbf6c46713ec506",
+      "score": 0.08212381601333618,
+      "threshold": 0.10270808544009924,
+      "verdict": "OK",
+      "is_defect": 1,
+      "defect_type": "thread_side",
+      "kind": "FN",
+      "evidence_id": "074af0eb413cc380c63d1661a6fc0a3b",
+      "peak_patch": [
+        19,
+        14
+      ],
+      "smoothed_peak_uv": [
+        0.6986607142857143,
+        0.5334821428571429
+      ],
+      "source_url": "/api/dt/vision/screw/coreset/assets/074af0eb413cc380c63d1661a6fc0a3b/source.png",
+      "original_url": "/api/dt/vision/screw/coreset/assets/074af0eb413cc380c63d1661a6fc0a3b/original.png",
+      "overlay_url": "/api/dt/vision/screw/coreset/assets/074af0eb413cc380c63d1661a6fc0a3b/overlay.png",
+      "mask_url": "/api/dt/vision/screw/coreset/assets/074af0eb413cc380c63d1661a6fc0a3b/gt_mask.png",
+      "object_proxy_url": "/api/dt/vision/screw/coreset/assets/074af0eb413cc380c63d1661a6fc0a3b/object_proxy.png"
+    },
+    {
+      "image_id": "screw/test/thread_side/004.png",
+      "image_sha256": "c7989f4ef74471327e48c2e13c6445d5681c2d798ce9555da80669ca9b36c6a0",
+      "score": 0.06743979454040527,
+      "threshold": 0.10270808544009924,
+      "verdict": "OK",
+      "is_defect": 1,
+      "defect_type": "thread_side",
+      "kind": "FN",
+      "evidence_id": "99e0fa8b8dd346aab1d781258cc27827",
+      "peak_patch": [
+        0,
+        27
+      ],
+      "smoothed_peak_uv": [
+        0.002232142857142857,
+        0.9977678571428571
+      ],
+      "source_url": "/api/dt/vision/screw/coreset/assets/99e0fa8b8dd346aab1d781258cc27827/source.png",
+      "original_url": "/api/dt/vision/screw/coreset/assets/99e0fa8b8dd346aab1d781258cc27827/original.png",
+      "overlay_url": "/api/dt/vision/screw/coreset/assets/99e0fa8b8dd346aab1d781258cc27827/overlay.png",
+      "mask_url": "/api/dt/vision/screw/coreset/assets/99e0fa8b8dd346aab1d781258cc27827/gt_mask.png",
+      "object_proxy_url": "/api/dt/vision/screw/coreset/assets/99e0fa8b8dd346aab1d781258cc27827/object_proxy.png"
+    },
+    {
+      "image_id": "screw/test/thread_side/005.png",
+      "image_sha256": "05200c7c5c1972f8039658e3e13bfcc7540cad525bbb8a30702c2bd8ff526fed",
+      "score": 0.08583569526672363,
+      "threshold": 0.10270808544009924,
+      "verdict": "OK",
+      "is_defect": 1,
+      "defect_type": "thread_side",
+      "kind": "FN",
+      "evidence_id": "672f3ba32f4ca9bac6a456935b93d524",
+      "peak_patch": [
+        10,
+        11
+      ],
+      "smoothed_peak_uv": [
+        0.3861607142857143,
+        0.4174107142857143
+      ],
+      "source_url": "/api/dt/vision/screw/coreset/assets/672f3ba32f4ca9bac6a456935b93d524/source.png",
+      "original_url": "/api/dt/vision/screw/coreset/assets/672f3ba32f4ca9bac6a456935b93d524/original.png",
+      "overlay_url": "/api/dt/vision/screw/coreset/assets/672f3ba32f4ca9bac6a456935b93d524/overlay.png",
+      "mask_url": "/api/dt/vision/screw/coreset/assets/672f3ba32f4ca9bac6a456935b93d524/gt_mask.png",
+      "object_proxy_url": "/api/dt/vision/screw/coreset/assets/672f3ba32f4ca9bac6a456935b93d524/object_proxy.png"
+    },
+    {
+      "image_id": "screw/test/thread_side/006.png",
+      "image_sha256": "b133e68f194f085872b0d11faaf2c39072076477e5bf69c33ed2581b5eff2a5e",
+      "score": 0.07812190055847168,
+      "threshold": 0.10270808544009924,
+      "verdict": "OK",
+      "is_defect": 1,
+      "defect_type": "thread_side",
+      "kind": "FN",
+      "evidence_id": "0025da0c4f2f0166ae7b81b3213f8b96",
+      "peak_patch": [
+        10,
+        11
+      ],
+      "smoothed_peak_uv": [
+        0.38169642857142855,
+        0.40848214285714285
+      ],
+      "source_url": "/api/dt/vision/screw/coreset/assets/0025da0c4f2f0166ae7b81b3213f8b96/source.png",
+      "original_url": "/api/dt/vision/screw/coreset/assets/0025da0c4f2f0166ae7b81b3213f8b96/original.png",
+      "overlay_url": "/api/dt/vision/screw/coreset/assets/0025da0c4f2f0166ae7b81b3213f8b96/overlay.png",
+      "mask_url": "/api/dt/vision/screw/coreset/assets/0025da0c4f2f0166ae7b81b3213f8b96/gt_mask.png",
+      "object_proxy_url": "/api/dt/vision/screw/coreset/assets/0025da0c4f2f0166ae7b81b3213f8b96/object_proxy.png"
+    },
+    {
+      "image_id": "screw/test/thread_side/007.png",
+      "image_sha256": "54a5b5cdf53ee5e43f240efe5925db4821ce8b5bc47f65185ca17e24eb6b4b97",
+      "score": 0.09256434440612793,
+      "threshold": 0.10270808544009924,
+      "verdict": "OK",
+      "is_defect": 1,
+      "defect_type": "thread_side",
+      "kind": "FN",
+      "evidence_id": "3a7623521bb5b37c91144c7daaccc12d",
+      "peak_patch": [
+        16,
+        15
+      ],
+      "smoothed_peak_uv": [
+        0.5870535714285714,
+        0.5558035714285714
+      ],
+      "source_url": "/api/dt/vision/screw/coreset/assets/3a7623521bb5b37c91144c7daaccc12d/source.png",
+      "original_url": "/api/dt/vision/screw/coreset/assets/3a7623521bb5b37c91144c7daaccc12d/original.png",
+      "overlay_url": "/api/dt/vision/screw/coreset/assets/3a7623521bb5b37c91144c7daaccc12d/overlay.png",
+      "mask_url": "/api/dt/vision/screw/coreset/assets/3a7623521bb5b37c91144c7daaccc12d/gt_mask.png",
+      "object_proxy_url": "/api/dt/vision/screw/coreset/assets/3a7623521bb5b37c91144c7daaccc12d/object_proxy.png"
+    },
+    {
+      "image_id": "screw/test/thread_side/008.png",
+      "image_sha256": "556b5342f95f8eba8ac389c4ddda00afa8fe08695e7f62117e306c850d019f99",
+      "score": 0.07945311069488525,
+      "threshold": 0.10270808544009924,
+      "verdict": "OK",
+      "is_defect": 1,
+      "defect_type": "thread_side",
+      "kind": "FN",
+      "evidence_id": "25ffc9aefa6bf7df448960a215817654",
+      "peak_patch": [
+        20,
+        9
+      ],
+      "smoothed_peak_uv": [
+        0.7433035714285714,
+        0.34151785714285715
+      ],
+      "source_url": "/api/dt/vision/screw/coreset/assets/25ffc9aefa6bf7df448960a215817654/source.png",
+      "original_url": "/api/dt/vision/screw/coreset/assets/25ffc9aefa6bf7df448960a215817654/original.png",
+      "overlay_url": "/api/dt/vision/screw/coreset/assets/25ffc9aefa6bf7df448960a215817654/overlay.png",
+      "mask_url": "/api/dt/vision/screw/coreset/assets/25ffc9aefa6bf7df448960a215817654/gt_mask.png",
+      "object_proxy_url": "/api/dt/vision/screw/coreset/assets/25ffc9aefa6bf7df448960a215817654/object_proxy.png"
+    },
+    {
+      "image_id": "screw/test/thread_side/009.png",
+      "image_sha256": "8bb12074385c862e2b68472a27f582a0911fa5af2f47d47d8020ec567d24643e",
+      "score": 0.07721924781799316,
+      "threshold": 0.10270808544009924,
+      "verdict": "OK",
+      "is_defect": 1,
+      "defect_type": "thread_side",
+      "kind": "FN",
+      "evidence_id": "6a451638b69acf14ddbc809c9afba3e5",
+      "peak_patch": [
+        2,
+        16
+      ],
+      "smoothed_peak_uv": [
+        0.08705357142857142,
+        0.5959821428571429
+      ],
+      "source_url": "/api/dt/vision/screw/coreset/assets/6a451638b69acf14ddbc809c9afba3e5/source.png",
+      "original_url": "/api/dt/vision/screw/coreset/assets/6a451638b69acf14ddbc809c9afba3e5/original.png",
+      "overlay_url": "/api/dt/vision/screw/coreset/assets/6a451638b69acf14ddbc809c9afba3e5/overlay.png",
+      "mask_url": "/api/dt/vision/screw/coreset/assets/6a451638b69acf14ddbc809c9afba3e5/gt_mask.png",
+      "object_proxy_url": "/api/dt/vision/screw/coreset/assets/6a451638b69acf14ddbc809c9afba3e5/object_proxy.png"
+    },
+    {
+      "image_id": "screw/test/thread_side/010.png",
+      "image_sha256": "1dbedd27b93ec6b895c9ae5dc72a12dca8e4482dce238cfc927d1565e694c16a",
+      "score": 0.06971931457519531,
+      "threshold": 0.10270808544009924,
+      "verdict": "OK",
+      "is_defect": 1,
+      "defect_type": "thread_side",
+      "kind": "FN",
+      "evidence_id": "4b52a6778e07bc533e7fffe8c91027c1",
+      "peak_patch": [
+        8,
+        14
+      ],
+      "smoothed_peak_uv": [
+        0.31473214285714285,
+        0.5245535714285714
+      ],
+      "source_url": "/api/dt/vision/screw/coreset/assets/4b52a6778e07bc533e7fffe8c91027c1/source.png",
+      "original_url": "/api/dt/vision/screw/coreset/assets/4b52a6778e07bc533e7fffe8c91027c1/original.png",
+      "overlay_url": "/api/dt/vision/screw/coreset/assets/4b52a6778e07bc533e7fffe8c91027c1/overlay.png",
+      "mask_url": "/api/dt/vision/screw/coreset/assets/4b52a6778e07bc533e7fffe8c91027c1/gt_mask.png",
+      "object_proxy_url": "/api/dt/vision/screw/coreset/assets/4b52a6778e07bc533e7fffe8c91027c1/object_proxy.png"
+    },
+    {
+      "image_id": "screw/test/thread_side/011.png",
+      "image_sha256": "ad7738aa343db9d0f4aa73d6dd26634ce6d836c97026532c89d65a3b58d79b93",
+      "score": 0.08078616857528687,
+      "threshold": 0.10270808544009924,
+      "verdict": "OK",
+      "is_defect": 1,
+      "defect_type": "thread_side",
+      "kind": "FN",
+      "evidence_id": "2ad668ee12f03a9e545f260400d99563",
+      "peak_patch": [
+        7,
+        23
+      ],
+      "smoothed_peak_uv": [
+        0.265625,
+        0.8370535714285714
+      ],
+      "source_url": "/api/dt/vision/screw/coreset/assets/2ad668ee12f03a9e545f260400d99563/source.png",
+      "original_url": "/api/dt/vision/screw/coreset/assets/2ad668ee12f03a9e545f260400d99563/original.png",
+      "overlay_url": "/api/dt/vision/screw/coreset/assets/2ad668ee12f03a9e545f260400d99563/overlay.png",
+      "mask_url": "/api/dt/vision/screw/coreset/assets/2ad668ee12f03a9e545f260400d99563/gt_mask.png",
+      "object_proxy_url": "/api/dt/vision/screw/coreset/assets/2ad668ee12f03a9e545f260400d99563/object_proxy.png"
+    },
+    {
+      "image_id": "screw/test/thread_side/012.png",
+      "image_sha256": "558ef5e5a43172ab90851596fab74123ac92d1787204bb6fd5a5a4924764ca13",
+      "score": 0.08968162536621094,
+      "threshold": 0.10270808544009924,
+      "verdict": "OK",
+      "is_defect": 1,
+      "defect_type": "thread_side",
+      "kind": "FN",
+      "evidence_id": "54cfb23cfb2893a2d4b29d7a56c5e2de",
+      "peak_patch": [
+        27,
+        2
+      ],
+      "smoothed_peak_uv": [
+        0.9977678571428571,
+        0.09151785714285714
+      ],
+      "source_url": "/api/dt/vision/screw/coreset/assets/54cfb23cfb2893a2d4b29d7a56c5e2de/source.png",
+      "original_url": "/api/dt/vision/screw/coreset/assets/54cfb23cfb2893a2d4b29d7a56c5e2de/original.png",
+      "overlay_url": "/api/dt/vision/screw/coreset/assets/54cfb23cfb2893a2d4b29d7a56c5e2de/overlay.png",
+      "mask_url": "/api/dt/vision/screw/coreset/assets/54cfb23cfb2893a2d4b29d7a56c5e2de/gt_mask.png",
+      "object_proxy_url": "/api/dt/vision/screw/coreset/assets/54cfb23cfb2893a2d4b29d7a56c5e2de/object_proxy.png"
+    },
+    {
+      "image_id": "screw/test/thread_side/013.png",
+      "image_sha256": "93cd19b069f6451d8871b379ad84568001073203a189d6a7add77f46ff1752ac",
+      "score": 0.07185882329940796,
+      "threshold": 0.10270808544009924,
+      "verdict": "OK",
+      "is_defect": 1,
+      "defect_type": "thread_side",
+      "kind": "FN",
+      "evidence_id": "db193833df529e412e4ce0cb2d71437e",
+      "peak_patch": [
+        27,
+        0
+      ],
+      "smoothed_peak_uv": [
+        0.9977678571428571,
+        0.002232142857142857
+      ],
+      "source_url": "/api/dt/vision/screw/coreset/assets/db193833df529e412e4ce0cb2d71437e/source.png",
+      "original_url": "/api/dt/vision/screw/coreset/assets/db193833df529e412e4ce0cb2d71437e/original.png",
+      "overlay_url": "/api/dt/vision/screw/coreset/assets/db193833df529e412e4ce0cb2d71437e/overlay.png",
+      "mask_url": "/api/dt/vision/screw/coreset/assets/db193833df529e412e4ce0cb2d71437e/gt_mask.png",
+      "object_proxy_url": "/api/dt/vision/screw/coreset/assets/db193833df529e412e4ce0cb2d71437e/object_proxy.png"
+    },
+    {
+      "image_id": "screw/test/thread_side/014.png",
+      "image_sha256": "9697be55d1f7d26a6dda0efaf7d184455799ea34a46056acea064872beef8691",
+      "score": 0.08014482259750366,
+      "threshold": 0.10270808544009924,
+      "verdict": "OK",
+      "is_defect": 1,
+      "defect_type": "thread_side",
+      "kind": "FN",
+      "evidence_id": "17e53a585834dedbe2c12922a061bdf8",
+      "peak_patch": [
+        12,
+        10
+      ],
+      "smoothed_peak_uv": [
+        0.453125,
+        0.37723214285714285
+      ],
+      "source_url": "/api/dt/vision/screw/coreset/assets/17e53a585834dedbe2c12922a061bdf8/source.png",
+      "original_url": "/api/dt/vision/screw/coreset/assets/17e53a585834dedbe2c12922a061bdf8/original.png",
+      "overlay_url": "/api/dt/vision/screw/coreset/assets/17e53a585834dedbe2c12922a061bdf8/overlay.png",
+      "mask_url": "/api/dt/vision/screw/coreset/assets/17e53a585834dedbe2c12922a061bdf8/gt_mask.png",
+      "object_proxy_url": "/api/dt/vision/screw/coreset/assets/17e53a585834dedbe2c12922a061bdf8/object_proxy.png"
+    },
+    {
+      "image_id": "screw/test/thread_side/015.png",
+      "image_sha256": "29d813e3632959ec80e119d82e98ccdff8388ba7fb90d14c7a7a925867c527f8",
+      "score": 0.07760906219482422,
+      "threshold": 0.10270808544009924,
+      "verdict": "OK",
+      "is_defect": 1,
+      "defect_type": "thread_side",
+      "kind": "FN",
+      "evidence_id": "2e7a95dfc9cfde7947fd37c4276e6b52",
+      "peak_patch": [
+        27,
+        27
+      ],
+      "smoothed_peak_uv": [
+        0.9977678571428571,
+        0.9977678571428571
+      ],
+      "source_url": "/api/dt/vision/screw/coreset/assets/2e7a95dfc9cfde7947fd37c4276e6b52/source.png",
+      "original_url": "/api/dt/vision/screw/coreset/assets/2e7a95dfc9cfde7947fd37c4276e6b52/original.png",
+      "overlay_url": "/api/dt/vision/screw/coreset/assets/2e7a95dfc9cfde7947fd37c4276e6b52/overlay.png",
+      "mask_url": "/api/dt/vision/screw/coreset/assets/2e7a95dfc9cfde7947fd37c4276e6b52/gt_mask.png",
+      "object_proxy_url": "/api/dt/vision/screw/coreset/assets/2e7a95dfc9cfde7947fd37c4276e6b52/object_proxy.png"
+    },
+    {
+      "image_id": "screw/test/thread_side/016.png",
+      "image_sha256": "2c6923f7723f3d0bbc14a808e5d63854efa8f004b8ba34fb69749358929b1793",
+      "score": 0.07840460538864136,
+      "threshold": 0.10270808544009924,
+      "verdict": "OK",
+      "is_defect": 1,
+      "defect_type": "thread_side",
+      "kind": "FN",
+      "evidence_id": "f8be6fa57b9e3ea8d60113597be5c622",
+      "peak_patch": [
+        27,
+        27
+      ],
+      "smoothed_peak_uv": [
+        0.9977678571428571,
+        0.9977678571428571
+      ],
+      "source_url": "/api/dt/vision/screw/coreset/assets/f8be6fa57b9e3ea8d60113597be5c622/source.png",
+      "original_url": "/api/dt/vision/screw/coreset/assets/f8be6fa57b9e3ea8d60113597be5c622/original.png",
+      "overlay_url": "/api/dt/vision/screw/coreset/assets/f8be6fa57b9e3ea8d60113597be5c622/overlay.png",
+      "mask_url": "/api/dt/vision/screw/coreset/assets/f8be6fa57b9e3ea8d60113597be5c622/gt_mask.png",
+      "object_proxy_url": "/api/dt/vision/screw/coreset/assets/f8be6fa57b9e3ea8d60113597be5c622/object_proxy.png"
+    },
+    {
+      "image_id": "screw/test/thread_side/017.png",
+      "image_sha256": "02d37d313219b768fcf228d98fe0ce6e783655c7415e2bfc0cfedfe9b866979a",
+      "score": 0.10218554735183716,
+      "threshold": 0.10270808544009924,
+      "verdict": "OK",
+      "is_defect": 1,
+      "defect_type": "thread_side",
+      "kind": "FN",
+      "evidence_id": "59ab37b658579e0fdc76d6ad9426df81",
+      "peak_patch": [
+        16,
+        6
+      ],
+      "smoothed_peak_uv": [
+        0.578125,
+        0.234375
+      ],
+      "source_url": "/api/dt/vision/screw/coreset/assets/59ab37b658579e0fdc76d6ad9426df81/source.png",
+      "original_url": "/api/dt/vision/screw/coreset/assets/59ab37b658579e0fdc76d6ad9426df81/original.png",
+      "overlay_url": "/api/dt/vision/screw/coreset/assets/59ab37b658579e0fdc76d6ad9426df81/overlay.png",
+      "mask_url": "/api/dt/vision/screw/coreset/assets/59ab37b658579e0fdc76d6ad9426df81/gt_mask.png",
+      "object_proxy_url": "/api/dt/vision/screw/coreset/assets/59ab37b658579e0fdc76d6ad9426df81/object_proxy.png"
+    },
+    {
+      "image_id": "screw/test/thread_side/018.png",
+      "image_sha256": "0e38bfb9dc72b800bf9fdd511ea4f50f776400fadda0729390afc38150738a63",
+      "score": 0.09761273860931396,
+      "threshold": 0.10270808544009924,
+      "verdict": "OK",
+      "is_defect": 1,
+      "defect_type": "thread_side",
+      "kind": "FN",
+      "evidence_id": "e99ccea0af1f812eb59806d7930174f5",
+      "peak_patch": [
+        5,
+        27
+      ],
+      "smoothed_peak_uv": [
+        0.18526785714285715,
+        0.9977678571428571
+      ],
+      "source_url": "/api/dt/vision/screw/coreset/assets/e99ccea0af1f812eb59806d7930174f5/source.png",
+      "original_url": "/api/dt/vision/screw/coreset/assets/e99ccea0af1f812eb59806d7930174f5/original.png",
+      "overlay_url": "/api/dt/vision/screw/coreset/assets/e99ccea0af1f812eb59806d7930174f5/overlay.png",
+      "mask_url": "/api/dt/vision/screw/coreset/assets/e99ccea0af1f812eb59806d7930174f5/gt_mask.png",
+      "object_proxy_url": "/api/dt/vision/screw/coreset/assets/e99ccea0af1f812eb59806d7930174f5/object_proxy.png"
+    },
+    {
+      "image_id": "screw/test/thread_side/019.png",
+      "image_sha256": "d0e07398d6e32a96b0b365cce04482a82911d19b8d2ed6a2f5fb66b09a0d5939",
+      "score": 0.07680284976959229,
+      "threshold": 0.10270808544009924,
+      "verdict": "OK",
+      "is_defect": 1,
+      "defect_type": "thread_side",
+      "kind": "FN",
+      "evidence_id": "c1803eaafffa115e317b35d3d6416242",
+      "peak_patch": [
+        2,
+        27
+      ],
+      "smoothed_peak_uv": [
+        0.08705357142857142,
+        0.9977678571428571
+      ],
+      "source_url": "/api/dt/vision/screw/coreset/assets/c1803eaafffa115e317b35d3d6416242/source.png",
+      "original_url": "/api/dt/vision/screw/coreset/assets/c1803eaafffa115e317b35d3d6416242/original.png",
+      "overlay_url": "/api/dt/vision/screw/coreset/assets/c1803eaafffa115e317b35d3d6416242/overlay.png",
+      "mask_url": "/api/dt/vision/screw/coreset/assets/c1803eaafffa115e317b35d3d6416242/gt_mask.png",
+      "object_proxy_url": "/api/dt/vision/screw/coreset/assets/c1803eaafffa115e317b35d3d6416242/object_proxy.png"
+    },
+    {
+      "image_id": "screw/test/thread_side/020.png",
+      "image_sha256": "df59bd27f83130bdf757d4e0fb7aabb84e930508bc2b12dab516683c3dc231dd",
+      "score": 0.07330536842346191,
+      "threshold": 0.10270808544009924,
+      "verdict": "OK",
+      "is_defect": 1,
+      "defect_type": "thread_side",
+      "kind": "FN",
+      "evidence_id": "0ff40a4f8ee54e7767fcbfa0238b9da9",
+      "peak_patch": [
+        18,
+        0
+      ],
+      "smoothed_peak_uv": [
+        0.6495535714285714,
+        0.002232142857142857
+      ],
+      "source_url": "/api/dt/vision/screw/coreset/assets/0ff40a4f8ee54e7767fcbfa0238b9da9/source.png",
+      "original_url": "/api/dt/vision/screw/coreset/assets/0ff40a4f8ee54e7767fcbfa0238b9da9/original.png",
+      "overlay_url": "/api/dt/vision/screw/coreset/assets/0ff40a4f8ee54e7767fcbfa0238b9da9/overlay.png",
+      "mask_url": "/api/dt/vision/screw/coreset/assets/0ff40a4f8ee54e7767fcbfa0238b9da9/gt_mask.png",
+      "object_proxy_url": "/api/dt/vision/screw/coreset/assets/0ff40a4f8ee54e7767fcbfa0238b9da9/object_proxy.png"
+    },
+    {
+      "image_id": "screw/test/thread_side/021.png",
+      "image_sha256": "c138a8979dbb2afeaeccfe587203d710729d77ab0ea335fdf41723d0f22717f7",
+      "score": 0.0692705512046814,
+      "threshold": 0.10270808544009924,
+      "verdict": "OK",
+      "is_defect": 1,
+      "defect_type": "thread_side",
+      "kind": "FN",
+      "evidence_id": "7f9985b49a55b1536d308ea361075ffc",
+      "peak_patch": [
+        21,
+        18
+      ],
+      "smoothed_peak_uv": [
+        0.765625,
+        0.6629464285714286
+      ],
+      "source_url": "/api/dt/vision/screw/coreset/assets/7f9985b49a55b1536d308ea361075ffc/source.png",
+      "original_url": "/api/dt/vision/screw/coreset/assets/7f9985b49a55b1536d308ea361075ffc/original.png",
+      "overlay_url": "/api/dt/vision/screw/coreset/assets/7f9985b49a55b1536d308ea361075ffc/overlay.png",
+      "mask_url": "/api/dt/vision/screw/coreset/assets/7f9985b49a55b1536d308ea361075ffc/gt_mask.png",
+      "object_proxy_url": "/api/dt/vision/screw/coreset/assets/7f9985b49a55b1536d308ea361075ffc/object_proxy.png"
+    },
+    {
+      "image_id": "screw/test/thread_side/022.png",
+      "image_sha256": "aac85a5f71ee56a49f1d345814ae6918e7b00597ca187b0a77fb770bf96c32a9",
+      "score": 0.09973776340484619,
+      "threshold": 0.10270808544009924,
+      "verdict": "OK",
+      "is_defect": 1,
+      "defect_type": "thread_side",
+      "kind": "FN",
+      "evidence_id": "19c8e4effcd12da14447aef07cb82a8d",
+      "peak_patch": [
+        26,
+        0
+      ],
+      "smoothed_peak_uv": [
+        0.9486607142857143,
+        0.002232142857142857
+      ],
+      "source_url": "/api/dt/vision/screw/coreset/assets/19c8e4effcd12da14447aef07cb82a8d/source.png",
+      "original_url": "/api/dt/vision/screw/coreset/assets/19c8e4effcd12da14447aef07cb82a8d/original.png",
+      "overlay_url": "/api/dt/vision/screw/coreset/assets/19c8e4effcd12da14447aef07cb82a8d/overlay.png",
+      "mask_url": "/api/dt/vision/screw/coreset/assets/19c8e4effcd12da14447aef07cb82a8d/gt_mask.png",
+      "object_proxy_url": "/api/dt/vision/screw/coreset/assets/19c8e4effcd12da14447aef07cb82a8d/object_proxy.png"
+    },
+    {
+      "image_id": "screw/test/thread_top/000.png",
+      "image_sha256": "dd7bb501371a66958e36379baab1a77d3b39e52bcd0c2772ec2e779588ec845f",
+      "score": 0.08874595165252686,
+      "threshold": 0.10270808544009924,
+      "verdict": "OK",
+      "is_defect": 1,
+      "defect_type": "thread_top",
+      "kind": "FN",
+      "evidence_id": "477966abbeaa128d68c1d44ed5fe6742",
+      "peak_patch": [
+        7,
+        8
+      ],
+      "smoothed_peak_uv": [
+        0.2611607142857143,
+        0.31026785714285715
+      ],
+      "source_url": "/api/dt/vision/screw/coreset/assets/477966abbeaa128d68c1d44ed5fe6742/source.png",
+      "original_url": "/api/dt/vision/screw/coreset/assets/477966abbeaa128d68c1d44ed5fe6742/original.png",
+      "overlay_url": "/api/dt/vision/screw/coreset/assets/477966abbeaa128d68c1d44ed5fe6742/overlay.png",
+      "mask_url": "/api/dt/vision/screw/coreset/assets/477966abbeaa128d68c1d44ed5fe6742/gt_mask.png",
+      "object_proxy_url": "/api/dt/vision/screw/coreset/assets/477966abbeaa128d68c1d44ed5fe6742/object_proxy.png"
+    },
+    {
+      "image_id": "screw/test/thread_top/001.png",
+      "image_sha256": "da2c2970e65e08971a94c4d38904844d45bb6bce3e90d715d3e47aa8e1d3efa9",
+      "score": 0.10200101137161255,
+      "threshold": 0.10270808544009924,
+      "verdict": "OK",
+      "is_defect": 1,
+      "defect_type": "thread_top",
+      "kind": "FN",
+      "evidence_id": "e2a72a412ef55697f85142d771acf146",
+      "peak_patch": [
+        16,
+        10
+      ],
+      "smoothed_peak_uv": [
+        0.6004464285714286,
+        0.37723214285714285
+      ],
+      "source_url": "/api/dt/vision/screw/coreset/assets/e2a72a412ef55697f85142d771acf146/source.png",
+      "original_url": "/api/dt/vision/screw/coreset/assets/e2a72a412ef55697f85142d771acf146/original.png",
+      "overlay_url": "/api/dt/vision/screw/coreset/assets/e2a72a412ef55697f85142d771acf146/overlay.png",
+      "mask_url": "/api/dt/vision/screw/coreset/assets/e2a72a412ef55697f85142d771acf146/gt_mask.png",
+      "object_proxy_url": "/api/dt/vision/screw/coreset/assets/e2a72a412ef55697f85142d771acf146/object_proxy.png"
+    },
+    {
+      "image_id": "screw/test/thread_top/002.png",
+      "image_sha256": "341487b8042de429865119ec73aec235e602b90b97ee444c94336da205fccd7c",
+      "score": 0.10195302963256836,
+      "threshold": 0.10270808544009924,
+      "verdict": "OK",
+      "is_defect": 1,
+      "defect_type": "thread_top",
+      "kind": "FN",
+      "evidence_id": "e72324e8153b5a603ff39caa8af48b36",
+      "peak_patch": [
+        9,
+        18
+      ],
+      "smoothed_peak_uv": [
+        0.33705357142857145,
+        0.6584821428571429
+      ],
+      "source_url": "/api/dt/vision/screw/coreset/assets/e72324e8153b5a603ff39caa8af48b36/source.png",
+      "original_url": "/api/dt/vision/screw/coreset/assets/e72324e8153b5a603ff39caa8af48b36/original.png",
+      "overlay_url": "/api/dt/vision/screw/coreset/assets/e72324e8153b5a603ff39caa8af48b36/overlay.png",
+      "mask_url": "/api/dt/vision/screw/coreset/assets/e72324e8153b5a603ff39caa8af48b36/gt_mask.png",
+      "object_proxy_url": "/api/dt/vision/screw/coreset/assets/e72324e8153b5a603ff39caa8af48b36/object_proxy.png"
+    },
+    {
+      "image_id": "screw/test/thread_top/003.png",
+      "image_sha256": "2bd07f4bb4ed5370b0c0b9ae5e0038102326342b2d36bf4375714f8a6628b8aa",
+      "score": 0.06908988952636719,
+      "threshold": 0.10270808544009924,
+      "verdict": "OK",
+      "is_defect": 1,
+      "defect_type": "thread_top",
+      "kind": "FN",
+      "evidence_id": "c13aacf234d18467415106ca55b9751b",
+      "peak_patch": [
+        8,
+        22
+      ],
+      "smoothed_peak_uv": [
+        0.28794642857142855,
+        0.8058035714285714
+      ],
+      "source_url": "/api/dt/vision/screw/coreset/assets/c13aacf234d18467415106ca55b9751b/source.png",
+      "original_url": "/api/dt/vision/screw/coreset/assets/c13aacf234d18467415106ca55b9751b/original.png",
+      "overlay_url": "/api/dt/vision/screw/coreset/assets/c13aacf234d18467415106ca55b9751b/overlay.png",
+      "mask_url": "/api/dt/vision/screw/coreset/assets/c13aacf234d18467415106ca55b9751b/gt_mask.png",
+      "object_proxy_url": "/api/dt/vision/screw/coreset/assets/c13aacf234d18467415106ca55b9751b/object_proxy.png"
+    },
+    {
+      "image_id": "screw/test/thread_top/004.png",
+      "image_sha256": "00990d7647b5c3a0a4a87ae32c7b45335f7c750e0cfbeacb62ed96109130ca4f",
+      "score": 0.09671294689178467,
+      "threshold": 0.10270808544009924,
+      "verdict": "OK",
+      "is_defect": 1,
+      "defect_type": "thread_top",
+      "kind": "FN",
+      "evidence_id": "6bbd354ce157d7d1237f3882d0ea3761",
+      "peak_patch": [
+        18,
+        16
+      ],
+      "smoothed_peak_uv": [
+        0.6540178571428571,
+        0.5959821428571429
+      ],
+      "source_url": "/api/dt/vision/screw/coreset/assets/6bbd354ce157d7d1237f3882d0ea3761/source.png",
+      "original_url": "/api/dt/vision/screw/coreset/assets/6bbd354ce157d7d1237f3882d0ea3761/original.png",
+      "overlay_url": "/api/dt/vision/screw/coreset/assets/6bbd354ce157d7d1237f3882d0ea3761/overlay.png",
+      "mask_url": "/api/dt/vision/screw/coreset/assets/6bbd354ce157d7d1237f3882d0ea3761/gt_mask.png",
+      "object_proxy_url": "/api/dt/vision/screw/coreset/assets/6bbd354ce157d7d1237f3882d0ea3761/object_proxy.png"
+    },
+    {
+      "image_id": "screw/test/thread_top/008.png",
+      "image_sha256": "eec1ca1712605c8a8d31160d3d05378faf0eaa48fe6ae645d588514ee466b6f1",
+      "score": 0.07489597797393799,
+      "threshold": 0.10270808544009924,
+      "verdict": "OK",
+      "is_defect": 1,
+      "defect_type": "thread_top",
+      "kind": "FN",
+      "evidence_id": "e3d12581420ad9bb6aeb1437cd404bc1",
+      "peak_patch": [
+        25,
+        11
+      ],
+      "smoothed_peak_uv": [
+        0.9977678571428571,
+        0.002232142857142857
+      ],
+      "source_url": "/api/dt/vision/screw/coreset/assets/e3d12581420ad9bb6aeb1437cd404bc1/source.png",
+      "original_url": "/api/dt/vision/screw/coreset/assets/e3d12581420ad9bb6aeb1437cd404bc1/original.png",
+      "overlay_url": "/api/dt/vision/screw/coreset/assets/e3d12581420ad9bb6aeb1437cd404bc1/overlay.png",
+      "mask_url": "/api/dt/vision/screw/coreset/assets/e3d12581420ad9bb6aeb1437cd404bc1/gt_mask.png",
+      "object_proxy_url": "/api/dt/vision/screw/coreset/assets/e3d12581420ad9bb6aeb1437cd404bc1/object_proxy.png"
+    },
+    {
+      "image_id": "screw/test/thread_top/009.png",
+      "image_sha256": "25eb73349b115f1a4a904c8938817f3e89678894b5bbc4ae04a84c62e8baec5d",
+      "score": 0.08964425325393677,
+      "threshold": 0.10270808544009924,
+      "verdict": "OK",
+      "is_defect": 1,
+      "defect_type": "thread_top",
+      "kind": "FN",
+      "evidence_id": "8fa97f19cb47aa686057f61575b4a5a4",
+      "peak_patch": [
+        0,
+        22
+      ],
+      "smoothed_peak_uv": [
+        0.002232142857142857,
+        0.8102678571428571
+      ],
+      "source_url": "/api/dt/vision/screw/coreset/assets/8fa97f19cb47aa686057f61575b4a5a4/source.png",
+      "original_url": "/api/dt/vision/screw/coreset/assets/8fa97f19cb47aa686057f61575b4a5a4/original.png",
+      "overlay_url": "/api/dt/vision/screw/coreset/assets/8fa97f19cb47aa686057f61575b4a5a4/overlay.png",
+      "mask_url": "/api/dt/vision/screw/coreset/assets/8fa97f19cb47aa686057f61575b4a5a4/gt_mask.png",
+      "object_proxy_url": "/api/dt/vision/screw/coreset/assets/8fa97f19cb47aa686057f61575b4a5a4/object_proxy.png"
+    },
+    {
+      "image_id": "screw/test/thread_top/010.png",
+      "image_sha256": "48d10f071c5510f24e15c892e638a91127f95ad9867d615b4625586abc288d81",
+      "score": 0.08019185066223145,
+      "threshold": 0.10270808544009924,
+      "verdict": "OK",
+      "is_defect": 1,
+      "defect_type": "thread_top",
+      "kind": "FN",
+      "evidence_id": "94736de8cea481037fe22d1937a43e8a",
+      "peak_patch": [
+        27,
+        27
+      ],
+      "smoothed_peak_uv": [
+        0.9977678571428571,
+        0.9977678571428571
+      ],
+      "source_url": "/api/dt/vision/screw/coreset/assets/94736de8cea481037fe22d1937a43e8a/source.png",
+      "original_url": "/api/dt/vision/screw/coreset/assets/94736de8cea481037fe22d1937a43e8a/original.png",
+      "overlay_url": "/api/dt/vision/screw/coreset/assets/94736de8cea481037fe22d1937a43e8a/overlay.png",
+      "mask_url": "/api/dt/vision/screw/coreset/assets/94736de8cea481037fe22d1937a43e8a/gt_mask.png",
+      "object_proxy_url": "/api/dt/vision/screw/coreset/assets/94736de8cea481037fe22d1937a43e8a/object_proxy.png"
+    },
+    {
+      "image_id": "screw/test/thread_top/011.png",
+      "image_sha256": "42b0e6ef71f0c6a6a06150b413eb365c05297f679e3cda2164154cab2afe16fd",
+      "score": 0.09293067455291748,
+      "threshold": 0.10270808544009924,
+      "verdict": "OK",
+      "is_defect": 1,
+      "defect_type": "thread_top",
+      "kind": "FN",
+      "evidence_id": "5f65fe405eef23c7e57b5a65fc94c603",
+      "peak_patch": [
+        10,
+        16
+      ],
+      "smoothed_peak_uv": [
+        0.37723214285714285,
+        0.6004464285714286
+      ],
+      "source_url": "/api/dt/vision/screw/coreset/assets/5f65fe405eef23c7e57b5a65fc94c603/source.png",
+      "original_url": "/api/dt/vision/screw/coreset/assets/5f65fe405eef23c7e57b5a65fc94c603/original.png",
+      "overlay_url": "/api/dt/vision/screw/coreset/assets/5f65fe405eef23c7e57b5a65fc94c603/overlay.png",
+      "mask_url": "/api/dt/vision/screw/coreset/assets/5f65fe405eef23c7e57b5a65fc94c603/gt_mask.png",
+      "object_proxy_url": "/api/dt/vision/screw/coreset/assets/5f65fe405eef23c7e57b5a65fc94c603/object_proxy.png"
+    },
+    {
+      "image_id": "screw/test/thread_top/012.png",
+      "image_sha256": "8fa8998f99c47d393cbf92b947655784e61fb86fdd70599f079394fec60c9c93",
+      "score": 0.08397078514099121,
+      "threshold": 0.10270808544009924,
+      "verdict": "OK",
+      "is_defect": 1,
+      "defect_type": "thread_top",
+      "kind": "FN",
+      "evidence_id": "b76d43ab13ed92c9f23479df49fe7e6c",
+      "peak_patch": [
+        9,
+        23
+      ],
+      "smoothed_peak_uv": [
+        0.3325892857142857,
+        0.8415178571428571
+      ],
+      "source_url": "/api/dt/vision/screw/coreset/assets/b76d43ab13ed92c9f23479df49fe7e6c/source.png",
+      "original_url": "/api/dt/vision/screw/coreset/assets/b76d43ab13ed92c9f23479df49fe7e6c/original.png",
+      "overlay_url": "/api/dt/vision/screw/coreset/assets/b76d43ab13ed92c9f23479df49fe7e6c/overlay.png",
+      "mask_url": "/api/dt/vision/screw/coreset/assets/b76d43ab13ed92c9f23479df49fe7e6c/gt_mask.png",
+      "object_proxy_url": "/api/dt/vision/screw/coreset/assets/b76d43ab13ed92c9f23479df49fe7e6c/object_proxy.png"
+    },
+    {
+      "image_id": "screw/test/thread_top/013.png",
+      "image_sha256": "e5952b8f2c2738b5d0d6910f65201432f7dd382ebc006604c1a0ea332209c5ab",
+      "score": 0.09224140644073486,
+      "threshold": 0.10270808544009924,
+      "verdict": "OK",
+      "is_defect": 1,
+      "defect_type": "thread_top",
+      "kind": "FN",
+      "evidence_id": "467cfa1d069f9df209ed03d85efced49",
+      "peak_patch": [
+        13,
+        8
+      ],
+      "smoothed_peak_uv": [
+        0.47098214285714285,
+        0.30580357142857145
+      ],
+      "source_url": "/api/dt/vision/screw/coreset/assets/467cfa1d069f9df209ed03d85efced49/source.png",
+      "original_url": "/api/dt/vision/screw/coreset/assets/467cfa1d069f9df209ed03d85efced49/original.png",
+      "overlay_url": "/api/dt/vision/screw/coreset/assets/467cfa1d069f9df209ed03d85efced49/overlay.png",
+      "mask_url": "/api/dt/vision/screw/coreset/assets/467cfa1d069f9df209ed03d85efced49/gt_mask.png",
+      "object_proxy_url": "/api/dt/vision/screw/coreset/assets/467cfa1d069f9df209ed03d85efced49/object_proxy.png"
+    },
+    {
+      "image_id": "screw/test/thread_top/014.png",
+      "image_sha256": "b1f8b447bba83c949ac2b73a760d582bb163273425597b5ef9f02edfc2ba3f6f",
+      "score": 0.07476300001144409,
+      "threshold": 0.10270808544009924,
+      "verdict": "OK",
+      "is_defect": 1,
+      "defect_type": "thread_top",
+      "kind": "FN",
+      "evidence_id": "471d3dc00683cc79407fe4778b1b50ed",
+      "peak_patch": [
+        18,
+        18
+      ],
+      "smoothed_peak_uv": [
+        0.6540178571428571,
+        0.6361607142857143
+      ],
+      "source_url": "/api/dt/vision/screw/coreset/assets/471d3dc00683cc79407fe4778b1b50ed/source.png",
+      "original_url": "/api/dt/vision/screw/coreset/assets/471d3dc00683cc79407fe4778b1b50ed/original.png",
+      "overlay_url": "/api/dt/vision/screw/coreset/assets/471d3dc00683cc79407fe4778b1b50ed/overlay.png",
+      "mask_url": "/api/dt/vision/screw/coreset/assets/471d3dc00683cc79407fe4778b1b50ed/gt_mask.png",
+      "object_proxy_url": "/api/dt/vision/screw/coreset/assets/471d3dc00683cc79407fe4778b1b50ed/object_proxy.png"
+    },
+    {
+      "image_id": "screw/test/thread_top/016.png",
+      "image_sha256": "13a379fe2abb7dcad2f0bfed209362b13b6385385711778802f03d5791590d2e",
+      "score": 0.08484411239624023,
+      "threshold": 0.10270808544009924,
+      "verdict": "OK",
+      "is_defect": 1,
+      "defect_type": "thread_top",
+      "kind": "FN",
+      "evidence_id": "394cfff631890aa21c1a9241a3f93da9",
+      "peak_patch": [
+        17,
+        3
+      ],
+      "smoothed_peak_uv": [
+        0.6316964285714286,
+        0.12723214285714285
+      ],
+      "source_url": "/api/dt/vision/screw/coreset/assets/394cfff631890aa21c1a9241a3f93da9/source.png",
+      "original_url": "/api/dt/vision/screw/coreset/assets/394cfff631890aa21c1a9241a3f93da9/original.png",
+      "overlay_url": "/api/dt/vision/screw/coreset/assets/394cfff631890aa21c1a9241a3f93da9/overlay.png",
+      "mask_url": "/api/dt/vision/screw/coreset/assets/394cfff631890aa21c1a9241a3f93da9/gt_mask.png",
+      "object_proxy_url": "/api/dt/vision/screw/coreset/assets/394cfff631890aa21c1a9241a3f93da9/object_proxy.png"
+    },
+    {
+      "image_id": "screw/test/thread_top/017.png",
+      "image_sha256": "ac7a132822530d5c6b1d0b8cdd92f16a0ec91b93bd13f6ac0b47bfab4a3f8ec9",
+      "score": 0.08680027723312378,
+      "threshold": 0.10270808544009924,
+      "verdict": "OK",
+      "is_defect": 1,
+      "defect_type": "thread_top",
+      "kind": "FN",
+      "evidence_id": "45a68aca8f34c03be4e2271b8070d648",
+      "peak_patch": [
+        23,
+        3
+      ],
+      "smoothed_peak_uv": [
+        0.8459821428571429,
+        0.12723214285714285
+      ],
+      "source_url": "/api/dt/vision/screw/coreset/assets/45a68aca8f34c03be4e2271b8070d648/source.png",
+      "original_url": "/api/dt/vision/screw/coreset/assets/45a68aca8f34c03be4e2271b8070d648/original.png",
+      "overlay_url": "/api/dt/vision/screw/coreset/assets/45a68aca8f34c03be4e2271b8070d648/overlay.png",
+      "mask_url": "/api/dt/vision/screw/coreset/assets/45a68aca8f34c03be4e2271b8070d648/gt_mask.png",
+      "object_proxy_url": "/api/dt/vision/screw/coreset/assets/45a68aca8f34c03be4e2271b8070d648/object_proxy.png"
+    },
+    {
+      "image_id": "screw/test/thread_top/018.png",
+      "image_sha256": "e19d74d81aef0465536cc1c2c7742ad860e4a9a215e0b33a641ac5538a2c6644",
+      "score": 0.09878003597259521,
+      "threshold": 0.10270808544009924,
+      "verdict": "OK",
+      "is_defect": 1,
+      "defect_type": "thread_top",
+      "kind": "FN",
+      "evidence_id": "cc65d6de1828712fdbb370dd1bc2a1ec",
+      "peak_patch": [
+        24,
+        16
+      ],
+      "smoothed_peak_uv": [
+        0.8727678571428571,
+        0.5915178571428571
+      ],
+      "source_url": "/api/dt/vision/screw/coreset/assets/cc65d6de1828712fdbb370dd1bc2a1ec/source.png",
+      "original_url": "/api/dt/vision/screw/coreset/assets/cc65d6de1828712fdbb370dd1bc2a1ec/original.png",
+      "overlay_url": "/api/dt/vision/screw/coreset/assets/cc65d6de1828712fdbb370dd1bc2a1ec/overlay.png",
+      "mask_url": "/api/dt/vision/screw/coreset/assets/cc65d6de1828712fdbb370dd1bc2a1ec/gt_mask.png",
+      "object_proxy_url": "/api/dt/vision/screw/coreset/assets/cc65d6de1828712fdbb370dd1bc2a1ec/object_proxy.png"
+    },
+    {
+      "image_id": "screw/test/thread_top/020.png",
+      "image_sha256": "53d4fad9fb22783c777ebbe3166eb53916485184538d307395f481ea68b8a14c",
+      "score": 0.09814369678497314,
+      "threshold": 0.10270808544009924,
+      "verdict": "OK",
+      "is_defect": 1,
+      "defect_type": "thread_top",
+      "kind": "FN",
+      "evidence_id": "3f5903d7047cef0471fd782a888ddf78",
+      "peak_patch": [
+        15,
+        5
+      ],
+      "smoothed_peak_uv": [
+        0.5691964285714286,
+        0.203125
+      ],
+      "source_url": "/api/dt/vision/screw/coreset/assets/3f5903d7047cef0471fd782a888ddf78/source.png",
+      "original_url": "/api/dt/vision/screw/coreset/assets/3f5903d7047cef0471fd782a888ddf78/original.png",
+      "overlay_url": "/api/dt/vision/screw/coreset/assets/3f5903d7047cef0471fd782a888ddf78/overlay.png",
+      "mask_url": "/api/dt/vision/screw/coreset/assets/3f5903d7047cef0471fd782a888ddf78/gt_mask.png",
+      "object_proxy_url": "/api/dt/vision/screw/coreset/assets/3f5903d7047cef0471fd782a888ddf78/object_proxy.png"
+    },
+    {
+      "image_id": "screw/test/thread_top/021.png",
+      "image_sha256": "7e138b95ea8c8c0036e58574974cf91158379639ab1a75d785865d8503fc90cb",
+      "score": 0.09009438753128052,
+      "threshold": 0.10270808544009924,
+      "verdict": "OK",
+      "is_defect": 1,
+      "defect_type": "thread_top",
+      "kind": "FN",
+      "evidence_id": "67f6e6d24aa6131f7ae6e2d504986722",
+      "peak_patch": [
+        20,
+        18
+      ],
+      "smoothed_peak_uv": [
+        0.7209821428571429,
+        0.671875
+      ],
+      "source_url": "/api/dt/vision/screw/coreset/assets/67f6e6d24aa6131f7ae6e2d504986722/source.png",
+      "original_url": "/api/dt/vision/screw/coreset/assets/67f6e6d24aa6131f7ae6e2d504986722/original.png",
+      "overlay_url": "/api/dt/vision/screw/coreset/assets/67f6e6d24aa6131f7ae6e2d504986722/overlay.png",
+      "mask_url": "/api/dt/vision/screw/coreset/assets/67f6e6d24aa6131f7ae6e2d504986722/gt_mask.png",
+      "object_proxy_url": "/api/dt/vision/screw/coreset/assets/67f6e6d24aa6131f7ae6e2d504986722/object_proxy.png"
+    },
+    {
+      "image_id": "screw/test/thread_top/022.png",
+      "image_sha256": "82994a7e17b15b8705eab7b53d5eadb6278f0e647cefd94ec5f0e7670a3b9f36",
+      "score": 0.07581067085266113,
+      "threshold": 0.10270808544009924,
+      "verdict": "OK",
+      "is_defect": 1,
+      "defect_type": "thread_top",
+      "kind": "FN",
+      "evidence_id": "5cda8da56ced10af2c38000f273a0d51",
+      "peak_patch": [
+        5,
+        23
+      ],
+      "smoothed_peak_uv": [
+        0.19419642857142858,
+        0.8459821428571429
+      ],
+      "source_url": "/api/dt/vision/screw/coreset/assets/5cda8da56ced10af2c38000f273a0d51/source.png",
+      "original_url": "/api/dt/vision/screw/coreset/assets/5cda8da56ced10af2c38000f273a0d51/original.png",
+      "overlay_url": "/api/dt/vision/screw/coreset/assets/5cda8da56ced10af2c38000f273a0d51/overlay.png",
+      "mask_url": "/api/dt/vision/screw/coreset/assets/5cda8da56ced10af2c38000f273a0d51/gt_mask.png",
+      "object_proxy_url": "/api/dt/vision/screw/coreset/assets/5cda8da56ced10af2c38000f273a0d51/object_proxy.png"
+    }
+  ],
+  "gallery_scope": {
+    "fp_top_k": 8,
+    "fp_total": 0,
+    "fn_all": 82
+  },
+  "background_response": {
+    "numerator": 0,
+    "denominator": 0,
+    "images": []
+  },
+  "process_impact": [
+    {
+      "run_id": "8dd8e446a095de96",
+      "cell": "inline",
+      "speed": 0.5,
+      "seed": 0,
+      "latency_mode": "profile",
+      "source_complete_sha256": "82e216265675a69dae54418501a0a019f28fad7774a8251210888efa08ba6ba7",
+      "parts_denominator": 14532,
+      "reinspection_per_1000": 15.483071841453343,
+      "false_positives_per_1000": 0.0,
+      "escaped_defects": 500,
+      "escaped_defects_per_1000": 34.40682631434076
+    }
+  ]
+}

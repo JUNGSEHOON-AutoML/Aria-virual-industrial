@@ -63,6 +63,18 @@ async def main():
      await asyncio.sleep(.3)
     await js(f'window.__cnotta.setTime({t})');await asyncio.sleep(.6)
     report['queue_cases'].append(await js('({run_id:window.__cnotta.runId,time:window.__cnotta.time,mesh_count:window.__cnotta.scene.getObjectByName("queue-boxes").count,rack_count:window.__cnotta.rackCount})'))
+   report['vision_audit']=await js("""(async()=>{
+    [...document.querySelectorAll('header button')].find(b=>b.textContent==='비전 분석').click();
+    for(let i=0;i<100&&!window.__cnotta.visionReport;i++)await new Promise(r=>setTimeout(r,100));
+    const checks=[];
+    for(const cls of ['bottle','screw','carpet']){
+     const input=document.querySelector('[aria-label="분석 클래스"]');Object.getOwnPropertyDescriptor(HTMLSelectElement.prototype,'value').set.call(input,cls);input.dispatchEvent(new Event('change',{bubbles:true}));
+     for(let i=0;i<100&&window.__cnotta.visionReport?.class!==cls;i++)await new Promise(r=>setTimeout(r,100));
+     await new Promise(r=>setTimeout(r,200));const server=await (await fetch(`/api/dt/vision/${cls}/report`)).json();
+     checks.push({class:cls,identical:JSON.stringify(server)===JSON.stringify(window.__cnotta.visionReport),display_counts:[...document.querySelectorAll('[data-audit-count]')].map(e=>({name:e.dataset.auditCount,value:Number(e.textContent)})),expected:server.models.ccifps.counts});
+    }return checks;
+   })()""")
+   shot=await cmd('Page.captureScreenshot',{'format':'png'});(OUT/'l1-vision.png').write_bytes(base64.b64decode(shot['data']))
    report['errors']=[e for e in events if e.get('method')=='Runtime.exceptionThrown']
    report['http_errors']=[e['params']['response']['url'] for e in events if e.get('method')=='Network.responseReceived' and e['params']['response']['status']>=400]
  finally:

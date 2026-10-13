@@ -21,3 +21,6 @@ def kpi(run_id:str,t:float=Query(...,ge=0,le=3600)):return store.kpi(run_id,t)
 def summary():
  try:return store.summary_data()
  except FileNotFoundError:raise HTTPException(404,'실험 진행 중')
+
+from .vision import router as vision_router
+app.include_router(vision_router)

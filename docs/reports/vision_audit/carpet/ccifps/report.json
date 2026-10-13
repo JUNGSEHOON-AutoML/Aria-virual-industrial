@@ -1,0 +1,441 @@
+{
+  "class": "carpet",
+  "model": "ccifps",
+  "images": 117,
+  "counts": {
+    "TP": 80,
+    "FN": 9,
+    "FP": 1,
+    "TN": 27
+  },
+  "threshold": 0.10999169573187828,
+  "histogram": {
+    "edges": [
+      0.06566083431243896,
+      0.07198961774508159,
+      0.0783184011777242,
+      0.08464718461036683,
+      0.09097596804300945,
+      0.09730475147565207,
+      0.10363353490829467,
+      0.1099623183409373,
+      0.11629110177357992,
+      0.12261988520622254,
+      0.12894866863886517,
+      0.13527745207150776,
+      0.14160623550415039,
+      0.147935018936793,
+      0.15426380236943563,
+      0.16059258580207825,
+      0.16692136923472087,
+      0.1732501526673635,
+      0.1795789361000061,
+      0.18590771953264873,
+      0.19223650296529135,
+      0.19856528639793397,
+      0.2048940698305766,
+      0.2112228532632192,
+      0.2175516366958618,
+      0.22388042012850443,
+      0.23020920356114705,
+      0.23653798699378967,
+      0.2428667704264323,
+      0.2491955538590749,
+      0.25552433729171753
+    ],
+    "normal": [
+      9,
+      2,
+      7,
+      5,
+      3,
+      1,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    "defect": [
+      0,
+      1,
+      1,
+      2,
+      0,
+      4,
+      1,
+      3,
+      5,
+      6,
+      4,
+      1,
+      3,
+      5,
+      8,
+      6,
+      8,
+      5,
+      6,
+      2,
+      5,
+      1,
+      3,
+      3,
+      4,
+      0,
+      1,
+      0,
+      0,
+      1
+    ]
+  },
+  "overlap": {
+    "definition": "intersection of empirical normal/defect score ranges (inclusive)",
+    "range": [
+      0.0773535966873169,
+      0.11435413360595703
+    ],
+    "normal_count": 17,
+    "defect_count": 11
+  },
+  "defect_types": [
+    {
+      "type": "color",
+      "images": 19,
+      "ng_count": 18,
+      "detection_rate": 0.9473684210526315,
+      "mean_score": 0.14391678257992394
+    },
+    {
+      "type": "cut",
+      "images": 17,
+      "ng_count": 17,
+      "detection_rate": 1.0,
+      "mean_score": 0.18048658441094792
+    },
+    {
+      "type": "good",
+      "images": 28,
+      "ng_count": 1,
+      "detection_rate": 0.03571428571428571,
+      "mean_score": 0.08187031745910645
+    },
+    {
+      "type": "hole",
+      "images": 17,
+      "ng_count": 16,
+      "detection_rate": 0.9411764705882353,
+      "mean_score": 0.1714235509143156
+    },
+    {
+      "type": "metal_contamination",
+      "images": 17,
+      "ng_count": 14,
+      "detection_rate": 0.8235294117647058,
+      "mean_score": 0.13939071402830236
+    },
+    {
+      "type": "thread",
+      "images": 19,
+      "ng_count": 15,
+      "detection_rate": 0.7894736842105263,
+      "mean_score": 0.16194155027991847
+    }
+  ],
+  "gallery": [
+    {
+      "image_id": "carpet/test/good/009.png",
+      "image_sha256": "9ea1e9884de2c5abc71e0bcd6048632dbbb8105b58cab89f4d6e04968583ff49",
+      "score": 0.11435413360595703,
+      "threshold": 0.10999169573187828,
+      "verdict": "NG",
+      "is_defect": 0,
+      "defect_type": "good",
+      "kind": "FP",
+      "evidence_id": "387b83a4163cad68dc6a9c0ff9b0f54b",
+      "peak_patch": [
+        14,
+        0
+      ],
+      "smoothed_peak_uv": [
+        0.5200892857142857,
+        0.002232142857142857
+      ],
+      "source_url": "/api/dt/vision/carpet/ccifps/assets/387b83a4163cad68dc6a9c0ff9b0f54b/source.png",
+      "original_url": "/api/dt/vision/carpet/ccifps/assets/387b83a4163cad68dc6a9c0ff9b0f54b/original.png",
+      "overlay_url": "/api/dt/vision/carpet/ccifps/assets/387b83a4163cad68dc6a9c0ff9b0f54b/overlay.png",
+      "mask_url": "/api/dt/vision/carpet/ccifps/assets/387b83a4163cad68dc6a9c0ff9b0f54b/gt_mask.png",
+      "object_proxy_url": "/api/dt/vision/carpet/ccifps/assets/387b83a4163cad68dc6a9c0ff9b0f54b/object_proxy.png"
+    },
+    {
+      "image_id": "carpet/test/color/002.png",
+      "image_sha256": "862872685fb8e8ac71b86270444cd3fdda2007596434ebfbe156d81ec782a2ae",
+      "score": 0.10400509834289551,
+      "threshold": 0.10999169573187828,
+      "verdict": "OK",
+      "is_defect": 1,
+      "defect_type": "color",
+      "kind": "FN",
+      "evidence_id": "1a057bf2998612b201f1f4439d64c8f3",
+      "peak_patch": [
+        7,
+        7
+      ],
+      "smoothed_peak_uv": [
+        0.2611607142857143,
+        0.2700892857142857
+      ],
+      "source_url": "/api/dt/vision/carpet/ccifps/assets/1a057bf2998612b201f1f4439d64c8f3/source.png",
+      "original_url": "/api/dt/vision/carpet/ccifps/assets/1a057bf2998612b201f1f4439d64c8f3/original.png",
+      "overlay_url": "/api/dt/vision/carpet/ccifps/assets/1a057bf2998612b201f1f4439d64c8f3/overlay.png",
+      "mask_url": "/api/dt/vision/carpet/ccifps/assets/1a057bf2998612b201f1f4439d64c8f3/gt_mask.png",
+      "object_proxy_url": "/api/dt/vision/carpet/ccifps/assets/1a057bf2998612b201f1f4439d64c8f3/object_proxy.png"
+    },
+    {
+      "image_id": "carpet/test/hole/001.png",
+      "image_sha256": "eeb8258f8c609285cd42e1d8570c51c6e64d9efe6e3baca0de60b05fe3075624",
+      "score": 0.09087347984313965,
+      "threshold": 0.10999169573187828,
+      "verdict": "OK",
+      "is_defect": 1,
+      "defect_type": "hole",
+      "kind": "FN",
+      "evidence_id": "a3399a88caf6eff8fc502d66f33c5781",
+      "peak_patch": [
+        5,
+        18
+      ],
+      "smoothed_peak_uv": [
+        0.19866071428571427,
+        0.6584821428571429
+      ],
+      "source_url": "/api/dt/vision/carpet/ccifps/assets/a3399a88caf6eff8fc502d66f33c5781/source.png",
+      "original_url": "/api/dt/vision/carpet/ccifps/assets/a3399a88caf6eff8fc502d66f33c5781/original.png",
+      "overlay_url": "/api/dt/vision/carpet/ccifps/assets/a3399a88caf6eff8fc502d66f33c5781/overlay.png",
+      "mask_url": "/api/dt/vision/carpet/ccifps/assets/a3399a88caf6eff8fc502d66f33c5781/gt_mask.png",
+      "object_proxy_url": "/api/dt/vision/carpet/ccifps/assets/a3399a88caf6eff8fc502d66f33c5781/object_proxy.png"
+    },
+    {
+      "image_id": "carpet/test/metal_contamination/000.png",
+      "image_sha256": "163002f1ec836e20ed14ac98c5a9e5b19b6f1df1d214cb986005f48500b83d5c",
+      "score": 0.08403027057647705,
+      "threshold": 0.10999169573187828,
+      "verdict": "OK",
+      "is_defect": 1,
+      "defect_type": "metal_contamination",
+      "kind": "FN",
+      "evidence_id": "f9c2753374284a8d96fc301f4c23e757",
+      "peak_patch": [
+        0,
+        27
+      ],
+      "smoothed_peak_uv": [
+        0.002232142857142857,
+        0.9977678571428571
+      ],
+      "source_url": "/api/dt/vision/carpet/ccifps/assets/f9c2753374284a8d96fc301f4c23e757/source.png",
+      "original_url": "/api/dt/vision/carpet/ccifps/assets/f9c2753374284a8d96fc301f4c23e757/original.png",
+      "overlay_url": "/api/dt/vision/carpet/ccifps/assets/f9c2753374284a8d96fc301f4c23e757/overlay.png",
+      "mask_url": "/api/dt/vision/carpet/ccifps/assets/f9c2753374284a8d96fc301f4c23e757/gt_mask.png",
+      "object_proxy_url": "/api/dt/vision/carpet/ccifps/assets/f9c2753374284a8d96fc301f4c23e757/object_proxy.png"
+    },
+    {
+      "image_id": "carpet/test/metal_contamination/001.png",
+      "image_sha256": "45ba93dc86d0f769cdf12e40e512bf0f40fcdafaca967efd33819027d9669f67",
+      "score": 0.10019314289093018,
+      "threshold": 0.10999169573187828,
+      "verdict": "OK",
+      "is_defect": 1,
+      "defect_type": "metal_contamination",
+      "kind": "FN",
+      "evidence_id": "ed3951251093bcdcccb21b73d62573a1",
+      "peak_patch": [
+        5,
+        17
+      ],
+      "smoothed_peak_uv": [
+        0.19866071428571427,
+        0.6361607142857143
+      ],
+      "source_url": "/api/dt/vision/carpet/ccifps/assets/ed3951251093bcdcccb21b73d62573a1/source.png",
+      "original_url": "/api/dt/vision/carpet/ccifps/assets/ed3951251093bcdcccb21b73d62573a1/original.png",
+      "overlay_url": "/api/dt/vision/carpet/ccifps/assets/ed3951251093bcdcccb21b73d62573a1/overlay.png",
+      "mask_url": "/api/dt/vision/carpet/ccifps/assets/ed3951251093bcdcccb21b73d62573a1/gt_mask.png",
+      "object_proxy_url": "/api/dt/vision/carpet/ccifps/assets/ed3951251093bcdcccb21b73d62573a1/object_proxy.png"
+    },
+    {
+      "image_id": "carpet/test/metal_contamination/014.png",
+      "image_sha256": "fc82b04090e1228db88bd91415c3e00086e1cfcaeb6ebe43848780135500f781",
+      "score": 0.0989234447479248,
+      "threshold": 0.10999169573187828,
+      "verdict": "OK",
+      "is_defect": 1,
+      "defect_type": "metal_contamination",
+      "kind": "FN",
+      "evidence_id": "533a49bc3abb32fd3aa29d72d37d92f5",
+      "peak_patch": [
+        17,
+        22
+      ],
+      "smoothed_peak_uv": [
+        0.6272321428571429,
+        0.796875
+      ],
+      "source_url": "/api/dt/vision/carpet/ccifps/assets/533a49bc3abb32fd3aa29d72d37d92f5/source.png",
+      "original_url": "/api/dt/vision/carpet/ccifps/assets/533a49bc3abb32fd3aa29d72d37d92f5/original.png",
+      "overlay_url": "/api/dt/vision/carpet/ccifps/assets/533a49bc3abb32fd3aa29d72d37d92f5/overlay.png",
+      "mask_url": "/api/dt/vision/carpet/ccifps/assets/533a49bc3abb32fd3aa29d72d37d92f5/gt_mask.png",
+      "object_proxy_url": "/api/dt/vision/carpet/ccifps/assets/533a49bc3abb32fd3aa29d72d37d92f5/object_proxy.png"
+    },
+    {
+      "image_id": "carpet/test/thread/001.png",
+      "image_sha256": "e6c42919c3130503f13383cc1f31f0505c624a1cb458e68a5fc269722b71c4ad",
+      "score": 0.09787392616271973,
+      "threshold": 0.10999169573187828,
+      "verdict": "OK",
+      "is_defect": 1,
+      "defect_type": "thread",
+      "kind": "FN",
+      "evidence_id": "ab47bd5cea6df72add450ab00f7b01e8",
+      "peak_patch": [
+        16,
+        10
+      ],
+      "smoothed_peak_uv": [
+        0.5915178571428571,
+        0.38169642857142855
+      ],
+      "source_url": "/api/dt/vision/carpet/ccifps/assets/ab47bd5cea6df72add450ab00f7b01e8/source.png",
+      "original_url": "/api/dt/vision/carpet/ccifps/assets/ab47bd5cea6df72add450ab00f7b01e8/original.png",
+      "overlay_url": "/api/dt/vision/carpet/ccifps/assets/ab47bd5cea6df72add450ab00f7b01e8/overlay.png",
+      "mask_url": "/api/dt/vision/carpet/ccifps/assets/ab47bd5cea6df72add450ab00f7b01e8/gt_mask.png",
+      "object_proxy_url": "/api/dt/vision/carpet/ccifps/assets/ab47bd5cea6df72add450ab00f7b01e8/object_proxy.png"
+    },
+    {
+      "image_id": "carpet/test/thread/009.png",
+      "image_sha256": "3ae2c8aa2dba56136fc3b73c06d3a1ec971fe4caa594fdb9becdc5a499eb2a9d",
+      "score": 0.09794008731842041,
+      "threshold": 0.10999169573187828,
+      "verdict": "OK",
+      "is_defect": 1,
+      "defect_type": "thread",
+      "kind": "FN",
+      "evidence_id": "dcd9b5352a1531adad065b22428ac3e0",
+      "peak_patch": [
+        12,
+        0
+      ],
+      "smoothed_peak_uv": [
+        0.44419642857142855,
+        0.002232142857142857
+      ],
+      "source_url": "/api/dt/vision/carpet/ccifps/assets/dcd9b5352a1531adad065b22428ac3e0/source.png",
+      "original_url": "/api/dt/vision/carpet/ccifps/assets/dcd9b5352a1531adad065b22428ac3e0/original.png",
+      "overlay_url": "/api/dt/vision/carpet/ccifps/assets/dcd9b5352a1531adad065b22428ac3e0/overlay.png",
+      "mask_url": "/api/dt/vision/carpet/ccifps/assets/dcd9b5352a1531adad065b22428ac3e0/gt_mask.png",
+      "object_proxy_url": "/api/dt/vision/carpet/ccifps/assets/dcd9b5352a1531adad065b22428ac3e0/object_proxy.png"
+    },
+    {
+      "image_id": "carpet/test/thread/015.png",
+      "image_sha256": "470f7260a5fcce2fa1b23c9c8c5d5d56f248587ebdfeb915c2316c704d7e3666",
+      "score": 0.0879163146018982,
+      "threshold": 0.10999169573187828,
+      "verdict": "OK",
+      "is_defect": 1,
+      "defect_type": "thread",
+      "kind": "FN",
+      "evidence_id": "1a3fc087d851536c2282508170074e5f",
+      "peak_patch": [
+        6,
+        0
+      ],
+      "smoothed_peak_uv": [
+        0.22991071428571427,
+        0.002232142857142857
+      ],
+      "source_url": "/api/dt/vision/carpet/ccifps/assets/1a3fc087d851536c2282508170074e5f/source.png",
+      "original_url": "/api/dt/vision/carpet/ccifps/assets/1a3fc087d851536c2282508170074e5f/original.png",
+      "overlay_url": "/api/dt/vision/carpet/ccifps/assets/1a3fc087d851536c2282508170074e5f/overlay.png",
+      "mask_url": "/api/dt/vision/carpet/ccifps/assets/1a3fc087d851536c2282508170074e5f/gt_mask.png",
+      "object_proxy_url": "/api/dt/vision/carpet/ccifps/assets/1a3fc087d851536c2282508170074e5f/object_proxy.png"
+    },
+    {
+      "image_id": "carpet/test/thread/018.png",
+      "image_sha256": "c69128dde252e909ed7fa27acb4f51c82d8a3186c3f3f53a1c59170a85e3f442",
+      "score": 0.0773535966873169,
+      "threshold": 0.10999169573187828,
+      "verdict": "OK",
+      "is_defect": 1,
+      "defect_type": "thread",
+      "kind": "FN",
+      "evidence_id": "d5b31e666c7bc1e8aee5d443433c1840",
+      "peak_patch": [
+        27,
+        27
+      ],
+      "smoothed_peak_uv": [
+        0.9977678571428571,
+        0.9977678571428571
+      ],
+      "source_url": "/api/dt/vision/carpet/ccifps/assets/d5b31e666c7bc1e8aee5d443433c1840/source.png",
+      "original_url": "/api/dt/vision/carpet/ccifps/assets/d5b31e666c7bc1e8aee5d443433c1840/original.png",
+      "overlay_url": "/api/dt/vision/carpet/ccifps/assets/d5b31e666c7bc1e8aee5d443433c1840/overlay.png",
+      "mask_url": "/api/dt/vision/carpet/ccifps/assets/d5b31e666c7bc1e8aee5d443433c1840/gt_mask.png",
+      "object_proxy_url": "/api/dt/vision/carpet/ccifps/assets/d5b31e666c7bc1e8aee5d443433c1840/object_proxy.png"
+    }
+  ],
+  "gallery_scope": {
+    "fp_top_k": 8,
+    "fp_total": 1,
+    "fn_all": 9
+  },
+  "background_response": {
+    "numerator": 1,
+    "denominator": 1,
+    "images": [
+      {
+        "image_id": "carpet/test/good/009.png",
+        "peak_patch": [
+          14,
+          0
+        ],
+        "peak_on_background_proxy": true,
+        "foreground_fraction": 0.36533402423469385
+      }
+    ]
+  },
+  "process_impact": [
+    {
+      "run_id": "64d67b7ebd198bd6",
+      "cell": "inline",
+      "speed": 0.5,
+      "seed": 0,
+      "latency_mode": "profile",
+      "source_complete_sha256": "593207a60635e6164bc78c75eab6bc53ccf1903900b05e0443fd78dd513d2593",
+      "parts_denominator": 14532,
+      "reinspection_per_1000": 78.2411230388109,
+      "false_positives_per_1000": 32.686484998623726,
+      "escaped_defects": 63,
+      "escaped_defects_per_1000": 4.335260115606936
+    }
+  ]
+}

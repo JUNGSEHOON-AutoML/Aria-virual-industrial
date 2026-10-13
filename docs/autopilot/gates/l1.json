@@ -1,0 +1,216 @@
+{
+  "milestone": "l1",
+  "pass": true,
+  "checks": {
+    "nine_reports": {
+      "pass": true,
+      "models": [
+        {
+          "class": "bottle",
+          "model": "coreset",
+          "counts": {
+            "TP": 63,
+            "FN": 0,
+            "FP": 1,
+            "TN": 19
+          },
+          "pass": true
+        },
+        {
+          "class": "bottle",
+          "model": "ccifps",
+          "counts": {
+            "TP": 63,
+            "FN": 0,
+            "FP": 0,
+            "TN": 20
+          },
+          "pass": true
+        },
+        {
+          "class": "bottle",
+          "model": "random_same_k",
+          "counts": {
+            "TP": 63,
+            "FN": 0,
+            "FP": 0,
+            "TN": 20
+          },
+          "pass": true
+        },
+        {
+          "class": "screw",
+          "model": "coreset",
+          "counts": {
+            "TP": 37,
+            "FN": 82,
+            "FP": 0,
+            "TN": 41
+          },
+          "pass": true
+        },
+        {
+          "class": "screw",
+          "model": "ccifps",
+          "counts": {
+            "TP": 44,
+            "FN": 75,
+            "FP": 0,
+            "TN": 41
+          },
+          "pass": true
+        },
+        {
+          "class": "screw",
+          "model": "random_same_k",
+          "counts": {
+            "TP": 16,
+            "FN": 103,
+            "FP": 0,
+            "TN": 41
+          },
+          "pass": true
+        },
+        {
+          "class": "carpet",
+          "model": "coreset",
+          "counts": {
+            "TP": 78,
+            "FN": 11,
+            "FP": 1,
+            "TN": 27
+          },
+          "pass": true
+        },
+        {
+          "class": "carpet",
+          "model": "ccifps",
+          "counts": {
+            "TP": 80,
+            "FN": 9,
+            "FP": 1,
+            "TN": 27
+          },
+          "pass": true
+        },
+        {
+          "class": "carpet",
+          "model": "random_same_k",
+          "counts": {
+            "TP": 80,
+            "FN": 9,
+            "FP": 1,
+            "TN": 27
+          },
+          "pass": true
+        }
+      ]
+    },
+    "screen_report_identity": {
+      "pass": true,
+      "classes": [
+        {
+          "class": "bottle",
+          "identical": true,
+          "display_counts": [
+            {
+              "name": "TP",
+              "value": 63
+            },
+            {
+              "name": "FN",
+              "value": 0
+            },
+            {
+              "name": "FP",
+              "value": 0
+            },
+            {
+              "name": "TN",
+              "value": 20
+            }
+          ],
+          "expected": {
+            "TP": 63,
+            "FN": 0,
+            "FP": 0,
+            "TN": 20
+          }
+        },
+        {
+          "class": "screw",
+          "identical": true,
+          "display_counts": [
+            {
+              "name": "TP",
+              "value": 44
+            },
+            {
+              "name": "FN",
+              "value": 75
+            },
+            {
+              "name": "FP",
+              "value": 0
+            },
+            {
+              "name": "TN",
+              "value": 41
+            }
+          ],
+          "expected": {
+            "TP": 44,
+            "FN": 75,
+            "FP": 0,
+            "TN": 41
+          }
+        },
+        {
+          "class": "carpet",
+          "identical": true,
+          "display_counts": [
+            {
+              "name": "TP",
+              "value": 80
+            },
+            {
+              "name": "FN",
+              "value": 9
+            },
+            {
+              "name": "FP",
+              "value": 1
+            },
+            {
+              "name": "TN",
+              "value": 27
+            }
+          ],
+          "expected": {
+            "TP": 80,
+            "FN": 9,
+            "FP": 1,
+            "TN": 27
+          }
+        }
+      ]
+    },
+    "backend_tests": {
+      "pass": true,
+      "summary": "176 passed, 14 warnings in 14.63s"
+    },
+    "golden": {
+      "pass": true,
+      "output": "[golden_trace] 검증 실행 중…\n[golden_trace] PASS — diff 0건 (무회귀 확인)"
+    },
+    "frontend_build": {
+      "pass": true
+    },
+    "console": {
+      "pass": true,
+      "errors": []
+    }
+  },
+  "at": "2026-10-13T03:40:59.726452+00:00",
+  "execution": "CPU only; saved P1 maps + existing EvidenceStore + reconstruct_b; no inference or GPU"
+}

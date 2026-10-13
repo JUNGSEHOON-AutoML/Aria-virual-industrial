@@ -1,0 +1,86 @@
+{
+  "classes": [
+    "bottle",
+    "screw",
+    "carpet"
+  ],
+  "models": [
+    "coreset",
+    "ccifps",
+    "random_same_k"
+  ],
+  "summary": [
+    {
+      "class": "bottle",
+      "model": "coreset",
+      "TP": 63,
+      "FN": 0,
+      "FP": 1,
+      "TN": 19
+    },
+    {
+      "class": "bottle",
+      "model": "ccifps",
+      "TP": 63,
+      "FN": 0,
+      "FP": 0,
+      "TN": 20
+    },
+    {
+      "class": "bottle",
+      "model": "random_same_k",
+      "TP": 63,
+      "FN": 0,
+      "FP": 0,
+      "TN": 20
+    },
+    {
+      "class": "screw",
+      "model": "coreset",
+      "TP": 37,
+      "FN": 82,
+      "FP": 0,
+      "TN": 41
+    },
+    {
+      "class": "screw",
+      "model": "ccifps",
+      "TP": 44,
+      "FN": 75,
+      "FP": 0,
+      "TN": 41
+    },
+    {
+      "class": "screw",
+      "model": "random_same_k",
+      "TP": 16,
+      "FN": 103,
+      "FP": 0,
+      "TN": 41
+    },
+    {
+      "class": "carpet",
+      "model": "coreset",
+      "TP": 78,
+      "FN": 11,
+      "FP": 1,
+      "TN": 27
+    },
+    {
+      "class": "carpet",
+      "model": "ccifps",
+      "TP": 80,
+      "FN": 9,
+      "FP": 1,
+      "TN": 27
+    },
+    {
+      "class": "carpet",
+      "model": "random_same_k",
+      "TP": 80,
+      "FN": 9,
+      "FP": 1,
+      "TN": 27
+    }
+  ]
+}

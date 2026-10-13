@@ -1,0 +1,221 @@
+{
+  "class": "bottle",
+  "model": "coreset",
+  "images": 83,
+  "counts": {
+    "TP": 63,
+    "FN": 0,
+    "FP": 1,
+    "TN": 19
+  },
+  "threshold": 0.07478612754493952,
+  "histogram": {
+    "edges": [
+      0.047183215618133545,
+      0.055719085534413654,
+      0.06425495545069376,
+      0.07279082536697387,
+      0.08132669528325398,
+      0.08986256519953409,
+      0.09839843511581421,
+      0.10693430503209432,
+      0.11547017494837443,
+      0.12400604486465454,
+      0.13254191478093463,
+      0.14107778469721477,
+      0.14961365461349488,
+      0.158149524529775,
+      0.1666853944460551,
+      0.1752212643623352,
+      0.18375713427861531,
+      0.19229300419489542,
+      0.20082887411117553,
+      0.20936474402745564,
+      0.21790061394373575,
+      0.22643648386001586,
+      0.23497235377629597,
+      0.24350822369257608,
+      0.2520440936088562,
+      0.26057996352513635,
+      0.26911583344141643,
+      0.2776517033576965,
+      0.28618757327397665,
+      0.2947234431902568,
+      0.30325931310653687
+    ],
+    "normal": [
+      17,
+      2,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    "defect": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      3,
+      1,
+      0,
+      2,
+      0,
+      3,
+      5,
+      1,
+      2,
+      5,
+      2,
+      6,
+      8,
+      7,
+      3,
+      4,
+      3,
+      2,
+      3,
+      0,
+      2
+    ]
+  },
+  "overlap": {
+    "definition": "intersection of empirical normal/defect score ranges (inclusive)",
+    "range": null,
+    "normal_count": 0,
+    "defect_count": 0
+  },
+  "defect_types": [
+    {
+      "type": "broken_large",
+      "images": 20,
+      "ng_count": 20,
+      "detection_rate": 1.0,
+      "mean_score": 0.2340830773115158
+    },
+    {
+      "type": "broken_small",
+      "images": 22,
+      "ng_count": 22,
+      "detection_rate": 1.0,
+      "mean_score": 0.22295412692156705
+    },
+    {
+      "type": "contamination",
+      "images": 21,
+      "ng_count": 21,
+      "detection_rate": 1.0,
+      "mean_score": 0.19973629713058472
+    },
+    {
+      "type": "good",
+      "images": 20,
+      "ng_count": 1,
+      "detection_rate": 0.05,
+      "mean_score": 0.05076998770236969
+    }
+  ],
+  "gallery": [
+    {
+      "image_id": "bottle/test/good/001.png",
+      "image_sha256": "a45aba86ef3e1ef8dbd95ca56abeb63f576fcd2bbd040ba748a1410bb70d6d78",
+      "score": 0.07678711414337158,
+      "threshold": 0.07478612754493952,
+      "verdict": "NG",
+      "is_defect": 0,
+      "defect_type": "good",
+      "kind": "FP",
+      "evidence_id": "43ad5a98ad2ae9f10da23cf5769edbe9",
+      "peak_patch": [
+        19,
+        21
+      ],
+      "smoothed_peak_uv": [
+        0.6941964285714286,
+        0.765625
+      ],
+      "source_url": "/api/dt/vision/bottle/coreset/assets/43ad5a98ad2ae9f10da23cf5769edbe9/source.png",
+      "original_url": "/api/dt/vision/bottle/coreset/assets/43ad5a98ad2ae9f10da23cf5769edbe9/original.png",
+      "overlay_url": "/api/dt/vision/bottle/coreset/assets/43ad5a98ad2ae9f10da23cf5769edbe9/overlay.png",
+      "mask_url": "/api/dt/vision/bottle/coreset/assets/43ad5a98ad2ae9f10da23cf5769edbe9/gt_mask.png",
+      "object_proxy_url": "/api/dt/vision/bottle/coreset/assets/43ad5a98ad2ae9f10da23cf5769edbe9/object_proxy.png"
+    }
+  ],
+  "gallery_scope": {
+    "fp_top_k": 8,
+    "fp_total": 1,
+    "fn_all": 0
+  },
+  "background_response": {
+    "numerator": 0,
+    "denominator": 1,
+    "images": [
+      {
+        "image_id": "bottle/test/good/001.png",
+        "peak_patch": [
+          19,
+          21
+        ],
+        "peak_on_background_proxy": false,
+        "foreground_fraction": 0.8064014668367347
+      }
+    ]
+  },
+  "process_impact": [
+    {
+      "run_id": "c90178b077fef27e",
+      "cell": "robot",
+      "speed": 0.5,
+      "seed": 0,
+      "latency_mode": "profile",
+      "source_complete_sha256": "66e1e8db5e60a2b16af9ce7cdf3ef66a4dbdd9c3c6fe0d050eff440b1012f489",
+      "parts_denominator": 400,
+      "reinspection_per_1000": 95.0,
+      "false_positives_per_1000": 52.5,
+      "escaped_defects": 0,
+      "escaped_defects_per_1000": 0.0
+    },
+    {
+      "run_id": "e764bdbe5364d847",
+      "cell": "inline",
+      "speed": 0.75,
+      "seed": 0,
+      "latency_mode": "constant",
+      "source_complete_sha256": "53cd03a58c98962641e577432b97ebe514592eb0d592d1e950298c49bf43be4e",
+      "parts_denominator": 21782,
+      "reinspection_per_1000": 96.2721513176017,
+      "false_positives_per_1000": 47.24084106142687,
+      "escaped_defects": 0,
+      "escaped_defects_per_1000": 0.0
+    }
+  ]
+}

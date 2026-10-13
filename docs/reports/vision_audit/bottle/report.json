@@ -1,0 +1,638 @@
+{
+  "schema_version": 1,
+  "class": "bottle",
+  "source": "verified P1; existing saved maps; CPU only; no new inference",
+  "models": {
+    "coreset": {
+      "class": "bottle",
+      "model": "coreset",
+      "images": 83,
+      "counts": {
+        "TP": 63,
+        "FN": 0,
+        "FP": 1,
+        "TN": 19
+      },
+      "threshold": 0.07478612754493952,
+      "histogram": {
+        "edges": [
+          0.047183215618133545,
+          0.055719085534413654,
+          0.06425495545069376,
+          0.07279082536697387,
+          0.08132669528325398,
+          0.08986256519953409,
+          0.09839843511581421,
+          0.10693430503209432,
+          0.11547017494837443,
+          0.12400604486465454,
+          0.13254191478093463,
+          0.14107778469721477,
+          0.14961365461349488,
+          0.158149524529775,
+          0.1666853944460551,
+          0.1752212643623352,
+          0.18375713427861531,
+          0.19229300419489542,
+          0.20082887411117553,
+          0.20936474402745564,
+          0.21790061394373575,
+          0.22643648386001586,
+          0.23497235377629597,
+          0.24350822369257608,
+          0.2520440936088562,
+          0.26057996352513635,
+          0.26911583344141643,
+          0.2776517033576965,
+          0.28618757327397665,
+          0.2947234431902568,
+          0.30325931310653687
+        ],
+        "normal": [
+          17,
+          2,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "defect": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          3,
+          1,
+          0,
+          2,
+          0,
+          3,
+          5,
+          1,
+          2,
+          5,
+          2,
+          6,
+          8,
+          7,
+          3,
+          4,
+          3,
+          2,
+          3,
+          0,
+          2
+        ]
+      },
+      "overlap": {
+        "definition": "intersection of empirical normal/defect score ranges (inclusive)",
+        "range": null,
+        "normal_count": 0,
+        "defect_count": 0
+      },
+      "defect_types": [
+        {
+          "type": "broken_large",
+          "images": 20,
+          "ng_count": 20,
+          "detection_rate": 1.0,
+          "mean_score": 0.2340830773115158
+        },
+        {
+          "type": "broken_small",
+          "images": 22,
+          "ng_count": 22,
+          "detection_rate": 1.0,
+          "mean_score": 0.22295412692156705
+        },
+        {
+          "type": "contamination",
+          "images": 21,
+          "ng_count": 21,
+          "detection_rate": 1.0,
+          "mean_score": 0.19973629713058472
+        },
+        {
+          "type": "good",
+          "images": 20,
+          "ng_count": 1,
+          "detection_rate": 0.05,
+          "mean_score": 0.05076998770236969
+        }
+      ],
+      "gallery": [
+        {
+          "image_id": "bottle/test/good/001.png",
+          "image_sha256": "a45aba86ef3e1ef8dbd95ca56abeb63f576fcd2bbd040ba748a1410bb70d6d78",
+          "score": 0.07678711414337158,
+          "threshold": 0.07478612754493952,
+          "verdict": "NG",
+          "is_defect": 0,
+          "defect_type": "good",
+          "kind": "FP",
+          "evidence_id": "43ad5a98ad2ae9f10da23cf5769edbe9",
+          "peak_patch": [
+            19,
+            21
+          ],
+          "smoothed_peak_uv": [
+            0.6941964285714286,
+            0.765625
+          ],
+          "source_url": "/api/dt/vision/bottle/coreset/assets/43ad5a98ad2ae9f10da23cf5769edbe9/source.png",
+          "original_url": "/api/dt/vision/bottle/coreset/assets/43ad5a98ad2ae9f10da23cf5769edbe9/original.png",
+          "overlay_url": "/api/dt/vision/bottle/coreset/assets/43ad5a98ad2ae9f10da23cf5769edbe9/overlay.png",
+          "mask_url": "/api/dt/vision/bottle/coreset/assets/43ad5a98ad2ae9f10da23cf5769edbe9/gt_mask.png",
+          "object_proxy_url": "/api/dt/vision/bottle/coreset/assets/43ad5a98ad2ae9f10da23cf5769edbe9/object_proxy.png"
+        }
+      ],
+      "gallery_scope": {
+        "fp_top_k": 8,
+        "fp_total": 1,
+        "fn_all": 0
+      },
+      "background_response": {
+        "numerator": 0,
+        "denominator": 1,
+        "images": [
+          {
+            "image_id": "bottle/test/good/001.png",
+            "peak_patch": [
+              19,
+              21
+            ],
+            "peak_on_background_proxy": false,
+            "foreground_fraction": 0.8064014668367347
+          }
+        ]
+      },
+      "process_impact": [
+        {
+          "run_id": "c90178b077fef27e",
+          "cell": "robot",
+          "speed": 0.5,
+          "seed": 0,
+          "latency_mode": "profile",
+          "source_complete_sha256": "66e1e8db5e60a2b16af9ce7cdf3ef66a4dbdd9c3c6fe0d050eff440b1012f489",
+          "parts_denominator": 400,
+          "reinspection_per_1000": 95.0,
+          "false_positives_per_1000": 52.5,
+          "escaped_defects": 0,
+          "escaped_defects_per_1000": 0.0
+        },
+        {
+          "run_id": "e764bdbe5364d847",
+          "cell": "inline",
+          "speed": 0.75,
+          "seed": 0,
+          "latency_mode": "constant",
+          "source_complete_sha256": "53cd03a58c98962641e577432b97ebe514592eb0d592d1e950298c49bf43be4e",
+          "parts_denominator": 21782,
+          "reinspection_per_1000": 96.2721513176017,
+          "false_positives_per_1000": 47.24084106142687,
+          "escaped_defects": 0,
+          "escaped_defects_per_1000": 0.0
+        }
+      ]
+    },
+    "ccifps": {
+      "class": "bottle",
+      "model": "ccifps",
+      "images": 83,
+      "counts": {
+        "TP": 63,
+        "FN": 0,
+        "FP": 0,
+        "TN": 20
+      },
+      "threshold": 0.10473260062281042,
+      "histogram": {
+        "edges": [
+          0.09810256958007812,
+          0.10486299196879069,
+          0.11162341435750325,
+          0.11838383674621582,
+          0.12514425913492838,
+          0.13190468152364096,
+          0.1386651039123535,
+          0.1454255263010661,
+          0.15218594868977864,
+          0.15894637107849122,
+          0.1657067934672038,
+          0.17246721585591634,
+          0.1792276382446289,
+          0.18598806063334147,
+          0.19274848302205405,
+          0.1995089054107666,
+          0.20626932779947915,
+          0.21302975018819173,
+          0.2197901725769043,
+          0.22655059496561686,
+          0.23331101735432944,
+          0.240071439743042,
+          0.24683186213175456,
+          0.2535922845204671,
+          0.26035270690917967,
+          0.2671131292978922,
+          0.2738735516866048,
+          0.28063397407531737,
+          0.28739439646403,
+          0.29415481885274253,
+          0.3009152412414551
+        ],
+        "normal": [
+          20,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "defect": [
+          0,
+          0,
+          1,
+          0,
+          1,
+          2,
+          0,
+          0,
+          1,
+          0,
+          2,
+          2,
+          3,
+          5,
+          0,
+          3,
+          0,
+          4,
+          5,
+          5,
+          6,
+          4,
+          4,
+          3,
+          3,
+          2,
+          0,
+          3,
+          3,
+          1
+        ]
+      },
+      "overlap": {
+        "definition": "intersection of empirical normal/defect score ranges (inclusive)",
+        "range": null,
+        "normal_count": 0,
+        "defect_count": 0
+      },
+      "defect_types": [
+        {
+          "type": "broken_large",
+          "images": 20,
+          "ng_count": 20,
+          "detection_rate": 1.0,
+          "mean_score": 0.23824116587638855
+        },
+        {
+          "type": "broken_small",
+          "images": 22,
+          "ng_count": 22,
+          "detection_rate": 1.0,
+          "mean_score": 0.22731006958267905
+        },
+        {
+          "type": "contamination",
+          "images": 21,
+          "ng_count": 21,
+          "detection_rate": 1.0,
+          "mean_score": 0.2054710104351952
+        },
+        {
+          "type": "good",
+          "images": 20,
+          "ng_count": 0,
+          "detection_rate": 0.0,
+          "mean_score": 0.09995238780975342
+        }
+      ],
+      "gallery": [],
+      "gallery_scope": {
+        "fp_top_k": 8,
+        "fp_total": 0,
+        "fn_all": 0
+      },
+      "background_response": {
+        "numerator": 0,
+        "denominator": 0,
+        "images": []
+      },
+      "process_impact": [
+        {
+          "run_id": "50a8cae1b37b7f1c",
+          "cell": "inline",
+          "speed": 0.25,
+          "seed": 0,
+          "latency_mode": "constant",
+          "source_complete_sha256": "da65ebdf8edc3283beaedddba938963c6b73fbd0e8d5a1a47b72da8d21f1b2f5",
+          "parts_denominator": 7283,
+          "reinspection_per_1000": 46.684058766991626,
+          "false_positives_per_1000": 0.0,
+          "escaped_defects": 0,
+          "escaped_defects_per_1000": 0.0
+        },
+        {
+          "run_id": "af706b5d4e52cf6c",
+          "cell": "inline",
+          "speed": 1.0,
+          "seed": 0,
+          "latency_mode": "profile",
+          "source_complete_sha256": "6b44e378bca5c917e4378552be90d1ba60c2b5dc20790fe55a92b7ef84f5421a",
+          "parts_denominator": 29032,
+          "reinspection_per_1000": 49.94488839900799,
+          "false_positives_per_1000": 0.0,
+          "escaped_defects": 0,
+          "escaped_defects_per_1000": 0.0
+        }
+      ]
+    },
+    "random_same_k": {
+      "class": "bottle",
+      "model": "random_same_k",
+      "images": 83,
+      "counts": {
+        "TP": 63,
+        "FN": 0,
+        "FP": 0,
+        "TN": 20
+      },
+      "threshold": 0.08961503207683563,
+      "histogram": {
+        "edges": [
+          0.038895606994628906,
+          0.04770019849141439,
+          0.05650478998819987,
+          0.06530938148498536,
+          0.07411397298177083,
+          0.0829185644785563,
+          0.0917231559753418,
+          0.10052774747212728,
+          0.10933233896891276,
+          0.11813693046569823,
+          0.1269415219624837,
+          0.1357461134592692,
+          0.14455070495605468,
+          0.15335529645284016,
+          0.16215988794962566,
+          0.17096447944641113,
+          0.1797690709431966,
+          0.18857366243998208,
+          0.19737825393676756,
+          0.20618284543355306,
+          0.21498743693033853,
+          0.223792028427124,
+          0.2325966199239095,
+          0.24140121142069498,
+          0.25020580291748046,
+          0.25901039441426593,
+          0.2678149859110514,
+          0.27661957740783694,
+          0.2854241689046224,
+          0.2942287604014079,
+          0.30303335189819336
+        ],
+        "normal": [
+          6,
+          7,
+          3,
+          2,
+          1,
+          1,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "defect": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          3,
+          1,
+          0,
+          0,
+          1,
+          2,
+          2,
+          3,
+          4,
+          2,
+          1,
+          3,
+          4,
+          9,
+          11,
+          3,
+          3,
+          3,
+          2,
+          4,
+          2
+        ]
+      },
+      "overlap": {
+        "definition": "intersection of empirical normal/defect score ranges (inclusive)",
+        "range": null,
+        "normal_count": 0,
+        "defect_count": 0
+      },
+      "defect_types": [
+        {
+          "type": "broken_large",
+          "images": 20,
+          "ng_count": 20,
+          "detection_rate": 1.0,
+          "mean_score": 0.2455833822488785
+        },
+        {
+          "type": "broken_small",
+          "images": 22,
+          "ng_count": 22,
+          "detection_rate": 1.0,
+          "mean_score": 0.23303856091065842
+        },
+        {
+          "type": "contamination",
+          "images": 21,
+          "ng_count": 21,
+          "detection_rate": 1.0,
+          "mean_score": 0.20613330886477516
+        },
+        {
+          "type": "good",
+          "images": 20,
+          "ng_count": 0,
+          "detection_rate": 0.0,
+          "mean_score": 0.05519564151763916
+        }
+      ],
+      "gallery": [],
+      "gallery_scope": {
+        "fp_top_k": 8,
+        "fp_total": 0,
+        "fn_all": 0
+      },
+      "background_response": {
+        "numerator": 0,
+        "denominator": 0,
+        "images": []
+      },
+      "process_impact": [
+        {
+          "run_id": "71da48a522a7fe4f",
+          "cell": "inline",
+          "speed": 0.5,
+          "seed": 0,
+          "latency_mode": "profile",
+          "source_complete_sha256": "49f40091319c573ce866e6d40ec6e798d081572a9e478fa5b7207cd3a4c52752",
+          "parts_denominator": 14532,
+          "reinspection_per_1000": 49.88989815579411,
+          "false_positives_per_1000": 0.0,
+          "escaped_defects": 0,
+          "escaped_defects_per_1000": 0.0
+        }
+      ]
+    }
+  },
+  "disagreements": [
+    {
+      "image_id": "bottle/test/good/001.png",
+      "models": {
+        "coreset": {
+          "score": 0.07678711414337158,
+          "threshold": 0.07478612754493952,
+          "verdict": "NG"
+        },
+        "ccifps": {
+          "score": 0.10078614950180054,
+          "threshold": 0.10473260062281042,
+          "verdict": "OK"
+        },
+        "random_same_k": {
+          "score": 0.08471459150314331,
+          "threshold": 0.08961503207683563,
+          "verdict": "OK"
+        }
+      }
+    }
+  ],
+  "object_proxy": {
+    "method": "normal-fit border RGB median; global Otsu on RGB distance; foreground distance > threshold",
+    "normal_fit_images": 167,
+    "background_rgb": [
+      255.0,
+      255.0,
+      255.0
+    ],
+    "distance_threshold": 168,
+    "limit": "not semantic ground truth; unsuitable for equal-colour objects/background and full-frame textures; no causal claim"
+  },
+  "source_hashes": {
+    "protocol.json": "a057613734a0058e8de0cac94a6e2383c99561ef8dd6dbd8359db863ed63a5d1",
+    "evaluation_gt.npy": "f67802e0b1867d8079077a495cd4454f1b8383411b06dacd4c9ed514dbeebb5e",
+    "gt_labels.csv": "9f39043c10940557cb7ff8efa9b966c85eec701dd59371bbe970a140ed1196ad",
+    "coreset/per_image.csv": "ef474021acba7fc123175aaacdebaff83f68d4cc9c0ea3735c5b56fe54206bac",
+    "coreset/predictions.csv": "3c588af9f1081c720ad9da62109c791678250b745b9f12cf532f06b2dc0f4ebb",
+    "coreset/common_maps.npy": "2820771e41244a5be01ae348176e076239eb57715e6608f0e33041386245f57e",
+    "coreset/raw_patch_scores.npy": "a7cc550f23a21994be09154c5d9185ecdaabcf1d6ceab3d477b2f0431cda4369",
+    "ccifps/per_image.csv": "ea4524fadb1791f45f81426abe5e5770c654aad46ec6f98b1adb7b141ce1aec7",
+    "ccifps/predictions.csv": "c2c6e0dc8d41d2ca2630b39076062ddd14ecf2ab074f888b2607b141a15b188e",
+    "ccifps/common_maps.npy": "6d446604581c75c151cc0d4242abcc0eeed2294a4d325f223894f4614a30aa7a",
+    "ccifps/raw_patch_scores.npy": "2db7634532b1e7959bb019a111844348c01dd202925513b1f335118225239c91",
+    "random_same_k/per_image.csv": "6106f36ffd6e52d9c47cbaef80c73a58cba6cbde1cfdf2fc05550590b9a991bf",
+    "random_same_k/predictions.csv": "1430a3c87f104e1fb9e58d03d7663c37a512c989246ac4405bbfde967b0ab691",
+    "random_same_k/common_maps.npy": "3ec9396e64f47b7081319e55315dd753d1e03b42a4fc735664e4d382cbd7017e",
+    "random_same_k/raw_patch_scores.npy": "fe1f778db732c601f9b62662cef69667efd8906ef82784af6629b7facbe5f4a3"
+  },
+  "p1_complete_sha256": "fde3e200803f6ed89a3efa60fb534be473ba28e6b94a70c413331886afad1d6a"
+}
