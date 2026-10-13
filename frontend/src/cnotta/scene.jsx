@@ -8,6 +8,7 @@ import booth from '../../../assets/cad/inspection_booth/dt_v1/dims.json'
 import diverter from '../../../assets/cad/diverter/dt_v1/dims.json'
 import robotPose from '../d0/robot-pose.json'
 import T from '../brand/cnotta.tokens.json'
+import {Site} from './Site'
 
 const C={ground:T.surface,floor:T.floor,line:T.line,blue:T['equip-frame'],dark:T.brand.ink,white:T.equip,box:T.cardboard,orange:T.human,tree:T.foliage,ink:T.brand.ink,primary:T.brand.primary}
 
@@ -61,19 +62,25 @@ function Reinspection() {return <Grounded name="offline-area" x={3} z={6.2}>
  </Grounded>}
 function Tree({x,z}) {return <Grounded name="decorative-tree" x={x} z={z}><Cylinder at={[0,.62,0]} r={.07} h={1.24} color={C.line}/><mesh position={[0,1.48,0]} scale={[.55,.8,.55]} castShadow><icosahedronGeometry args={[1,2]}/>{material(C.tree)}</mesh></Grounded>}
 function Truck() {return <Grounded name="decorative-truck" x={-5} z={10.2}><Box at={[0,.95,0]} size={[3.6,1.65,1.65]}/><Box at={[-2.45,.75,0]} size={[1.15,1.25,1.6]} color={C.blue}/><Box at={[-2.46,1.04,.805]} size={[.75,.48,.015]} color={C.dark}/><Box at={[-3.035,1.04,0]} size={[.02,.48,1.3]} color={C.dark}/><Box at={[0,.49,0]} size={[3.7,.24,1.7]} color={C.dark}/>{[-2.35,.8,1.35].flatMap(x=>[-.85,.85].map(z=><Cylinder key={`${x}-${z}`} at={[x,.3,z]} r={.3} h={.16} color={C.ink} rotation={[Math.PI/2,0,0]}/>))}</Grounded>}
-export function Scene({children}) {return <group name="d0-static-scene">
+// Existing single-hall conveyor geometry. Model lanes are a separate Site input.
+export const DEFAULT_CONVEYORS=[
+ {id:'infeed',x:-7,length:6},{id:'after-vision',x:-2.2},
+ {id:'cross',x:.1,z:0,length:3.6,rotation:Math.PI/2},
+ ...[-1.8,0,1.8].map((z,i)=>({id:`output-${i}`,x:3.3,z,length:6})),
+ {id:'offline-transfer',x:6.6,z:2.2,length:4.4,rotation:Math.PI/2},
+]
+export function Scene({children,origin=[0,0],rotation=0,lanes=['ccifps']}) {return <Site origin={origin} rotation={rotation} lanes={lanes}>{siteLanes=><group name="d0-static-scene" userData={{modelLanes:siteLanes}}>
  <mesh name="surface" rotation={[-Math.PI/2,0,0]} position={[0,-.015,0]}><planeGeometry args={[80,60]}/><meshBasicMaterial color={C.ground}/></mesh><mesh name="floor" rotation={[-Math.PI/2,0,0]} position={[0,-.001,1]}><planeGeometry args={[24,18]}/><meshBasicMaterial color={C.floor}/></mesh>
  <Box at={[0,.02,12]} size={[48,.04,5]} color={C.line}/>{Array.from({length:13},(_,i)=><Box key={i} at={[-22+i*3.6,.044,12]} size={[1.8,.008,.1]}/>)}
  <Grounded name="cutaway-building"><Box at={[0,1.15,-8]} size={[24,2.3,.25]} color={C.blue}/><Box at={[-12,1.15,1]} size={[.25,2.3,18]} color={C.blue}/><Box at={[0,2.35,-8]} size={[24.2,.1,.4]} color={C.dark}/><Box at={[-12,2.35,1]} size={[.4,.1,18]} color={C.dark}/>{[-9,-5,-1,3,7,10].map(x=><Box key={x} at={[x,1.6,-7.855]} size={[2.4,.65,.05]} color={C.line}/>)}<Box at={[-11.85,1.2,5.8]} size={[.05,2.4,2.5]} color={C.white}/><Html position={[-10,1.7,-7.85]} transform zIndexRange={[1,0]}><img className="wall-mark" src="/brand/cnotta-mark.svg" alt="CNOTTA"/></Html></Grounded>
  {[-2,2.5].map(z=><Box key={z} at={[0,.007,z]} size={[21,.014,.07]} color={C.line}/>)}
  <group name="process-area"><RobotCell/><Cabinet x={-1.7} z={-5.4}/><Pallet x={-9.5} z={-4.5} stack={2}/>
- <Belt x={-7} length={6}/><Booth/><Belt x={-2.2}/>
+ {DEFAULT_CONVEYORS.map(({id,...props})=><Belt key={id} {...props}/>)}<Booth/>
  <Grounded name="diverter" x={-.7}><Belt x={0} length={diverter.length_mm/1000} width={diverter.width_mm/1000}/><Box at={[0,.74,0]} size={[.7,.08,.08]} color={C.blue} rotation={[0,-.4,0]}/></Grounded>
- <Belt x={.1} z={0} length={3.6} rotation={Math.PI/2}/>{[-1.8,0,1.8].map((z,i)=><group key={z}><Belt x={3.3} z={z} length={6}/></group>)}
  <Label at={[-8,1.8,0]}>INFEED</Label><Label at={[-.7,1.8,0]}>SORT</Label>
  <Pallet x={-10} z={1.7} stack={2}/>
  <Pallet x={8} z={-1.8} stack={2}/><Pallet x={9.7} z={-1.8} stack={1}/><Pallet x={8.5} z={.2} stack={1}/>
  <Fence x={7.5} z={2.5} length={2}/><Fence x={8.5} z={1.65} length={1.7} rotation={Math.PI/2}/><Box at={[7.5,.04,1.7]} size={[2,.08,1.6]} color={C.line}/><Carton x={7.4} z={1.7} bottom={.08}/>
- <Belt x={6.6} z={2.2} length={4.4} rotation={Math.PI/2}/><Reinspection/><Pallet x={-7.5} z={5.1} stack={2}/><Pallet x={-9.2} z={5.1} stack={1}/><Worker x={-9} z={2.9}/>
+ <Reinspection/><Pallet x={-7.5} z={5.1} stack={2}/><Pallet x={-9.2} z={5.1} stack={1}/><Worker x={-9} z={2.9}/>
  {children}</group><Truck/>{[[-15,-7],[-15,-2],[-15,4],[-15,9],[14,-7],[14,-2],[14,4],[14,9]].map(([x,z])=><Tree key={`${x}-${z}`} x={x} z={z}/>)}
- </group>}
+ </group>}</Site>}
