@@ -1,0 +1,6 @@
+{
+  "source": "https://dl.polyhaven.org/file/ph-assets/HDRIs/hdr/1k/potsdamer_platz_1k.hdr",
+  "license_source": "https://raw.githubusercontent.com/spdx/license-list-data/main/text/CC0-1.0.txt",
+  "asset": "frontend/public/d0/potsdamer_platz_1k.hdr",
+  "sha256": "7afe4c2f9700ee78c7477c53fa355463d7dda1fdede401432d6b5f9ff0a95696"
+}
