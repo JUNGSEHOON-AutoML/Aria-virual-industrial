@@ -1,6 +1,6 @@
 # BLOCKERS
 
-- M5: 실험 대기. 확인 시 A 2,094/2,970, B·최종 REPORT 미생성. API 404와 진행 중 화면은 구현·검증; 완료 후 `python -m tools.gates.m5` 재실행. M6는 파일럿으로 진행.
+- M5: 실험 대기. 최신 조회 시 A 2,829/2,970, B·최종 REPORT 미생성. API 404와 진행 중 화면은 구현·검증; 완료 후 `python -m tools.gates.m5` 재실행. M6는 파일럿으로 진행.
 - 실제 GPU 화풍·FPS 미확인: SwiftShader만 사용. GPU 확인은 작업 진행을 막지 않음.
 
 
@@ -9,3 +9,5 @@
 - [해소: 2026-10-13 9/9 재검증 통과] M7 이전 데이터 게이트: 3개 홀 9개 레인 중 8개 완료 실행 연결. CARPET random_same_k의 seed 0 / inline / 0.5 / profile은 아직 없음. 다른 조건으로 대체하거나 실험을 재실행하지 않음. 화면 게이트는 통과했고 `gates/m7.json`은 `pending_data`, pass=false로 보존. 해당 complete.json 도착 후 목록에 자동 반영되며 게이트 재실행 필요. 최신 순서의 다음 독립 작업은 G1.
 
 - [해소: G1 등록 강제·해당 연출 비활성화] G1 이전 출처 규칙 도입 대기: 기존 캠퍼스 시간 기반 롤러 회전과 단일 실행의 임의 로봇 회전은 12절에 따른 이벤트 검증 전이므로 신규 규칙 기준 INVALID 대상이다. `configs/ambient_motion.json`에 이 후보를 명시했고 단순 ambient 등록으로 승인하지 않는다. G1에서 연결 또는 비활성화해야 한다. 이번 문서/설정 계약 변경으로 런타임 강제가 구현됐다고 간주하지 않는다.
+
+- L2 확장 제한: 현재 실제 검출기 bundle은 BOTTLE CCIFPS만 준비되어 Live는 이 레인으로 한정. SCREW/CARPET 및 코어셋/random_same_k는 저장 Replay로 제공한다. 추가 모델을 가짜 판정으로 대체하거나 자동 다운로드하지 않는다. L2 게이트 범위는 준비된 실제 bundle의 기능 연결이며 전체 9레인 실시간 검사를 의미하지 않는다.

@@ -1,0 +1,13 @@
+{
+  "schema_version": 1,
+  "mode": "isolated_cpu_live",
+  "category": "bottle",
+  "run_id": "ccifps_f17f101ca31a4b7e834c1ad9f480c22f",
+  "interarrival_seconds": {"value": 6, "unit": "s", "tag": "assumed"},
+  "inspection_hold_seconds": {"value": 2, "unit": "s", "tag": "assumed"},
+  "max_images": {"value": 64, "unit": "image", "tag": "assumed"},
+  "source_order": "round-robin local BOTTLE test folders; demonstration, not the research 5% resampling",
+  "motion": {"ng_base_scale": 2, "hold_base_scale": -2, "ng_place": "scale existing place/return base joint; same seven-stage durations, checked URDF limits", "tag": "assumed"},
+  "unavailable_classes": ["screw", "carpet"],
+  "unavailable_reason": "No completed compatible real CCIFPS detector bundle installed for these classes"
+}

@@ -56,18 +56,19 @@ export function Hall({site,focused,onEnter,children}){
   {children}<Roof site={site} focused={focused} onEnter={onEnter}/>
  </group></Site>
 }
-export function LaneEquipment({site}){
+export function LaneEquipment({site,live=false}){
  const {width,depth}=hallSize(site)
  const shapes=useMemo(()=>{const frames=[],belts=[],feet=[],racks=[],floor=[]
   site.lanes.forEach((_,i)=>{const z=laneZ(site,i)
-   frames.push([[-5,.63,z],[14,.14,1.05]],[[-3.6,1.5,z-.5],[1.2,.16,.4]],[[-3.6,1,z-.67],[1.2,1,.14]],[[-4.15,1,z+.45],[.1,1,.1]],[[-3.05,1,z+.45],[.1,1,.1]])
+   frames.push([[-5,.63,z],[14,.14,1.05]])
+   if(!(live&&site.lanes[i]==='ccifps'))frames.push([[-3.6,1.5,z-.5],[1.2,.16,.4]],[[-3.6,1,z-.67],[1.2,1,.14]],[[-4.15,1,z+.45],[.1,1,.1]],[[-3.05,1,z+.45],[.1,1,.1]])
    belts.push([[-5,.72,z],[14,.045,.8]])
    for(const x of [-11,-8,-5,-2,1])for(const dz of [-.4,.4])feet.push([[x,.3,z+dz],[.12,.6,.12]])
    for(const dz of [-1.4,0,1.4]){frames.push([[6,.63,z+dz],[7,.14,.75]]);belts.push([[6,.72,z+dz],[7,.045,.56]])}
    // Offline queue rack is separated from the lane ends by a walkway.
    for(const x of [12,14.7]){for(const y of [.22,.95,1.68])racks.push([[x,y,z+1.9],[2.1,.08,.9]]);for(const dx of [-1,1])racks.push([[x+dx,.95,z+1.9],[.06,1.9,.9]])}
    floor.push([[12.4,.091,z+1.6],[6.4,.014,3.3]])
-  });return {frames,belts,feet,racks,floor}},[site])
+  });return {frames,belts,feet,racks,floor}},[site,live])
  return <group name={'lanes-'+site.id}><Boxes color={T['equip-frame']} items={shapes.frames}/><Boxes color={T.brand.primary} items={shapes.belts}/><Boxes color={T.brand.ink} items={shapes.feet}/><Boxes name="waiting-racks" color={T['text-2']} items={shapes.racks}/><Boxes color={T.brand['primary-200']} items={shapes.floor}/><Boxes color={T.line} items={[[[-width/2+1,.1,0],[.08,.02,depth-2]]]} /></group>
 }
 export function Landscape(){

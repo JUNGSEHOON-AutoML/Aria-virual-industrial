@@ -74,12 +74,12 @@ refresh()
 
 const names = {M0:'기반 준비',M1:'장면·브랜드',M2:'저장 결과 재생',L1:'비전 분석',M7:'캠퍼스',G1:'움직임 엔진',G2:'하류 물류',L2:'실시간 운영 연결',L3:'에이전트 작업',L4:'4족 순찰',V1:'2.5D 결함 뷰어',V2:'실측 3D 뷰어',V3:'부품 외형',M3:'선택·검색',M4:'KPI·재검사 패널',G3:'수치 출처',M5:'본 실험 결과 연결',M6:'데모 패키징'}
 const rows = progress.split('\n').map(line => line.split('|').map(cell => cell.trim())).filter(row => names[row[0]])
-const implemented = new Set(['M0','M1','M2','L1','M7','M3','M4','M6'])
+const implemented = new Set(['M0','M1','M2','L1','M7','G1','G2','L2','M3','M4','M6'])
 for (const [id,status,gate,next] of rows) {
   const details = make('details', undefined, 'milestone')
   details.dataset.category = implemented.has(id) ? 'implemented' : 'pending'
   // M7's saved progress can lag the read-only catalog: keep gate evidence distinct.
-  const shownStatus = id === 'M7' ? '화면 자동 게이트 통과 · 전체 데이터 게이트는 이전 기록' : status
+  const shownStatus = status
   const summary = make('summary')
   summary.append(make('span',id,'stage-id'),make('b',names[id]),make('span',shownStatus,'stage-status'))
   const body = make('div',undefined,'stage-body')

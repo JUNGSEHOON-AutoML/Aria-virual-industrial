@@ -1,4 +1,4 @@
-"""Independent read-only dashboard HTTP service. No experiment control endpoints."""
+"""Read-only research replay and an isolated CPU Live Ops demonstration."""
 import json
 from fastapi import FastAPI,HTTPException,Query
 from fastapi.responses import JSONResponse
@@ -29,3 +29,5 @@ app.include_router(campus_router)
 
 from .logistics import router as logistics_router
 app.include_router(logistics_router)
+from .live import router as live_router
+app.include_router(live_router)

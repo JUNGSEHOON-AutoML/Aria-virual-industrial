@@ -59,6 +59,38 @@
       "clock": "sim",
       "enabled": true,
       "status": "connected_G2"
+    },
+    {
+      "id": "live.parts",
+      "kind": "event",
+      "source": "ws:/api/live/ws#parts",
+      "clock": "live_des",
+      "enabled": true,
+      "status": "connected_L2"
+    },
+    {
+      "id": "live.robot",
+      "kind": "event",
+      "source": "ws:/api/live/ws#metrics.resources.AI-INSPECTION.robot",
+      "clock": "live_des",
+      "enabled": true,
+      "status": "connected_L2"
+    },
+    {
+      "id": "live.patrol",
+      "kind": "event",
+      "source": "ws:/api/live/ws#patrol.robots",
+      "clock": "live_des",
+      "enabled": true,
+      "status": "connected_L2"
+    },
+    {
+      "id": "live.maintenance",
+      "kind": "event",
+      "source": "ws:/api/live/ws#patrol.maintenance",
+      "clock": "live_des",
+      "enabled": true,
+      "status": "connected_L2"
     }
   ],
   "ambient": [],

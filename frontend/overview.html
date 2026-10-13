@@ -19,12 +19,12 @@
           <p class="eyebrow">INSPECTION TWIN / IMPLEMENTATION MAP</p>
           <h1 id="page-title">연구 결과에서,<br />공장 화면까지.</h1>
           <p class="lead">비전 모델의 판정과 공정 실험 결과를 하나의 캠퍼스에서 비교합니다. 지금 작동하는 기능과 명세에 등록된 다음 단계를 함께 정리했습니다.</p>
-          <div class="intro-actions"><a class="button primary" href="/cnotta.html">현재 대시보드 보기 ↗</a><a class="text-link" href="#flow">데이터 흐름 살펴보기 ↓</a></div>
+          <div class="intro-actions"><a class="button primary" href="/cnotta.html?mode=live">Live 운영 보기 ↗</a><a class="text-link" href="#flow">데이터 흐름 살펴보기 ↓</a></div>
         </div>
         <aside class="current" aria-label="현재 서비스 상태">
-          <div class="current-heading"><span class="dot"></span> 현재 모드 <b>REPLAY</b></div>
-          <h2>저장된 실행을 재생합니다.</h2>
-          <p>부품 이동·판정·재검사 대기열은 저장 기록을 읽습니다. 실시간 공정 운영과 물류 계산은 다음 연결 단계입니다.</p>
+          <div class="current-heading"><span class="dot"></span> 지원 모드 <b>LIVE / REPLAY</b></div>
+          <h2>실검사와 저장 재생을 선택합니다.</h2>
+          <p>Live는 BOTTLE CCIFPS의 실제 이미지 검사와 M0609·순찰·수리를 연결합니다. Replay는 저장된 9개 레인과 사후 물류를 재생합니다.</p>
           <dl><div><dt>캠퍼스 데이터</dt><dd id="ready-count">확인 중</dd></div><div><dt>본 실험 최종 요약</dt><dd id="study-status">확인 중</dd></div></dl>
           <p id="connection" class="source" role="status">읽기 전용 API를 조회하고 있습니다.</p>
           <button id="refresh" class="text-link" type="button">데이터 상태 다시 확인 ↻</button>
@@ -35,7 +35,7 @@
         <div class="section-heading"><div><p class="eyebrow">01 / CAMPUS</p><h2 id="campus-title">세 공장, 같은 비교 기준</h2></div><span class="pill">M7 · 화면 구현</span></div>
         <p class="section-copy">각 홀에는 코어셋·CCIFPS·random_same_k 레인이 있습니다. 아래 홀을 선택하면 연결 상태와 배치 정보를 확인할 수 있습니다.</p>
         <div class="campus-grid">
-          <div class="campus-map"><div class="map-caption"><span>배치 개념도 · 실제 3D 화면은 위 링크</span><span>campus.layout.json</span></div><div class="halls" id="halls"></div><div class="road"><span>캠퍼스 진입로</span></div><div class="outbuildings"><div><span class="building-symbol">⌑</span><b>로봇 셀 동</b><small>운영 연결 · L2 예정</small></div><div><span class="building-symbol">▤</span><b>물류 야드</b><small>현재 장식 · G2에서 계산 연결</small></div></div><div class="map-footer"><span>입구 사인 · 정면 간판 · 입체 지붕 로고</span><span>임시 SVG / 교체 가능</span></div></div>
+          <div class="campus-map"><div class="map-caption"><span>배치 개념도 · 실제 3D 화면은 위 링크</span><span>campus.layout.json</span></div><div class="halls" id="halls"></div><div class="road"><span>캠퍼스 진입로</span></div><div class="outbuildings"><div><span class="building-symbol">⌑</span><b>로봇 셀 동</b><small>M0609 · BOTTLE 레인에 연결</small></div><div><span class="building-symbol">▤</span><b>물류 야드</b><small>장식 구역 + G2 이벤트 물류</small></div></div><div class="map-footer"><span>입구 사인 · 정면 간판 · 입체 지붕 로고</span><span>임시 SVG / 교체 가능</span></div></div>
           <aside class="hall-detail" aria-live="polite"><p class="eyebrow">SELECTED HALL</p><h3 id="hall-name"></h3><p id="hall-position" class="source"></p><ul id="lane-list"></ul><p class="hall-note">동일 seed·cell·속도·latency 조건을 매칭합니다. 없는 실행은 다른 조건으로 대체하지 않습니다.</p><a class="text-link" href="/cnotta.html">3D에서 홀 선택하기 ↗</a></aside>
         </div>
         <p class="note" id="gate-note">현재 데이터 준비 상태는 API 응답이며, M7 전체 재검증 통과를 의미하지 않습니다.</p>
@@ -48,21 +48,21 @@
           <article><span class="step-id">POST-PROCESS</span><h3>정책 B · 사후 계산</h3><p>A의 기록으로 재검사 변형과 지표를 산출합니다. B를 위한 DES 재실행은 없습니다.</p><small>재검사 지표 · 1,000개당 정규화</small></article>
           <article><span class="step-id">PRESENTATION</span><h3>읽기 API → Replay</h3><p>같은 재생 시각에서 부품·NG·재검사 랙·KPI를 표시합니다.</p><code>aria/dashboard → frontend</code></article>
         </div>
-        <div class="downstream"><span class="pill planned">G2 · 구현 예정</span><div><h3>최종 OK 출구 → 포장 → 팔레트 → 지게차 → 출하</h3><p>물류는 결과를 읽는 하류 계산입니다. DES·사후 B 결과에 되돌려 쓰지 않으며, 설정값은 <code>configs/logistics.yaml</code>의 <code>assumed</code>로 관리합니다. 현재 계산은 비활성 상태입니다.</p></div></div>
-        <details class="technical"><summary>구현 파일과 연결 지점</summary><dl><div><dt>배치·장면</dt><dd><code>frontend/src/campus/campus.layout.json</code> · Site(origin, rotation, lanes)</dd></div><div><dt>판정·근거 리포트</dt><dd><code>aria/dashboard/vision.py</code> · 기존 L1 화면의 ‘비전 분석’</dd></div><div><dt>저장 실행·조건 매칭</dt><dd><code>aria/dashboard/store.py</code> · <code>campus.py</code></dd></div><div><dt>움직임 등록 계약</dt><dd><code>configs/ambient_motion.json</code> · 기본 거부 계약만 준비, 런타임 강제는 G1 예정</dd></div><div><dt>브랜드 교체 경계</dt><dd><code>frontend/public/brand/identity.json</code>과 같은 폴더의 SVG</dd></div></dl></details>
+        <div class="downstream"><span class="pill planned">G2 · 구현 완료</span><div><h3>최종 OK 출구 → 포장 → 팔레트 → 지게차 → 출하</h3><p>물류는 결과를 읽는 하류 계산입니다. DES·사후 B 결과에 되돌려 쓰지 않으며, 설정값은 <code>configs/logistics.yaml</code>의 <code>assumed</code>로 관리합니다. Replay의 물류 버튼에서 정책 A/B와 출하 내역을 확인합니다.</p></div></div>
+        <details class="technical"><summary>구현 파일과 연결 지점</summary><dl><div><dt>배치·장면</dt><dd><code>frontend/src/campus/campus.layout.json</code> · Site(origin, rotation, lanes)</dd></div><div><dt>판정·근거 리포트</dt><dd><code>aria/dashboard/vision.py</code> · 기존 L1 화면의 ‘비전 분석’</dd></div><div><dt>저장 실행·조건 매칭</dt><dd><code>aria/dashboard/store.py</code> · <code>campus.py</code></dd></div><div><dt>움직임 등록 계약</dt><dd><code>configs/ambient_motion.json</code> · G1 런타임 등록 강제 · 미등록 움직임 기본 거부</dd></div><div><dt>브랜드 교체 경계</dt><dd><code>frontend/public/brand/identity.json</code>과 같은 폴더의 SVG</dd></div></dl></details>
       </section>
       <section id="roadmap" aria-labelledby="roadmap-title">
         <div class="section-heading"><div><p class="eyebrow">03 / IMPLEMENTATION</p><h2 id="roadmap-title">지금까지 구현한 것과 다음 단계</h2></div><span class="pill">dt-cnotta</span></div>
         <p class="section-copy">최신 순서: M7 → G1 → G2 → L2 → L3 → L4 → V1–V3 → M3 → M4 → G3 → M5 → M6. M3·M4·M6의 기존 Replay 구현은 새 기능을 연결한 뒤 재검증합니다.</p>
         <div class="filters" role="group" aria-label="구현 단계 필터"><button type="button" data-filter="all" aria-pressed="true">전체</button><button type="button" data-filter="implemented" aria-pressed="false">구현·기존 검증</button><button type="button" data-filter="pending" aria-pressed="false">대기·후속 작업</button></div>
         <div id="milestones"></div>
-        <p class="note">G1–G3의 명세 게이트 통과는 기능 구현 완료를 의미하지 않습니다. 기존 롤러·로봇의 임의 연출 정리와 모든 움직임의 등록 강제는 G1에서 처리할 항목입니다.</p>
+        <p class="note">G1·G2·L2는 구현과 CPU 검증을 완료했습니다. L3 에이전트 작업, L4 4족 모델, G3 수치 출처 전수 검사는 다음 단계입니다.</p>
       </section>
       <section id="evidence" aria-labelledby="evidence-title">
         <div class="section-heading"><div><p class="eyebrow">04 / VERIFICATION & ACCESS</p><h2 id="evidence-title">확인된 근거로 보는 현재 상태</h2></div></div>
         <div class="evidence-grid" id="evidence-cards"></div>
         <p class="source" id="evidence-date"></p>
-        <div class="access"><div><h3>움직이는 공정은 이렇게 확인하세요.</h3><ol><li>3D 캠퍼스를 열고 확인할 홀을 선택합니다.</li><li>화면 아래 <b>재생</b>을 누릅니다. 배속과 시각 탐색을 사용할 수 있습니다.</li><li>상단 <b>비전 분석</b>에서 모델별 판정 근거를 확인합니다.</li></ol></div><div class="access-links"><a class="button primary" href="/cnotta.html">캠퍼스 열기 ↗</a><a class="button" href="/cnotta.html?view=line">단일 실행 화면 ↗</a><small>실제 GPU의 화풍·FPS는 미확인입니다.<br />현재 안내 페이지는 3D 렌더링 없이 동작합니다.</small></div></div>
+        <div class="access"><div><h3>움직이는 공정은 이렇게 확인하세요.</h3><ol><li><b>Live 운영</b>을 열고 아래 <b>Live 시작</b>을 누릅니다. CPU 실검사 중에는 공정 시계가 대기합니다.</li><li>최근 검사 결과를 누르면 원본과 히트맵이 열립니다. <b>고장 주입</b>으로 순찰·복구를 확인합니다.</li><li><b>Replay 보기</b>에서 9개 저장 레인과 정책 A/B 물류를 재생합니다.</li></ol></div><div class="access-links"><a class="button primary" href="/cnotta.html?mode=live">Live 운영 열기 ↗</a><a class="button" href="/cnotta.html">Replay 캠퍼스 ↗</a><a class="button" href="/cnotta.html?view=line">단일 실행 화면 ↗</a><small>실제 GPU의 화풍·FPS는 미확인입니다.<br />현재 안내 페이지는 3D 렌더링 없이 동작합니다.</small></div></div>
         <details class="technical"><summary>서버가 꺼져 있을 때 실행 명령</summary><p>프로젝트 루트에서 실행합니다. 서버가 켜져 있으면 기존 URL을 사용합니다.</p><pre><code>CNOTTA_PYTHON=/userHome/userhome4/sehoon/miniconda3/envs/aria/bin/python \
 CNOTTA_NODE=/userHome/userhome4/sehoon/miniconda3/envs/aria/bin/node ./scripts/demo.sh
 # 기본 로컬 주소

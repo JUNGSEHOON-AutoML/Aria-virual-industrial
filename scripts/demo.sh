@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Saved replay only; never starts DES or inference.
+# Replay starts read-only. Explicit Live controls start a separate CPU-only DES.
 set -euo pipefail
 ROOT=$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)
 cd "$ROOT"
@@ -9,6 +9,7 @@ export CNOTTA_API_PORT=${CNOTTA_API_PORT:-5277} CNOTTA_WEB_PORT=${CNOTTA_WEB_POR
 export CNOTTA_PILOT=${CNOTTA_PILOT:-$ROOT/docs/validation/aria_dt_20261013_03/des_pilot30}
 export CNOTTA_P1=${CNOTTA_P1:-$ROOT/docs/validation/aria_dt_20261012_02/p1_verified}
 export PYTHONPATH="$ROOT${PYTHONPATH:+:$PYTHONPATH}" OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1
+export CUDA_VISIBLE_DEVICES=''
 LOG_DIR=${CNOTTA_LOG_DIR:-$ROOT/docs/autopilot/local/demo}
 mkdir -p "$LOG_DIR"
 [[ -d "$CNOTTA_PILOT/runs" && -d "$CNOTTA_P1" ]] || { echo 'CNOTTA_PILOT/CNOTTA_P1에 검증된 데이터 경로가 필요합니다.' >&2; exit 2; }

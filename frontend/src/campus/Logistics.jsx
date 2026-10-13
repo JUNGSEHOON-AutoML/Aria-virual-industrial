@@ -5,11 +5,11 @@ import T from '../brand/cnotta.tokens.json'
 import {compilePath,samplePath} from '../motion/core.mjs'
 import {allowed} from '../motion/registry'
 import {subscribeFrame} from '../motion/clock'
-export function useLogistics(replay,focus){
+export function useLogistics(replay,focus,enabled=true){
  const [data,setData]=useState(null),[state,setState]=useState(null),[error,setError]=useState(''),[policy,setPolicy]=useState('B')
  const site=replay.catalog?.sites.find(s=>s.id===(focus||'hall-bottle')),run=site?.lanes.find(l=>l.selector==='ccifps')?.run?.run_id
- useEffect(()=>{setData(null);setState(null);setError('');if(!run)return;const c=new AbortController();fetch(`/api/dt/runs/${run}/logistics?policy=${policy}`,{signal:c.signal}).then(r=>{if(!r.ok)throw Error('물류 계산 읽기 실패');return r.json()}).then(setData).catch(e=>{if(e.name!=='AbortError')setError(e.message)});return()=>c.abort()},[run,policy])
- useEffect(()=>{if(!run)return;let active=true,timer;const c=new AbortController();async function poll(){try{const r=await fetch(`/api/dt/runs/${run}/logistics/state?policy=${policy}&t=${replay.clock.read()}`,{signal:c.signal});if(!r.ok)throw Error('물류 상태 읽기 실패');const d=await r.json();if(active)setState(d)}catch(e){if(e.name!=='AbortError')setError(e.message)}if(active)timer=setTimeout(poll,1200)}poll();return()=>{active=false;c.abort();clearTimeout(timer)}},[run,policy,replay.clock])
+ useEffect(()=>{setData(null);setState(null);setError('');if(!enabled||!run)return;const c=new AbortController();fetch(`/api/dt/runs/${run}/logistics?policy=${policy}`,{signal:c.signal}).then(r=>{if(!r.ok)throw Error('물류 계산 읽기 실패');return r.json()}).then(setData).catch(e=>{if(e.name!=='AbortError')setError(e.message)});return()=>c.abort()},[run,policy,enabled])
+ useEffect(()=>{if(!enabled||!run)return;let active=true,timer;const c=new AbortController();async function poll(){try{const r=await fetch(`/api/dt/runs/${run}/logistics/state?policy=${policy}&t=${replay.clock.read()}`,{signal:c.signal});if(!r.ok)throw Error('물류 상태 읽기 실패');const d=await r.json();if(active)setState(d)}catch(e){if(e.name!=='AbortError')setError(e.message)}if(active)timer=setTimeout(poll,1200)}poll();return()=>{active=false;c.abort();clearTimeout(timer)}},[run,policy,replay.clock,enabled])
  return {data,state,error,policy,setPolicy,run,site:site?.name}
 }
 function Vehicle({kind,record,clock,motion,onSelect}){

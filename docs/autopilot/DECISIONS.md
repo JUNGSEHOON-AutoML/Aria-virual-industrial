@@ -62,3 +62,9 @@
 
 2026-10-13 | G2 | 박스 10개 부품·팔레트 6박스·트럭 4팔레트, 지게차/출하 트럭 각 2대 등 데모 가정값을 logistics.yaml에 assumed로 집중 | 미설정 계약을 검증 가능한 결정론 하류 모델로 활성화; 원 공정 피드백 금지 | 설정 파일 변경 후 보존/회귀 게이트 재실행
 2026-10-13 | G2 | 포장/팔레트/적재 미완료와 게이트 통과 전 화물 전량을 미출하 재공으로 보존; GT는 배차 완료 후 트럭 평가에서만 결합 | 부분 적재 누락·FN 경로 개입 방지 | 별도 버전 계산기로 변경하고 동일 원기록 비교
+
+2026-10-13 | L2 | 기존 FactoryService/InspectionAdapter/PatrolSupervisor/MaintenanceHarness를 별도 outputs/cnotta-live 세션으로 연결하고 demo.sh의 자식 API에만 CUDA_VISIBLE_DEVICES 비움 | 본 실험·저장 공정·기존 근거 보존, CPU 실검사 | Live 라우터를 분리하고 Replay 진입 유지
+2026-10-13 | L2 | 기존 INSPECT 단계에서 실제 추론을 한 번 수행하고 기존 DES 완료 콜백에는 동일 결과를 전달; 검사 중 서버 시계 정지·정확한 INSPECT 스냅샷 송신 | 판정 전에 놓지 않으면서 엔진·평가기 계산 코드 유지 | live.py 어댑터 연결 해제
+2026-10-13 | L2 | NG/HOLD 위치는 기존 place/return base 관절을 각각 2/-2배 변환하고 URDF 위치·속도 제한 검사; 7단계 시간 유지 | IN·OK·NG·HOLD가 서로 다른 위치; 판정 실패를 OK로 보이지 않게 함, assumed 설정 집중 | configs/live_ops.json 및 fixture를 함께 변경·회귀 검증
+2026-10-13 | L2 | 준비된 실제 BOTTLE CCIFPS bundle만 사용, 로컬 테스트 폴더에서 순환 입력 64장; 다른 클래스는 Replay로 명시 | 가짜 판정·무단 다운로드·GPU 점유 방지; 연구 5% 재샘플링 결과와 분리 | 추가 클래스의 검증된 bundle을 별도 설정·게이트로 연결
+2026-10-13 | L2 | 서버 WebSocket 상태를 ref/useFrame로 그리며 React 패널은 최대 4Hz; 사용하지 않는 Replay/물류 요청 중단 | 클라이언트 시계·난수·가짜 동작 없이 실제 상태 표시, CPU 부담 제한 | 모드별 데이터 훅 enabled 조건으로 조절

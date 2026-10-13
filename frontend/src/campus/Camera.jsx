@@ -5,12 +5,12 @@ import * as THREE from 'three'
 import {allowed} from '../motion/registry'
 import {layout,halls,hallSize,seededDecorations} from './layout'
 
-export default function Camera({focus,onFootprint}){
+export default function Camera({focus,closeup=false,onFootprint}){
  const ref=useRef(),{camera,size,gl,scene,invalidate}=useThree();const last=useRef(0)
  useEffect(()=>{const c=ref.current; c.setBoundary(new THREE.Box3(new THREE.Vector3(layout.bounds.min[0],0,layout.bounds.min[1]),new THREE.Vector3(layout.bounds.max[0],20,layout.bounds.max[1])));c.smoothTime=.16
-  const site=halls.find(s=>s.id===focus),target=site?[site.origin[0],.3,site.origin[1]]:layout.camera.target,offset=site?layout.camera.hall_offset:layout.camera.offset
+  const site=halls.find(s=>s.id===focus),target=closeup?[-4,1.1,0]:site?[site.origin[0],.3,site.origin[1]]:layout.camera.target,offset=closeup?[2.5,4,6]:site?layout.camera.hall_offset:layout.camera.offset
   if(!allowed('view.camera'))return
-  c.setLookAt(...target.map((v,i)=>v+offset[i]),...target,!!window.__campus?.cameraReady);c.zoomTo((site?layout.camera.hall_zoom:layout.camera.zoom)*Math.min(size.width/1440,size.height/900),!!window.__campus?.cameraReady);invalidate()
+  c.setLookAt(...target.map((v,i)=>v+offset[i]),...target,!!window.__campus?.cameraReady);c.zoomTo((closeup?210:site?layout.camera.hall_zoom:layout.camera.zoom)*Math.min(size.width/1440,size.height/900),!!window.__campus?.cameraReady);invalidate()
   const project=p=>{const v=new THREE.Vector3(...p).project(camera);return [(v.x+1)*size.width/2,(1-v.y)*size.height/2]}
   window.__campus={...window.__campus,scene,camera,controls:c,cameraReady:true,renderer:gl.getContext().getParameter(gl.getContext().getExtension('WEBGL_debug_renderer_info').UNMASKED_RENDERER_WEBGL),audit:()=>{
    scene.updateMatrixWorld(true);camera.updateMatrixWorld();const rectangles=[];let handlers=0
@@ -21,7 +21,7 @@ export default function Camera({focus,onFootprint}){
    }
    return {viewport:[size.width,size.height],panels:[...document.querySelectorAll('.campus-summary article')].map(e=>{const r=e.getBoundingClientRect();return [r.x,r.y,r.right,r.bottom]}),halls:rectangles,draw_calls:gl.info.render.calls,triangles:gl.info.render.triangles,decorative_handlers:handlers,foliage:seededDecorations(),focus,target:c.getTarget().toArray(),names:[...document.querySelectorAll('[data-hall-name]')].map(e=>{const r=e.getBoundingClientRect();return {id:e.dataset.hallName,text:e.textContent,bounds:[r.x,r.y,r.right,r.bottom]}})}
   }}
- },[focus,size.width,size.height,scene,camera,gl,invalidate])
+ },[focus,closeup,size.width,size.height,scene,camera,gl,invalidate])
  useFrame(state=>{if(state.clock.elapsedTime-last.current<.2)return;last.current=state.clock.elapsedTime;const ray=new THREE.Raycaster(),plane=new THREE.Plane(new THREE.Vector3(0,1,0),0),points=[];for(const [x,y] of [[-1,-1],[-1,1],[1,1],[1,-1]]){ray.setFromCamera(new THREE.Vector2(x,y),camera);const p=ray.ray.intersectPlane(plane,new THREE.Vector3());if(p)points.push([p.x,p.z])}const signature=JSON.stringify(points.map(p=>p.map(v=>Math.round(v*100)/100)));if(last.signature!==signature){last.signature=signature;onFootprint(points)}})
- return <CameraControls enabled={allowed('view.camera')} ref={ref} makeDefault minZoom={layout.camera.min_zoom} maxZoom={layout.camera.max_zoom} minPolarAngle={.35} maxPolarAngle={1.1} minAzimuthAngle={-.5} maxAzimuthAngle={.7}/>
+ return <CameraControls enabled={allowed('view.camera')} ref={ref} makeDefault minZoom={layout.camera.min_zoom} maxZoom={closeup?300:layout.camera.max_zoom} minPolarAngle={.35} maxPolarAngle={1.1} minAzimuthAngle={-.5} maxAzimuthAngle={.7}/>
 }
