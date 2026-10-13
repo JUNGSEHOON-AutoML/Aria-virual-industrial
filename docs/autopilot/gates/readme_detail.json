@@ -1,0 +1,52 @@
+{
+  "milestone": "M6 README execution guide and quantitative analysis",
+  "passed": true,
+  "source_code_commit": "4c7ff5d2d74a2eb3f75cecf171d0c33cc2e33ad1",
+  "checks": {
+    "aggregate_statistics_rows_recomputed": 7452,
+    "groups_30_seeds": 243,
+    "generated_tables_match_readme": 4,
+    "local_links_checked": 39,
+    "missing_links": [],
+    "rendered_tables": 11,
+    "rendered_images": 5,
+    "internal_anchors": 5,
+    "actual_screenshots": 4,
+    "screenshot_size": [
+      1440,
+      900
+    ],
+    "screenshot_all_9_kpis_t": 1800,
+    "browser_errors": 0,
+    "http_errors": 0,
+    "readme_local_preview_inspected": true,
+    "api_import": true,
+    "node_version": "20.20.2",
+    "demo_shell_syntax": true,
+    "backend_tests_rerun": false,
+    "DES_runs": 0,
+    "inferences": 0,
+    "GPU_used": false,
+    "runtime_code_changes": false
+  },
+  "evidence": {
+    "images": "docs/reports/readme_20261013/images.json",
+    "backend_previous": "docs/autopilot/gates/s3.json"
+  },
+  "publication": {
+    "branch": "main",
+    "source_branch": "codex/readme-publication",
+    "force_push": false,
+    "full_aggregate_csv_included": false,
+    "full_report_copy_included": false,
+    "local_analysis_commit": "70be5b5",
+    "note": "Documentation-only branch from prior main. Unpublished analysis commit is not an ancestor."
+  },
+  "statistics_source_sha256": {
+    "summary_ci95.csv": "01631e9065829bd949c560a6420b1fd080cacde4be0ff56f3c08ee94f5869338",
+    "paired_effects.csv": "24c62499cc1a44a7a0f5f103496192e9892d02f8495d539f05e93a5c87e4d9d8",
+    "completion.json": "74ade17f36960f0092222a3ddc41c3b06e453801091c22c26a42145a27f1497a",
+    "verification.json": "cc5cd884c87bf0886f2e383f45a96bc92f4a7832b621b12618c753a15cd898c2",
+    "REPORT.md": "9a58bd858821ae168160c1a168f0468ca854b5d8322914d24255de2dd9bf524a"
+  }
+}

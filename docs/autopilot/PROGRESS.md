@@ -62,3 +62,5 @@ README 공개 준비: S1–S3 캠퍼스·고정 카메라·TRANSFER·CPU Live를
 README 문서 게이트: `gates/readme.json` 통과. 상대 링크 25개·코드 블록 균형·기존 검증 수치 대조 완료. 실행 코드 변경이 없어 백엔드 테스트를 다시 실행하지 않았다.
 
 기본 브랜치 게시 준비: dt-cnotta의 README 및 구현 32개 커밋이 origin/main의 후속 이력임을 확인했다. 최신 사용자 요청에 따라 main에도 fast-forward로 게시하며 작업 브랜치는 dt-cnotta로 유지한다. `gates/main_publish.json`은 게시 전 검사이며, 성공 여부는 push 후 원격 해시로 별도 확인한다. 실행 코드 변경·실험/서버 조작·테스트 재실행 없음.
+
+README 상세화: 실행·원격 접속·Replay/Live 조작·문제 해결, 자체 1440×900 화면 4장과 CI 그래프, 탐지 혼동행렬·최종 처분/품질/인시·대응 비교·서비스 시간 민감도를 추가했다. gates/readme_detail.json: 7,452개 통계 행 재계산, 표/이미지/링크 및 API import·Node20 확인. 전체 집계 CSV 공개는 자동 검토에서 차단되어 공개 대상에서 제외하고 로컬 커밋 70be5b5에 보존했다. 공개 커밋은 기존 main에서 분기하며 이 로컬 커밋을 부모 이력에 포함하지 않는다. 본 실험·GPU·실행 코드 변경 없음; 223 passed/3 skipped·골든 diff 0은 S3 과거 기록이다. M5 UI 재검증은 대기다.

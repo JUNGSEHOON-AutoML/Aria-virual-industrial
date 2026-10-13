@@ -1,0 +1,62 @@
+{
+  "code_commit": "4c7ff5d2d74a2eb3f75cecf171d0c33cc2e33ad1",
+  "images": {
+    "cnotta-campus.png": {
+      "sha256": "bf387ddd6b8b020a7998becc2f6a696e3f6ab5a7a1d6a8a232685a5761d07dfb",
+      "bytes": 130142,
+      "viewport": [
+        1440,
+        900
+      ],
+      "sim_time_seconds": 1800,
+      "seed": 0,
+      "source": "Own CNOTTA web implementation, Chrome CPU SwiftShader",
+      "dataset_images_included": false,
+      "reference_frames_included": false
+    },
+    "cnotta-bottle.png": {
+      "sha256": "ac0a54b2a39fb7cb7151c370c6f588b6a48a56a077907aa8fdec5a020e0cda16",
+      "bytes": 229416,
+      "viewport": [
+        1440,
+        900
+      ],
+      "sim_time_seconds": 1800,
+      "seed": 0,
+      "source": "Own CNOTTA web implementation, Chrome CPU SwiftShader",
+      "dataset_images_included": false,
+      "reference_frames_included": false
+    },
+    "cnotta-screw.png": {
+      "sha256": "154590942b29efb8da9668a832d7ca85585c11655f31e76269c2c72e19c06095",
+      "bytes": 204757,
+      "viewport": [
+        1440,
+        900
+      ],
+      "sim_time_seconds": 1800,
+      "seed": 0,
+      "source": "Own CNOTTA web implementation, Chrome CPU SwiftShader",
+      "dataset_images_included": false,
+      "reference_frames_included": false
+    },
+    "cnotta-carpet.png": {
+      "sha256": "0a00742d7f72cd781f19397361fe51307bb4537ec9b722406fefecba4dda20bd",
+      "bytes": 207480,
+      "viewport": [
+        1440,
+        900
+      ],
+      "sim_time_seconds": 1800,
+      "seed": 0,
+      "source": "Own CNOTTA web implementation, Chrome CPU SwiftShader",
+      "dataset_images_included": false,
+      "reference_frames_included": false
+    }
+  },
+  "renderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+  "browser_errors": 0,
+  "http_errors": 0,
+  "all_9_kpis_at_1800": true,
+  "note": "No image compositing/retouching. UI values are seed 0 at t=1800, not the README 30-seed study mean. Chart generated separately from aggregate CSV."
+}
