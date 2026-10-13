@@ -26,3 +26,6 @@ from .vision import router as vision_router
 app.include_router(vision_router)
 from .campus import router as campus_router
 app.include_router(campus_router)
+
+from .logistics import router as logistics_router
+app.include_router(logistics_router)

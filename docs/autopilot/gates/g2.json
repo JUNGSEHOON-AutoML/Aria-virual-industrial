@@ -1,0 +1,29 @@
+{
+  "milestone": "G2",
+  "at": "2026-10-13T05:37:44.405531+00:00",
+  "pass": true,
+  "checks": {
+    "backend_tests": {
+      "passed": 191,
+      "skipped": 3
+    },
+    "logistics_tests": 10,
+    "golden_diff": 0,
+    "build": true,
+    "console_errors": [],
+    "http_errors": [],
+    "real_B_conservation": true,
+    "browser_playing_time": 1801.9667,
+    "source_engine_changed": false
+  },
+  "actual_gpu": "미확인",
+  "parameters": "configs/logistics.yaml; all authored assumed",
+  "notes": [
+    "Existing static yard props remain decorative; derived cargo has separate event IDs",
+    "CPU/TestClient tests run on host because sandbox socketpair hangs"
+  ],
+  "screenshots": [
+    "docs/autopilot/local/g2-logistics.png",
+    "docs/autopilot/local/g2-logistics-playing.png"
+  ]
+}

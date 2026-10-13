@@ -1,8 +1,6 @@
-# G2 input contract only. Not connected to a runtime yet.
-# null is deliberately unset, not a measured zero. G2 must reject unset values.
 schema_version: 1
-status: contract_only_pending_G2
-enabled: false
+status: G2_downstream_enabled
+enabled: true
 mode: downstream_only
 input_policy: inherit_selected_A_or_B
 write_back_to_des: false
@@ -13,82 +11,96 @@ shipment_boundary: campus_gate_exit
 reinspection: inherit_selected_posthoc_b_config
 parameters:
   parts_per_box:
-    value: null
+    value: 10
     unit: part/box
     tag: assumed
   boxes_per_pallet:
-    value: null
+    value: 6
     unit: box/pallet
     tag: assumed
   pallets_per_truck:
-    value: null
+    value: 4
     unit: pallet/truck
     tag: assumed
   packing_seconds_per_box:
-    value: null
+    value: 1
     unit: s/box
     tag: assumed
   palletizing_seconds_per_pallet:
-    value: null
+    value: 2
     unit: s/pallet
     tag: assumed
   forklift_count:
-    value: null
+    value: 2
     unit: vehicle
     tag: assumed
   forklift_speed_mps:
-    value: null
+    value: 2
     unit: m/s
     tag: assumed
   forklift_load_seconds:
-    value: null
+    value: 3
     unit: s/pallet
     tag: assumed
   forklift_unload_seconds:
-    value: null
+    value: 3
     unit: s/pallet
     tag: assumed
   outbound_truck_count:
-    value: null
+    value: 2
     unit: vehicle
     tag: assumed
   truck_speed_mps:
-    value: null
+    value: 3
     unit: m/s
     tag: assumed
   truck_load_seconds_per_pallet:
-    value: null
+    value: 4
     unit: s/pallet
     tag: assumed
   inbound_parts_per_pallet:
-    value: null
+    value: 100
     unit: part/pallet
     tag: assumed
   inbound_pallets_per_truck:
-    value: null
+    value: 4
     unit: pallet/truck
     tag: assumed
   initial_raw_material_pallets:
-    value: null
+    value: 4
     unit: pallet
     tag: assumed
   inbound_unload_seconds_per_pallet:
-    value: null
+    value: 5
     unit: s/pallet
     tag: assumed
   scrap_bin_capacity:
-    value: null
+    value: 20
     unit: part
     tag: assumed
   scrap_cart_count:
-    value: null
+    value: 1
     unit: vehicle
     tag: assumed
   scrap_cart_speed_mps:
-    value: null
+    value: 1
     unit: m/s
     tag: assumed
   scrap_collection_seconds:
-    value: null
+    value: 5
     unit: s/bin
+    tag: assumed
+motion:
+  radius: 2
+  turnRate: 1.5707963267948966
+  step: 0.05
+  tag: assumed
+  units: m, rad/s, s
+layout:
+  staging_offset:
+    value:
+    - 13
+    - 0
+    - 20
+    unit: m
     tag: assumed

@@ -51,6 +51,14 @@
       "clock": "view_transition",
       "enabled": true,
       "status": "connected_G1"
+    },
+    {
+      "id": "logistics.actors",
+      "kind": "event",
+      "source": "api:/api/dt/runs/{id}/logistics",
+      "clock": "sim",
+      "enabled": true,
+      "status": "connected_G2"
     }
   ],
   "ambient": [],
