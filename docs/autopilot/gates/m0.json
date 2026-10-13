@@ -1,0 +1,22 @@
+{
+  "milestone": "m0",
+  "pass": true,
+  "checks": {
+    "schema": {
+      "pass": true,
+      "tokens": 16
+    },
+    "hardcoded_colors": {
+      "pass": true,
+      "files": [],
+      "scope": "active CNOTTA UI, brand and logo; historical D0 excluded"
+    },
+    "branch": {
+      "pass": true
+    },
+    "files": {
+      "pass": true
+    }
+  },
+  "at": "2026-10-13T02:38:53.678522+00:00"
+}

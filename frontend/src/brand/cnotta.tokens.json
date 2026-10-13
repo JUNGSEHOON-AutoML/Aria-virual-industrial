@@ -1,0 +1,5 @@
+{
+  "brand": {"ink":"#10295E","primary":"#5E66F4","primary-100":"#EEF0FE","primary-200":"#DDE1FD"},
+  "surface":"#F7F8FC","floor":"#FFFFFF","line":"#E3E6F0","equip":"#FFFFFF","equip-frame":"#E9ECF5",
+  "cardboard":"#D8B48C","human":"#F2A33A","foliage":"#7CC8A4","ok":"#1FA971","ng":"#E5484D","hold":"#F5A524","text-2":"#5B6585"
+}
