@@ -1,0 +1,21 @@
+{
+  "milestone": "L2 access",
+  "passed": true,
+  "checks": {
+    "replay_lanes": 9,
+    "replay_time": 601.9334,
+    "running": {
+      "time": 2.246768854005495,
+      "status": "running",
+      "speed": "1",
+      "uiSpeed": "1",
+      "connected": true
+    },
+    "errors": [],
+    "http_errors": []
+  },
+  "cpu_build": true,
+  "url": "http://127.0.0.1:5278/cnotta.html?mode=live",
+  "actual_gpu": "미확인",
+  "note": "Cold saved-run loading exceeded initial 60 s test budget; cached retry verified all 9 lanes and mode transition"
+}

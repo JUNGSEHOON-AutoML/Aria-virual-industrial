@@ -143,7 +143,7 @@ python -m uvicorn server.app:app --host 127.0.0.1 --port 8230
 
 ## CNOTTA 검사 트윈 데모
 
-`dt-cnotta`의 `/cnotta.html`은 저장된 정책 A 타임라인과 B 사후 계산만 재생합니다. DES·추론·본 실험을 시작하지 않습니다. 임시 로고이며 실제 GPU 화풍·FPS는 미확인입니다.
+`dt-cnotta`의 `/cnotta.html`은 기본으로 정책 A 타임라인과 B 사후 계산을 재생합니다. `?mode=live`의 **Live 시작**은 기존 FactoryService·CCIFPS·M0609·순찰·수리 하네스를 연결한 별도 CPU 시연을 시작합니다. 본 실험은 제어하지 않습니다. 임시 로고이며 실제 GPU 화풍·FPS는 미확인입니다.
 
 격리 Python 환경의 기존 프로젝트 의존성과 FastAPI/Uvicorn, Node 20.19+ 및 `frontend/node_modules`가 필요합니다. 새 체크아웃에서는 `cd frontend && npm ci`로 프런트 로컬 의존성을 준비하세요. 설치된 격리 환경을 사용할 수 있으며 시스템 패키지를 변경하지 않습니다.
 
@@ -163,11 +163,11 @@ export CNOTTA_P1=/path/to/verified/p1_verified
 
 검증: `PYTHONPATH=. python -m tools.gates.m0`부터 `m6`까지. 브라우저 측정은 `python -m tools.gates.capture_browser`(Chrome·SwiftShader, 로컬 실행 URL 필요), 전체 테스트는 `python -m pytest tests -q`, 골든 검증은 `python tests/golden_trace.py --verify`입니다. DB 통합 테스트에는 `ARIA_TEST_POSTGRES_DSN`이 필요합니다. 게이트 JSON·진행·결정·제약은 `docs/autopilot/`, 최종 보고서는 `docs/autopilot/REPORT.md`에 있습니다. 녹화·브라우저 캡처는 커밋하지 않는 `docs/autopilot/local/`에 저장합니다.
 
-흐름 확인: 하단 **흐름 연출 (assumed)** 모드에서 **재생 → 1×**를 선택하세요. 저장된 대기·처리 시간에 부품 위치와 로봇 셀 회전을 맞춘 설명용 연출이며, 실제 이송 속도나 관절 측정값은 아닙니다. **기록 위치** 모드는 기존 원시 역 위치를 유지합니다. 검사·분류·출구 시각이 같은 원시 이벤트는 여전히 즉시 완료됩니다. 두 모드 모두 판정·재고 수·KPI·이벤트 시각은 동일하며 일시정지 시 움직임도 멈춥니다.
+흐름 확인: 하단 **흐름 연출 (assumed)** 모드에서 **재생 → 1×**를 선택하세요. 저장된 대기·처리 시간에 부품 위치를 맞춘 설명용 연출이며, 실제 이송 속도나 관절 측정값은 아닙니다. 출처 없는 기존 로봇 회전은 G1에서 비활성화했으며, Live의 관절 운동은 서버 운동학 상태만 따릅니다. **기록 위치** 모드는 기존 원시 역 위치를 유지합니다. 검사·분류·출구 시각이 같은 원시 이벤트는 여전히 즉시 완료됩니다. 두 모드 모두 판정·재고 수·KPI·이벤트 시각은 동일하며 일시정지 시 움직임도 멈춥니다.
 
 비전 분석: CNOTTA 상단의 **비전 분석**에서 bottle/screw/carpet 및 세 모델을 선택합니다. `docs/reports/vision_audit/<class>/REPORT.md`와 동일한 JSON을 읽으며 점수 분포·결함별 성능·오탐/미탐 갤러리·판정 차이·파일럿 공정 영향을 표시합니다. 원본 이미지와 파생 근거는 Git에서 제외되어 새 클론에서는 `CUDA_VISIBLE_DEVICES="" PYTHONPATH=. python -m tools.build_vision_audit`로 보존된 P1·데이터를 CPU 분석해야 합니다. 기존 EvidenceStore와 사후 계산을 재사용하며 재추론하지 않습니다. 전체 테스트·골든 검증 뒤 `python -m tools.gates.l1`로 CSV 재집계 및 브라우저 일치를 확인합니다.
 
-기본 화면은 3개 공장을 보여 주는 **캠퍼스**입니다. 지붕 또는 공장 간판·상단 홀 선택·미니맵을 누르면 홀 내부 3개 모델 레인이 열립니다. 아래 **재생**을 누르면 같은 sim 시계로 저장된 부품·NG·B 재검사 대기열을 재생합니다. 상단 **캠퍼스**로 돌아옵니다. 기존 단일 실행 화면은 `cnotta.html?view=line` 또는 **단일 실행** 링크로 엽니다. 운영(Live)은 다음 L2 단계이며 현재 화면은 저장 실행 Replay입니다.
+기본 화면은 3개 공장을 보여 주는 **캠퍼스**입니다. 지붕 또는 공장 간판·상단 홀 선택·미니맵을 누르면 홀 내부 3개 모델 레인이 열립니다. 아래 **재생**을 누르면 같은 sim 시계로 저장된 부품·NG·B 재검사 대기열을 재생합니다. 상단 **캠퍼스**로 돌아옵니다. 기존 단일 실행 화면은 `cnotta.html?view=line` 또는 **단일 실행** 링크로 엽니다. **Live 운영** 또는 `cnotta.html?mode=live`에서 BOTTLE CCIFPS 실검사·M0609 동작·실제 히트맵·고장 주입과 복구를 확인합니다. 첫 화면은 로봇 셀 확대이며 **공정 전체 보기**로 레인과 순찰을 볼 수 있습니다. 다른 클래스·모델은 Replay만 지원합니다. CPU 검사 동안 공정 시간은 대기하며 상태가 표시됩니다. 시작·일시정지 및 1/2/5/20× 속도는 서버에 적용됩니다. 원본 연구 데이터는 읽기 전용이고 시연 출력은 `outputs/cnotta-live/<session>/`에 저장됩니다.
 
 배치는 `frontend/src/campus/campus.layout.json`에서 변경합니다. 로고 경로는 `frontend/public/brand/identity.json` 한 곳에 정의되어 있습니다. 원본이 도착하면 같은 brand 폴더의 `cnotta-mark.svg`·`cnotta-wordmark.svg`를 윤곽선 SVG(fill path, viewBox 포함)로 교체하면 지붕의 두 입체 로고와 상단·입구 마크가 함께 반영됩니다. 교체 후 `tools/gates/capture_campus.py`와 `python -m tools.gates.m7`로 글자 높이·가독성을 재검증합니다.
 

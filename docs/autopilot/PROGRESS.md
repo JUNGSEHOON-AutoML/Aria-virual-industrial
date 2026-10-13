@@ -41,3 +41,5 @@ G1 구현: 재생 시계를 React 프레임 상태에서 분리, Worker 구간 �
 G2: deterministic 하류 계산·A/B 선택·출하 보존·GT 사후 트럭 평가·물류 화면 연결. 실제 B 실행 t=1800에서 OK 8,382 = 출하 2,640 + 미출하 5,742, 콘솔/HTTP 오류 0. 백엔드 191 passed·3 skipped·골든 diff 0, CPU 빌드 통과. 기존 엔진·평가기·사후 B 구현 변경 없음.
 
 L2: `/cnotta.html?mode=live`에 실제 BOTTLE CCIFPS CPU 검사·M0609 공식 CAD/운동학·WebSocket 공정·기존 순찰/수리 하네스 연결. Live/Replay 전환, 7단계 그리퍼·OK/NG/HOLD 위치, 실제 원본/히트맵, 고장 주입·현장 확인·복구 지원. 브라우저 49개 표본의 WIP 일치, CLOSED 33개 표본의 TCP 최대 차이 1.306e-7m, OPEN 후 들고 이동 0, 정지 위치 고정, 실검사 OK/NG 모두 확인. 고장 10 seed + 잡은 도중 고장 + HOLD 분기를 포함한 백엔드 207 passed·3 skipped, 골든 diff 0, CPU 빌드 통과. L3 작업 카탈로그/L4 4족은 아직 다음 단계; 위의 과거 “L2 미구현” 기록은 이 항목으로 대체한다. 실제 GPU 미확인.
+
+L2 접속 후속: gates/l2-access.json — Live→Replay 9레인 로드/재생→Live 전환·서버 배속/선택 표시 일치·콘솔/HTTP 오류 0. 최종 Live 시작 동작으로 서버를 가동해 두었다. 저장 원기록 최초 검증은 60초를 넘을 수 있으므로 완료 레인 로딩 표시를 보존하고 화면 검사 대기를 확장했다.

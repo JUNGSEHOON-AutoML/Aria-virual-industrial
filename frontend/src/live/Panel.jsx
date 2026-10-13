@@ -1,8 +1,9 @@
-import React,{useState} from 'react'
+import React,{useEffect,useState} from 'react'
 const stages=['MOVE_PICK','GRIP','MOVE_INSPECT','INSPECT','MOVE_PLACE','RELEASE','RETURN_HOME']
 const names=['집기 이동','그립','검사 이동','실제 검사','분류 이동','놓기','복귀']
 export function LivePanel({live,closeup,setCloseup,onSelect}){
  const [speed,setSpeed]=useState(1),s=live.snapshot,resource=s?.metrics.resources['AI-INSPECTION'],robot=resource?.robot,task=s?.patrol.maintenance[0]
+ useEffect(()=>{if(s?.speed)setSpeed(Number(s.speed))},[s?.speed,s?.session])
  const decisions=s?.live_events.filter(e=>e.type==='live_inspection_ready').slice(-6).reverse()||[]
  return <>
   <aside className="live-panel card" aria-label="Live 운영 상태"><div className="live-title"><span className={live.connected?'online-dot':'offline-dot'}/><b>LIVE OPERATIONS</b><span>CPU</span></div><h2>BOTTLE · CCIFPS</h2><p>실제 이미지 검사 · M0609 가상 제어</p>
