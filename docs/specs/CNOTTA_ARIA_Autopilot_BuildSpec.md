@@ -587,3 +587,66 @@ DES 출구 이벤트에서 **결정론적으로** 물류 이벤트를 만든다.
 - **항등식의 기준 시각:** 출하 수는 시각 t까지 캠퍼스 게이트를 지난 트럭의 적재 부품 수로 정의한다. 포장·팔레트·운반·적재 대기, 부분 박스/팔레트, 게이트 통과 전 트럭 적재분도 모두 미출하 재공에 포함해 `OK 출구 누계(t) = 출하 누계(t) + 미출하 재공(t)`를 검사한다. 부품 ID는 중복 없이 분할하며 전체 기간 끝에도 남은 수량을 누락하지 않는다. 트럭당 판정 구성이 전부 OK여도 GT 불량(FN)은 있을 수 있다.
 - **파라미터:** `configs/logistics.yaml` 한 곳에 두고 값마다 `tag: assumed`와 단위를 기록한다. 실제 측정값으로 표현하지 않는다. 사후 B의 재검사 인원·작업 시간은 선택한 B 결과/config를 그대로 참조하고 별도 물류 기본값으로 덮어쓰지 않는다. 미설정 값은 G2 계산 시작 전에 거부하며 임의 기본값을 코드에 숨기지 않는다.
 - **도입 상태:** 이번 변경은 첨부 병합·순서/예산/게이트 등록과 설정 계약 준비다. `ambient_motion.json` 등록 후보와 `logistics.yaml` 값은 초기 비활성/미설정이며 런타임에 아직 연결하지 않았다. G1–G3의 구현 완료나 게이트 통과로 표시하지 않는다. G1 첫 작업은 등록 강제·기존 연출 정리이며 G2 계산은 설정 확정·검증 후 활성화한다. 본 실험이 끝나기 전에는 CPU만 사용하고 본 실험 프로세스·GPU에 개입하지 않는다.
+
+
+# 13. Omniverse 연동 — 독립 O0/O1 및 조건부 O2/O3
+
+첨부 `CNOTTA_ARIA_Omniverse_Addendum.md`의 13.0–13.5 원문을 아래에 보존한다. 웹 대시보드가 주 제품이며 웹 마일스톤 순서는 변경하지 않는다. 이번 승인 범위는 O0 읽기 전용 점검과 O1 CPU USD 생성뿐이다.
+
+## 13.0 결론
+
+- **O0 사전 점검과 O1 USD 생성은 지금 한다.** GPU·드라이버·시스템 변경이 없다.
+- **O2(Kit 앱)와 O3(Replicator)는 O0 결과가 조건을 모두 통과하고, 본 실험이 끝난 뒤에만 한다.** 조건을 못 넘으면 서버 관리자에게 보낼 요청서만 만들고 멈춘다.
+- 근거: Omniverse 최소 사양은 RTX 3070, RAM 16GB, 저장 공간 250GB이고, Linux 검증 드라이버는 570.169, 580.95.05, 595.58.03이다(Omniverse Technical Requirements, 2026). 2026년 5월부터 개발·상용 모두 무료다.
+
+## 13.1 O0 — 사전 점검 (읽기 전용)
+
+`tools/omniverse_preflight.py`가 아래를 읽기만 하고 `docs/autopilot/omniverse_preflight.json`에 쓴다. 아무것도 설치·변경하지 않는다.
+
+| 항목 | 확인 방법 | 통과 조건 |
+|---|---|---|
+| 드라이버 | `nvidia-smi --query-gpu=driver_version` | 570.169 / 580.95.05 / 595.58.03 중 하나(또는 그 이상이면 "미검증"으로 표시) |
+| GPU | 모델, UUID, 사용 중 프로세스, 여유 메모리 | 본 실험이 쓰지 않는 RTX GPU 1장 이상 |
+| 저장 공간 | Kit 설치 예정 경로의 여유 공간 | 250GB 이상(최소 사양). 지난 측정에서 저장소 파일시스템 여유가 약 29GB였으므로 다른 볼륨 후보를 함께 조사 |
+| RAM | `free -g` | 16GB 이상 여유 |
+| 디스플레이 | `DISPLAY` 유무 | 없으면 headless + 스트리밍 경로 사용 |
+| OS | `/etc/os-release` | Ubuntu 22.04 또는 24.04 |
+
+하나라도 실패하면 `docs/autopilot/omniverse_admin_request.md`를 만든다: 현재 값, 필요한 값, 영향(공용 서버 드라이버 업그레이드는 다른 사용자 CUDA 작업에 영향), 제안 일정(본 실험 종료 후). **드라이버 업그레이드는 Codex가 하지 않는다**(AGENTS.override.md 정지 조건 5).
+
+## 13.2 O1 — 공장 정의 → OpenUSD (지금, CPU)
+
+- `usd-core`(pip, 프로젝트 격리 환경)로 `campus.layout.json` + CAD `dims.json` + `cnotta.tokens.json`에서 `exports/usd/cnotta_campus.usda`를 생성한다.
+- 계층: `/World/Campus/{Hall_bottle,Hall_screw,Hall_carpet,RobotCell,Yard}/{Lane_*,Booth,Diverter,Reinspection,...}`. 단위 m(`metersPerUnit=1`), Y-up.
+- CAD STEP이 있으면 USD 참조로 연결하고, 없으면 같은 치수의 단순 형상(Cube/Cylinder)으로 둔다. M0609는 공식 URDF를 USD로 변환할 수 있는 도구가 확인될 때만 포함하고, 아니면 자리 표시 형상.
+- 재질은 UsdPreviewSurface로 CNOTTA 토큰 색을 그대로 쓴다. 지붕 엠블럼은 로고 SVG 돌출 메시를 같이 내보낸다.
+- 웹 장면과 USD 장면이 같은 정의 파일에서 나오도록 한다. 좌표를 따로 손으로 맞추지 않는다.
+
+게이트: `usdchecker` 통과, USD 안의 사이트·레인 개수와 위치 = `campus.layout.json`, 단위·축 메타데이터 존재, 웹 장면 바운딩박스와 USD 바운딩박스 차이 ≤ 1cm.
+
+## 13.3 O2 — Kit 앱: 같은 이벤트로 움직이는 고품질 뷰 (조건부)
+
+O0 통과 + 본 실험 종료 후에만.
+
+- NVIDIA 공식 `kit-app-template`에서 headless 스트리밍 앱을 만든다. 서버에서 렌더링하고, 사용자는 포트 포워딩한 브라우저로 본다.
+- 앱 확장 하나가 대시보드와 같은 WebSocket·timeline API를 구독해 USD 프림의 위치를 갱신한다(부품·트럭·지게차·로봇). **Omniverse 쪽에 별도 공정 로직을 만들지 않는다.** 시계와 판정은 기존 백엔드가 가진다.
+- 용도: 시연 영상 녹화(사진 같은 렌더링), 투자·면접용 하이라이트. 수치 패널은 웹 대시보드가 담당한다.
+
+게이트: 같은 sim 시각에 웹과 Kit의 부품 위치 차이 ≤ 2cm, 스트리밍 30초 녹화, GPU 메모리 사용량 기록, 본 실험 GPU 미사용 확인.
+
+## 13.4 O3 — Replicator 합성 검사 데이터 (조건부, 연구 트랙)
+
+O2 이후. 조명·카메라 각도·배경을 바꾼 합성 이미지로 CCIFPS 오탐이 어떻게 변하는지 보는 연구용이다. 합성 결함을 만들 경우 GT 마스크를 같이 생성한다. 기존 MVTec 결과와 섞지 않고 별도 실험으로 보고한다. 범위는 별도 명세로 정한다.
+
+## 13.5 하지 않는 것
+
+- 드라이버·CUDA·시스템 패키지 변경
+- 본 실험 GPU 사용
+- 저장 공간이 부족한 볼륨에 Kit·캐시 설치
+- Omniverse 안에 별도 공정 로직이나 수치 만들기
+
+## 13.6 적용 기록과 경계
+
+- O0 실패는 O2/O3를 막으며, 13.0에 명시된 독립 CPU O1은 계속한다. 더 높은 드라이버 버전은 미검증이며 자동 통과하지 않는다. GPU 조회 실패도 UNKNOWN으로 차단한다. 유휴 GPU 관측은 실험 종료나 사용 승인이 아니다.
+- 2026-10-13 [NVIDIA 기술 요구사항](https://docs.omniverse.nvidia.com/dev-guide/latest/common/technical-requirements.html)에서 Ampere GeForce 드라이버 목록 및 Kit OS·최소 사양을 확인했다. 첨부의 무료/상용 라이선스 주장은 원문 출처로 보존한 것으로, 이번 작업에서 검증·승인한 라이선스 판단은 아니다. Kit/Replicator 다운로드는 하지 않는다.
+- O1 설치 위치는 프로젝트 `venv/omniverse/`이며 기존 Python 환경과 시스템은 수정하지 않는다. 웹과 동일한 정적 prefab의 실제 메시·변환·SVG 돌출을 CPU로 추출한다. Replay/Live 시계·부품·DOM 패널은 정적 USD 범위 밖이다.

@@ -68,3 +68,6 @@
 2026-10-13 | L2 | NG/HOLD 위치는 기존 place/return base 관절을 각각 2/-2배 변환하고 URDF 위치·속도 제한 검사; 7단계 시간 유지 | IN·OK·NG·HOLD가 서로 다른 위치; 판정 실패를 OK로 보이지 않게 함, assumed 설정 집중 | configs/live_ops.json 및 fixture를 함께 변경·회귀 검증
 2026-10-13 | L2 | 준비된 실제 BOTTLE CCIFPS bundle만 사용, 로컬 테스트 폴더에서 순환 입력 64장; 다른 클래스는 Replay로 명시 | 가짜 판정·무단 다운로드·GPU 점유 방지; 연구 5% 재샘플링 결과와 분리 | 추가 클래스의 검증된 bundle을 별도 설정·게이트로 연결
 2026-10-13 | L2 | 서버 WebSocket 상태를 ref/useFrame로 그리며 React 패널은 최대 4Hz; 사용하지 않는 Replay/물류 요청 중단 | 클라이언트 시계·난수·가짜 동작 없이 실제 상태 표시, CPU 부담 제한 | 모드별 데이터 훅 enabled 조건으로 조절
+
+2026-10-13 | O0 | 조회 실패/미검증 드라이버는 차단, 컴퓨트뿐 아니라 그래픽 프로세스도 있는 GPU는 미예약; RAM은 MemAvailable 16 GiB, 디스크는 250 GB 기준 | 공용 GPU 비개입 및 단위 명시; O0 실패는 O2/O3만 차단 | 관리자 할당 후 읽기 전용 재점검
+2026-10-13 | O1 | 프로젝트 venv/omniverse에만 usd-core 26.8 설치, 별도 CPU 정적 export 사용 | 기존 실험 Python·GPU·시계에 영향 없이 13.0의 독립 O1 실행 | 격리 환경/도구를 archive로 이동해 비활성화

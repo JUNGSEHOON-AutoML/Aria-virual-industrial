@@ -1,0 +1,22 @@
+{
+  "milestone": "O0",
+  "audit_complete": true,
+  "pass": false,
+  "status": "blocked_environment",
+  "environment_checks": {
+    "driver": false,
+    "unused_rtx": false,
+    "kit_storage": false,
+    "ram": true,
+    "os": false,
+    "display_route": true
+  },
+  "report": "docs/autopilot/omniverse_preflight.json",
+  "admin_request": "docs/autopilot/omniverse_admin_request.md",
+  "unit_tests": {
+    "passed": 6
+  },
+  "system_changes": false,
+  "gpu_context_created": false,
+  "next": "O1 CPU independent; O2/O3 blocked"
+}
