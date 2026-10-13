@@ -3,7 +3,7 @@
 마일스톤 | 상태 | 게이트 | 다음 작업
 --- | --- | --- | ---
 M0 | 완료 | gates/m0.json | 통과; M1 진행
-M1 | 대기 | gates/m1.json | 장면 리브랜드
+M1 | 자동 게이트 통과 · 실제 GPU 미확인 | gates/m1.json | M2 진행; 화풍 피드백은 토큰 범위
 M2 | 대기 | gates/m2.json | 저장 데이터 재생
 M3 | 대기 | gates/m3.json | 선택·검색
 M4 | 대기 | gates/m4.json | 평가기 KPI·랙

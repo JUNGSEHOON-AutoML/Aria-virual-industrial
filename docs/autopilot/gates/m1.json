@@ -1,0 +1,62 @@
+{
+  "milestone": "m1",
+  "pass": true,
+  "checks": {
+    "surface_pixels": {
+      "pass": true,
+      "samples": {
+        "surface": {
+          "xy": [
+            1376,
+            805
+          ],
+          "rgb": [
+            247,
+            248,
+            252
+          ],
+          "max_error": 0,
+          "pass": true
+        },
+        "floor": {
+          "xy": [
+            570,
+            429
+          ],
+          "rgb": [
+            251,
+            251,
+            251
+          ],
+          "max_error": 4,
+          "pass": true
+        }
+      }
+    },
+    "lane_rack_overlap": {
+      "pass": true,
+      "pairs": []
+    },
+    "ground_contact": {
+      "pass": true,
+      "violations": [],
+      "scope": "assembly AABB, tolerance .02m"
+    },
+    "viewport_fill": {
+      "pass": true,
+      "ratio": 0.8726205314124462,
+      "metric": "clipped projected process-area bounding rectangle / viewport"
+    },
+    "primary_area": {
+      "pass": true,
+      "ratio": 0.048456018518518516,
+      "metric": "primary hue family including shaded pixels (HSV H 155..183, S>=70,V>=70)"
+    },
+    "console": {
+      "pass": true,
+      "errors": []
+    }
+  },
+  "at": "2026-10-13T02:46:26.174954+00:00",
+  "hardware_GPU_verified": false
+}

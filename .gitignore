@@ -94,3 +94,6 @@ config/latency_profiles/aria_dt_cap_seed0_*/
 
 # Private third-party reference frames and comparisons (never publish).
 /docs/specs/assets/p6_ref/
+
+# Local autopilot captures and recordings
+/docs/autopilot/local/
