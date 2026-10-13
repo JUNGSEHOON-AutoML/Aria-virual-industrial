@@ -3,3 +3,5 @@
 header>img,.wall-mark{background:var(--brand-ink);mask:url(/brand/cnotta-mark.svg) center/contain no-repeat;object-position:-999px}
 
 .replay-bar{position:absolute;z-index:10;bottom:18px;left:50%;transform:translateX(-50%);display:flex;gap:10px;align-items:center;font-size:12px}.replay-bar input{width:240px}.replay-bar output{width:85px}select{max-width:290px;padding:7px;border:1px solid var(--line);background:var(--floor);color:var(--brand-ink);border-radius:10px}.error{position:absolute;top:90px;left:40%;z-index:20}
+
+.search{display:flex;gap:4px;position:relative}.search input{width:150px;border:1px solid var(--line);border-radius:16px;padding:7px}.search output{position:absolute;top:40px;background:var(--floor)}.detail{position:absolute;right:20px;top:82px;width:238px;font-size:12px}.detail h3{overflow-wrap:anywhere;margin:4px 0 14px}.close{float:right;padding:2px 8px}dt{color:var(--text-2);margin-top:9px}dd{margin:4px 0;overflow-wrap:anywhere}header select{max-width:270px}

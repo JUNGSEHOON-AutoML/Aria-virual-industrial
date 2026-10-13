@@ -40,6 +40,13 @@ async def main():
     samples.append(await js('({time:window.__cnotta.time,ids:window.__cnotta.activeIds,expected:window.__cnotta.timeline.parts.filter(p=>p.born<=window.__cnotta.time&&(p.exit_time==null||window.__cnotta.time<p.exit_time)).map(p=>p.part_id)})'));await asyncio.sleep(.2)
    await js('window.__cnotta.setPlaying(false)')
    report['replay']['ten_x_samples']=samples;report['replay']['run_id']=await js('window.__cnotta.runId')
+   report['interaction']=await js("""(async()=>{
+    const c=window.__cnotta,p=c.timeline.parts.find(p=>p.inspection_time!=null&&p.score!=null);c.setTime(p.inspection_time+.01);
+    const input=document.querySelector('.search input');Object.getOwnPropertyDescriptor(HTMLInputElement.prototype,'value').set.call(input,p.part_id);input.dispatchEvent(new Event('input',{bubbles:true}));await new Promise(r=>setTimeout(r,150));input.form.dispatchEvent(new Event('submit',{bubbles:true,cancelable:true}));await new Promise(r=>setTimeout(r,1600));
+    let handlers=0,decorations=0;c.scene.traverse(o=>{if(o.name.startsWith('decorative-')){decorations++;o.traverse(n=>{handlers+=Object.keys(n.__r3f?.handlers||{}).length});let n=o.parent;while(n){handlers+=Object.keys(n.__r3f?.handlers||{}).length;n=n.parent}}});
+    return {part_id:p.part_id,selected:window.__cnotta.selected?.part_id,score:Number(document.querySelector('[data-score]')?.dataset.score),verdict:document.querySelector('[data-verdict]')?.dataset.verdict,decorations,decoration_handlers:handlers,markers:c.scene.children.flatMap(()=>[]).length,run_id:c.runId,target:c.controls.getTarget().toArray()};
+   })()""")
+   shot=await cmd('Page.captureScreenshot',{'format':'png'});(OUT/'m3.png').write_bytes(base64.b64decode(shot['data']))
    report['errors']=[e for e in events if e.get('method')=='Runtime.exceptionThrown']
    report['http_errors']=[e['params']['response']['url'] for e in events if e.get('method')=='Network.responseReceived' and e['params']['response']['status']>=400]
  finally:

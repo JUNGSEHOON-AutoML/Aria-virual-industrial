@@ -69,9 +69,9 @@ export function Scene({children}) {return <group name="d0-static-scene">
  <group name="process-area"><RobotCell/><Cabinet x={-1.7} z={-5.4}/><Pallet x={-9.5} z={-4.5} stack={2}/>
  <Belt x={-7} length={6}/><Booth/><Belt x={-2.2}/>
  <Grounded name="diverter" x={-.7}><Belt x={0} length={diverter.length_mm/1000} width={diverter.width_mm/1000}/><Box at={[0,.74,0]} size={[.7,.08,.08]} color={C.blue} rotation={[0,-.4,0]}/></Grounded>
- <Belt x={.1} z={0} length={3.6} rotation={Math.PI/2}/>{[-1.8,0,1.8].map((z,i)=><group key={z}><Belt x={3.3} z={z} length={6}/><Carton x={3+i*.5} z={z} bottom={.7} size={.25}/></group>)}
+ <Belt x={.1} z={0} length={3.6} rotation={Math.PI/2}/>{[-1.8,0,1.8].map((z,i)=><group key={z}><Belt x={3.3} z={z} length={6}/></group>)}
  <Label at={[-8,1.8,0]}>INFEED</Label><Label at={[-.7,1.8,0]}>SORT</Label>
- {[-9,-7.2,-5.5].map(x=><Carton key={x} x={x} bottom={.7} size={.25}/>)}<Pallet x={-10} z={1.7} stack={2}/>
+ <Pallet x={-10} z={1.7} stack={2}/>
  <Pallet x={8} z={-1.8} stack={2}/><Pallet x={9.7} z={-1.8} stack={1}/><Pallet x={8.5} z={.2} stack={1}/>
  <Fence x={7.5} z={2.5} length={2}/><Fence x={8.5} z={1.65} length={1.7} rotation={Math.PI/2}/><Box at={[7.5,.04,1.7]} size={[2,.08,1.6]} color={C.line}/><Carton x={7.4} z={1.7} bottom={.08}/>
  <Belt x={6.6} z={2.2} length={4.4} rotation={Math.PI/2}/><Reinspection/><Pallet x={-7.5} z={5.1} stack={2}/><Pallet x={-9.2} z={5.1} stack={1}/><Worker x={-9} z={2.9}/>

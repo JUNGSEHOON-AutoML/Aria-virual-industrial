@@ -1,0 +1,26 @@
+{
+  "milestone": "m3",
+  "pass": true,
+  "checks": {
+    "prediction_card": {
+      "pass": true,
+      "screen_score": 0.07187867164611816,
+      "raw_score": 0.07187867164611816,
+      "verdict": "OK"
+    },
+    "search_selection": {
+      "pass": true,
+      "part": "P0000001"
+    },
+    "decorative_clicks": {
+      "pass": true,
+      "objects": 9,
+      "handlers_in_subtrees_and_ancestors": 0
+    },
+    "console": {
+      "pass": true,
+      "errors": []
+    }
+  },
+  "at": "2026-10-13T02:59:05.560503+00:00"
+}
