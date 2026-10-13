@@ -1,0 +1,18 @@
+{
+  "scope": "Defect3D specification integration only; no V1–V3 implementation gate",
+  "pass": true,
+  "checks": {
+    "attachment_11_0_to_11_4_preserved": true,
+    "milestone_order_L1_V1_V2_V3_L2": true,
+    "budgets_hours": {
+      "V1": 4,
+      "V2": 4,
+      "V3": 3
+    },
+    "direct_request_precedence_section": "11.5"
+  },
+  "model_downloads": 0,
+  "license_reviews_performed": false,
+  "implementation_started": false,
+  "date": "2026-10-13 Asia/Seoul"
+}
