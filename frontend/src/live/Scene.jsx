@@ -6,12 +6,14 @@ import {Html} from '@react-three/drei'
 import * as THREE from 'three'
 import T from '../brand/cnotta.tokens.json'
 import {allowed} from '../motion/registry'
+import {LiveTransfer} from '../stations/Transfers'
 import {Boxes} from '../campus/Geometry'
 
 export const ROBOT_BASE=[-4.2,.99,-.35]
 const visuals=[[0,'MF0609_0_0.dae'],[1,'MF0609_1_0.dae'],[2,'MF0609_2_0.dae'],[2,'MF0609_2_1.dae'],[2,'MF0609_2_2.dae'],[3,'MF0609_3_0.dae'],[4,'MF0609_4_0.dae'],[4,'MF0609_4_1.dae'],[5,'MF0609_5_0.dae'],[6,'MF0609_6_0.dae']]
 const robotState=s=>s?.metrics.resources['AI-INSPECTION']?.robot
 export const sceneTCP=point=>[ROBOT_BASE[0]+point[0],ROBOT_BASE[1]+point[2],ROBOT_BASE[2]-point[1]]
+// INVALID prior equipment-specific CAD visual; S3 uses generic TRANSFER links.
 function CADArm({store}){
  const models=useLoader(ColladaLoader,visuals.map(([,file])=>`/robots/doosan_m0609/${file}`))
  const frames=useRef([]),tool=useRef(),fingers=useRef([])
@@ -38,7 +40,8 @@ function Fixtures({store}){
   <group position={sceneTCP(positions.inspect)}><mesh position={[0,.13,-.17]}><boxGeometry args={[.18,.14,.14]}/><meshStandardMaterial color={T.brand.ink}/></mesh><mesh position={[0,.13,-.08]} rotation={[Math.PI/2,0,0]}><cylinderGeometry args={[.035,.035,.035,12]}/><meshStandardMaterial color={T.brand.primary}/></mesh></group>
  </group>
 }
-function Parts({store,onSelect}){
+// INVALID legacy inspection-arm carrying visualization, retained for provenance.
+function LegacyInspectionParts({store,onSelect}){
  const mesh=useRef(),ids=useRef([]),helper=useMemo(()=>new THREE.Object3D(),[]),color=useMemo(()=>new THREE.Color(),[])
  const geometry=useMemo(()=>{const body=new THREE.CylinderGeometry(.043,.045,.12,12),neck=new THREE.CylinderGeometry(.019,.027,.04,12);neck.translate(0,.08,0);const result=mergeGeometries([body,neck]);body.dispose();neck.dispose();return result},[])
  useEffect(()=>()=>geometry.dispose(),[geometry])
@@ -65,6 +68,29 @@ function Parts({store,onSelect}){
  })
  return <instancedMesh name="live-parts" ref={mesh} args={[geometry,undefined,128]} frustumCulled={false} onClick={e=>{e.stopPropagation();onSelect(ids.current[e.instanceId])}}><meshStandardMaterial roughness={.3} metalness={.08}/></instancedMesh>
 }
+function FixedCameraParts({store,onSelect}){
+ const mesh=useRef(),ids=useRef([]),helper=useMemo(()=>new THREE.Object3D(),[]),color=useMemo(()=>new THREE.Color(),[])
+ const geometry=useMemo(()=>{const body=new THREE.CylinderGeometry(.043,.045,.12,12),neck=new THREE.CylinderGeometry(.019,.027,.04,12);neck.translate(0,.08,0);const result=mergeGeometries([body,neck]);body.dispose();neck.dispose();return result},[])
+ useEffect(()=>()=>geometry.dispose(),[geometry])
+ useFrame(()=>{
+  const s=store.current.snapshot;if(!s||!mesh.current||!allowed('live.parts'))return
+  const components=Object.fromEntries(s.model.components.map(c=>[c.id,c])),counts={},audit=[]
+  s.parts.forEach((part,i)=>{
+   const c=components[part.component],rank=counts[c.id]||0;counts[c.id]=rank+1
+   let p=[c.position[0],.83,c.position[2]+rank*.16],tcp=null
+   if(part.robot){p=[-3.6,.85,0]}else if(c.kind==='Conveyor'){
+    const f=part.due>part.entered?THREE.MathUtils.clamp((s.time-part.entered)/(part.due-part.entered),0,1):1
+    p[0]+=(f-.5)*c.length
+   }else p[0]-=rank*.15
+   helper.position.fromArray(p);helper.rotation.set(0,0,0);helper.scale.set(1,1,1);helper.updateMatrix();mesh.current.setMatrixAt(i,helper.matrix)
+   color.set(part.verdict==='NG'?T.ng:part.verdict==='OK'?T.ok:T.cardboard);mesh.current.setColorAt(i,color)
+   audit.push({id:part.id,position:p,tcp,gripper:null,attached:false,stage:part.robot?'FIXED_CAMERA':part.phase,verdict:part.verdict})
+  })
+  ids.current=s.parts;mesh.current.count=s.parts.length;mesh.current.instanceMatrix.needsUpdate=true;if(mesh.current.instanceColor)mesh.current.instanceColor.needsUpdate=true
+  window.__live={...window.__live,render:{time:s.time,parts:audit,wip:s.metrics.wip,sequence:s.sequence,robot:robotState(s)}}
+ })
+ return <instancedMesh name="live-parts" ref={mesh} args={[geometry,undefined,128]} frustumCulled={false} onClick={e=>{e.stopPropagation();onSelect(ids.current[e.instanceId])}}><meshStandardMaterial roughness={.3} metalness={.08}/></instancedMesh>
+}
 function Patrol({store,index}){
  const root=useRef(),legs=useRef([]),arms=useRef([]),label=useRef()
  useFrame(()=>{
@@ -85,5 +111,5 @@ export function LiveScene({live,onSelect}){
  const {invalidate}=useThree()
  useEffect(()=>{live.store.current.listeners.add(invalidate);return()=>live.store.current.listeners.delete(invalidate)},[live.store,invalidate])
  if(!live.snapshot)return null
- return <group name="live-ops"><Suspense fallback={null}><CADArm store={live.store}/></Suspense><Fixtures store={live.store}/><Parts store={live.store} onSelect={onSelect}/>{[0,1].map(i=><Patrol key={i} index={i} store={live.store}/>)}</group>
+ return <group name="live-ops"><LiveTransfer live={live}/><FixedCameraParts store={live.store} onSelect={onSelect}/>{[0,1].map(i=><Patrol key={i} index={i} store={live.store}/>)}</group>
 }

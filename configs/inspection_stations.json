@@ -1,0 +1,64 @@
+{
+  "version": 1,
+  "mode": "downstream_only",
+  "write_back_to_des": false,
+  "write_back_to_posthoc_b": false,
+  "geometry_tag": "assumed",
+  "camera": {
+    "direction": [
+      0,
+      -1,
+      0
+    ],
+    "dataset_view": "top_down",
+    "fov_deg": 45,
+    "height_m": 2.4,
+    "side_camera_enabled": false
+  },
+  "motion": {
+    "pulse_seconds": 0.12,
+    "texture_period_m": 0.2,
+    "roller_radius_m": 0.08,
+    "tag": "assumed"
+  },
+  "bottle": {
+    "kind": "vision_tunnel",
+    "trigger": [
+      -3.6,
+      0.85,
+      0
+    ],
+    "eject": [
+      -0.7,
+      0.85,
+      0
+    ],
+    "product_diameter_m": 0.08
+  },
+  "screw": {
+    "kind": "glass_disc",
+    "center": [
+      -2.5,
+      0.85,
+      0
+    ],
+    "radius_m": 1.6,
+    "trigger_angle": 3.141592653589793,
+    "nozzle_angle": 0,
+    "product_diameter_m": 0.018
+  },
+  "carpet": {
+    "kind": "roll_to_roll",
+    "trigger": [
+      -3.6,
+      1.38,
+      0
+    ],
+    "marker": [
+      -0.7,
+      1.38,
+      0
+    ],
+    "width_m": 1.2
+  }
+}

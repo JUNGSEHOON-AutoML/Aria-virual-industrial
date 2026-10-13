@@ -73,8 +73,8 @@
       "kind": "event",
       "source": "ws:/api/live/ws#metrics.resources.AI-INSPECTION.robot",
       "clock": "live_des",
-      "enabled": true,
-      "status": "connected_L2"
+      "enabled": false,
+      "status": "INVALID_inspection_arm_visualization_replaced_by_TRANSFER"
     },
     {
       "id": "live.patrol",
@@ -91,6 +91,46 @@
       "clock": "live_des",
       "enabled": true,
       "status": "connected_L2"
+    },
+    {
+      "id": "stations.equipment",
+      "kind": "event",
+      "source": "api:/api/dt/runs/{id}/stations#equipment,parts",
+      "clock": "sim",
+      "enabled": true,
+      "status": "connected_S1_S2"
+    },
+    {
+      "id": "stations.transfer",
+      "kind": "event",
+      "source": "api:/api/dt/runs/{id}/stations#transfer_tasks",
+      "clock": "sim",
+      "enabled": true,
+      "status": "connected_S3"
+    },
+    {
+      "id": "stations.live_equipment",
+      "kind": "event",
+      "source": "ws:/api/live/ws#station",
+      "clock": "live_des",
+      "enabled": true,
+      "status": "connected_S1_S3"
+    },
+    {
+      "id": "stations.live_transfer",
+      "kind": "event",
+      "source": "ws:/api/live/ws#station",
+      "clock": "live_des",
+      "enabled": true,
+      "status": "connected_S1_S3"
+    },
+    {
+      "id": "stations.products",
+      "kind": "event",
+      "source": "api:/api/dt/runs/{id}/stations#parts,products,transfer_tasks",
+      "clock": "sim",
+      "enabled": true,
+      "status": "connected_S2_S3"
     }
   ],
   "ambient": [],

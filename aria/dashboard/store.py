@@ -71,7 +71,7 @@ def load(run_id):
    if start is not None:delta[start]=delta.get(start,0)-1
  count=0;queue=[{'time':0.,'count':0}]
  for t,d in sorted(delta.items()):count+=d;queue.append({'time':t,'count':count})
- return {'config':cfg,'parts':parts,'public':public,'gt':gt,'transitions':transitions,'queue':queue,'complete_hash':row['complete_hash']}
+ return {'config':cfg,'parts':parts,'public':public,'gt':gt,'transitions':transitions,'queue':queue,'complete_hash':row['complete_hash'],'source_root':folder.parent.parent}
 def queue_at(run,t):
  result=0
  for q in run['queue']:
@@ -97,8 +97,10 @@ def kpi(run_id,t):
 _base_kpi = kpi
 @lru_cache(maxsize=96)
 def kpi(run_id,t):
- result=dict(_base_kpi(run_id,t));cfg=load(run_id)['config']
- baseline=next((r for r in catalog() if r['selector']=='coreset' and all(r[k]==cfg[k] for k in ('class_name','cell','speed','latency_mode','seed'))),None)
+ result=dict(_base_kpi(run_id,t));run=load(run_id);cfg=run['config']
+ # Pilot and full-study collections are distinct comparison cohorts. A newly
+ # completed study must not silently add a baseline to a pilot-only view.
+ baseline=next((r for r in catalog() if r['_path'].parent.parent==run['source_root'] and r['selector']=='coreset' and all(r[k]==cfg[k] for k in ('class_name','cell','speed','latency_mode','seed'))),None)
  if baseline:
   reference=_base_kpi(baseline['run_id'],t)
   result['delta']={k:result[k]-reference[k] if result[k] is not None and reference[k] is not None else None for k in ('throughput_per_hour','gt_quality','false_positives_per_1000')}

@@ -3,6 +3,7 @@ import {Html} from '@react-three/drei'
 import {useFrame,useThree} from '@react-three/fiber'
 import * as THREE from 'three'
 import T from '../brand/cnotta.tokens.json'
+import {stationPosition} from '../stations/core.mjs'
 import {positionAt,queueAt} from '../cnotta/replay'
 import {halls,laneZ,modelName} from './layout'
 import {indexedAt,upperBound} from '../motion/core.mjs'
@@ -11,20 +12,20 @@ import {allowed} from '../motion/registry'
 import {subscribeFrame} from '../motion/clock'
 export function laneSnapshots(replay,indexes={},time=replay.clock?.read()??replay.time){return halls.flatMap(site=>site.lanes.map((selector,index)=>{const lane=replay.catalog?.sites.find(s=>s.id===site.id)?.lanes.find(l=>l.selector===selector),timeline=replay.timelines[lane?.run?.run_id],ix=indexes[lane?.run?.run_id];return {site,index,selector,lane,timeline,active:timeline?indexedAt(timeline,ix,time):[],queue:timeline?queueAt(timeline.queue,time):null,ng:ix?upperBound(ix.inspections,time,'time'):null}}))}
 export function world(site,x,y,z){const c=Math.cos(site.rotation),s=Math.sin(site.rotation);return [site.origin[0]+c*x+s*z,y,site.origin[1]-s*x+c*z]}
-export function CampusParts({replay,focus,onSelect}){
+export function CampusParts({replay,focus,onSelect,stations}){
  const parts=useRef(),queues=useRef(),labels=useRef({}),last=useRef(''),metrics=useRef({frames:0,js_ms:[],commits:0})
  metrics.current.commits++
  const {invalidate}=useThree(),indexes=useTimelineIndexes(replay.timelines)
  const capacity=Math.max(1,Object.values(replay.timelines).reduce((n,t)=>n+t.parts.length,0)),dummy=useMemo(()=>new THREE.Object3D(),[])
  useEffect(()=>subscribeFrame(replay.clock,()=>{if(replay.clock.playing)invalidate()}),[replay.clock,invalidate])
- useEffect(()=>{last.current='';invalidate()},[indexes,focus,replay.time,replay.illustrate,invalidate])
+ useEffect(()=>{last.current='';invalidate()},[indexes,focus,replay.time,replay.illustrate,stations?.records,invalidate])
  useFrame(()=>{
   const time=replay.clock.read(),key=`${time}:${focus}:${replay.illustrate}`;if(last.current===key)return;last.current=key
   const start=performance.now(),snapshots=laneSnapshots(replay,indexes,time);let partN=0,queueN=0;const picking=[],positions=[],audit=[]
   for(const s of snapshots){audit.push({site:s.site.id,selector:s.selector,run_id:s.lane?.run?.run_id,time,active_ids:s.active.map(p=>p.part_id),queue:s.queue,ng_count:s.ng})
    if(s.site.id!==focus)continue
    const z=laneZ(s.site,s.index)
-   if(allowed('replay.parts'))for(const p of s.active){const xyz=positionAt(p,time,replay.illustrate),pos=world(s.site,xyz[0],xyz[1],z+xyz[2]*.32);dummy.position.fromArray(pos);dummy.scale.set(.25,.25,.25);dummy.rotation.set(0,s.site.rotation,0);dummy.updateMatrix();parts.current.setMatrixAt(partN,dummy.matrix);parts.current.setColorAt(partN,new THREE.Color(p.inspection_time!=null&&p.inspection_time<=time?(p.verdict==='NG'?T.ng:p.verdict==='OK'?T.ok:T.hold):T.cardboard));partN++;picking.push({part:p,timeline:s.timeline,lane:s.selector});positions.push(pos)}
+   if(allowed('replay.parts'))for(const p of s.active){const projected=stations?.records[s.lane?.run?.run_id],part=projected?.byId.get(p.part_id),mapped=part&&time>=part.trigger?stationPosition(part,time,s.site.class,projected.geometry):null,xyz=mapped?.position||positionAt(p,time,replay.illustrate),pos=world(s.site,xyz[0],xyz[1],z+xyz[2]*(mapped?1:.32));dummy.position.fromArray(pos);dummy.scale.set(...(s.site.class==='carpet'?[.09,.012,1.18]:s.site.class==='screw'?[.018,.012,.012]:[.08,.15,.08]));dummy.rotation.set(0,s.site.rotation+(mapped?.yaw||0),0);dummy.updateMatrix();parts.current.setMatrixAt(partN,dummy.matrix);parts.current.setColorAt(partN,new THREE.Color(p.inspection_time!=null&&p.inspection_time<=time?(p.verdict==='NG'?T.ng:p.verdict==='OK'?T.ok:T.hold):T.cardboard));partN++;picking.push({part:p,timeline:s.timeline,lane:s.selector});positions.push(pos)}
    if(allowed('replay.reinspection_queue'))for(let n=0;n<(s.queue||0);n++){const overflow=n>=18,j=n-18;const x=overflow?10.3+(j%20)*.28:11.3+(n%6)*.54;const yy=overflow?.23+Math.floor(j/200)*.25:.5+Math.floor(n/6)*.72;const zz=overflow?z+3.1+Math.floor((j%200)/20)*.28:z+1.9;dummy.position.fromArray(world(s.site,x,yy,zz));dummy.scale.setScalar(overflow?.23:.43);dummy.rotation.set(0,s.site.rotation,0);dummy.updateMatrix();queues.current.setMatrixAt(queueN++,dummy.matrix)}
    const label=labels.current[s.selector];if(label)label.textContent=s.timeline?`NG ${s.ng??'—'} · 대기 ${s.queue}`:s.lane?.run?'검증·로딩 중':'완료 대기'
   }

@@ -24,6 +24,7 @@ from aria.simulation.des.patrol import PatrolSupervisor
 from aria.simulation.des.maintenance import MaintenanceHarness
 from aria.simulation.des.robot import fk, tool_point, POSES, JOINTS, model_info
 from .store import ROOT
+from .station_live import LiveStationView
 
 router=APIRouter(prefix='/api/live',tags=['isolated CPU live'])
 CONFIG=ROOT/'configs/live_ops.json'
@@ -45,7 +46,7 @@ class LiveOps:
         self.service.engine=Engine(self.model(seed),self.inspect_once)
         self.service.speed='1'
         self.patrol=PatrolSupervisor(self.directory/'patrol');self.maintenance=MaintenanceHarness()
-        self.events=[];self.releases=set();self.info=model_info()
+        self.events=[];self.releases=set();self.info=model_info();self.station_view=LiveStationView()
         q=list(POSES['place']);q[0]*=self.config['motion']['ng_base_scale']
         self.info['fixtures']['ng']=tool_point(fk(q)[1])
         q=list(POSES['place']);q[0]*=self.config['motion']['hold_base_scale']
@@ -85,7 +86,7 @@ class LiveOps:
                 self.decisions[pid]=result
             except Exception as exc:self.decisions[pid]=dict(verdict='SKIPPED',reason=str(exc),mode='ccifps')
             finally:self.elapsed_inference+=time.monotonic()-begin;self.inspection_busy=False
-            self.record('live_inspection_ready',part=pid,**self.decisions[pid])
+            self.record('live_inspection_ready',part=pid,inspection_wall_ms=(time.monotonic()-begin)*1000,**self.decisions[pid])
         return copy.deepcopy(self.decisions[pid])
 
     def record(self,kind,**fields):
@@ -95,6 +96,7 @@ class LiveOps:
 
     def _observe(self,dt):
         snap=self.service.snapshot()
+        self.station_view.observe(snap,self.events)
         self.patrol.tick(snap,dt);self.maintenance.tick(self.service.engine,self.patrol,dt)
         # Inference is performed once at the existing INSPECT stage. The original
         # DES receives that same result at its unchanged completion boundary.
@@ -181,6 +183,7 @@ class LiveOps:
                 resource['robot']=part['robot'] if part else self.pose(resource.get('robot'),None)
             patrol=self.patrol.snapshot();patrol['source']='existing A* supervisor; time delta from live DES'
             snap.update(mode='live',sim=1,session=self.session,sequence=self.stream_sequence,device='cpu',class_name='bottle',selector='ccifps',patrol=patrol,live_events=copy.deepcopy(self.events[-80:]),inspection_busy=self.inspection_busy,inference_wall_seconds=self.elapsed_inference,robot_info=self.info,source='isolated existing FactoryService; not research results',assumptions=self.config)
+            snap['station']=self.station_view.snapshot(snap)
             return snap
 
 _runtime=None

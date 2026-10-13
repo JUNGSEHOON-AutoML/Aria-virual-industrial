@@ -104,3 +104,29 @@ layout:
     - 20
     unit: m
     tag: assumed
+
+inspection_stations:
+  segment_length_m:
+    value: 0.1
+    unit: m/segment
+    tag: assumed
+  segments_per_roll:
+    value: 100
+    unit: segment/roll
+    tag: assumed
+  grade_a_max_labels:
+    value: 0
+    unit: label/roll
+    tag: assumed
+  grade_b_max_labels:
+    value: 3
+    unit: label/roll
+    tag: assumed
+  ok_bin_capacity:
+    value: 30
+    unit: screw/bin
+    tag: assumed
+  transfer_seconds:
+    value: 0.5
+    unit: s
+    tag: assumed

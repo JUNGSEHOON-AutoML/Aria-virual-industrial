@@ -31,3 +31,5 @@ from .logistics import router as logistics_router
 app.include_router(logistics_router)
 from .live import router as live_router
 app.include_router(live_router)
+from .stations import router as stations_router
+app.include_router(stations_router)
