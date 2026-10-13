@@ -60,3 +60,5 @@ S3 및 L2 역할 재검증 완료: `gates/s3.json`, `gates/l2-stations.json`. �
 
 README 공개 준비: S1–S3 캠퍼스·고정 카메라·TRANSFER·CPU Live를 첫 진입점으로 재작성. 실행 명령, 데이터/번들 별도 준비, 기존 검증 시점과 실제 GPU/O1/M5 제한을 명시하고 이전 README는 Git 이력 링크로 보존. dt-cnotta 게시 준비; 원격 커밋 확인 후 푸시 완료를 보고한다. 이번 변경은 문서만이며 본 실험·실행 서버는 변경하지 않는다.
 README 문서 게이트: `gates/readme.json` 통과. 상대 링크 25개·코드 블록 균형·기존 검증 수치 대조 완료. 실행 코드 변경이 없어 백엔드 테스트를 다시 실행하지 않았다.
+
+기본 브랜치 게시 준비: dt-cnotta의 README 및 구현 32개 커밋이 origin/main의 후속 이력임을 확인했다. 최신 사용자 요청에 따라 main에도 fast-forward로 게시하며 작업 브랜치는 dt-cnotta로 유지한다. `gates/main_publish.json`은 게시 전 검사이며, 성공 여부는 push 후 원격 해시로 별도 확인한다. 실행 코드 변경·실험/서버 조작·테스트 재실행 없음.

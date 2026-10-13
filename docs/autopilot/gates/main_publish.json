@@ -1,0 +1,19 @@
+{
+  "milestone": "M6 default branch publication",
+  "phase": "preflight",
+  "passed": true,
+  "source_branch": "dt-cnotta",
+  "target_branch": "main",
+  "main_before": "0b68a3b38fbaa27c54135313490e55730cb48d16",
+  "implementation_commit": "f6de2fe5dff6ce49d9fe7856171b8f06451f3bc7",
+  "checks": {
+    "main_is_ancestor": true,
+    "commits_ahead_before_publication_log": 32,
+    "working_tree_clean_before_publication_log": true,
+    "runtime_changes": false,
+    "force_push": false,
+    "history_rewrite": false,
+    "new_test_execution": false
+  },
+  "note": "Records preflight only. Publication success must be verified from remote refs after push; local/github_main_push.json holds that receipt."
+}

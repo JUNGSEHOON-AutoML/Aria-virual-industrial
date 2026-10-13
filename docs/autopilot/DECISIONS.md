@@ -87,3 +87,5 @@
 2026-10-13 | S2 | Live 상세 카드를 독립 합성 레이어로 표시 | SwiftShader에서 정지된 WebGL이 상세 카드 일부를 가리는 현상을 실캡처로 발견·해결 | station-panel의 translateZ(0) 제거
 
 2026-10-13 | M6 README/push | 현재 dt-cnotta를 원격의 같은 이름 브랜치로 게시하고 README를 S1–S3/CPU Live 기준으로 재작성한다. 이전 README는 f8da8c9 링크로 보존 | 사용자의 GitHub push 요청, main 보존 조건 유지, 새 클론의 외부 데이터 의존성 명시 | 문서 커밋을 되돌리고 원격 브랜치는 별도 요청 때 정리
+
+2026-10-13 | M6 기본 브랜치 게시 | dt-cnotta에 게시된 최신 구현과 README를 원격 main에도 fast-forward로 반영; 작업 브랜치는 유지 | 사용자가 개발 브랜치 게시 안내 후 저장소 기본 주소의 미반영을 지적하며 push를 다시 요청함 | 필요 시 별도 revert 커밋으로 되돌리며 강제 push·이력 재작성은 하지 않음
