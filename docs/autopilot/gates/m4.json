@@ -1,0 +1,104 @@
+{
+  "milestone": "m4",
+  "pass": true,
+  "checks": {
+    "queue_nonzero_and_overflow": {
+      "pass": true,
+      "cases": [
+        {
+          "run_id": "888ddf2b7943f09e",
+          "time": 2350.880121,
+          "mesh_count": 2,
+          "rack_count": 2,
+          "posthoc": 2
+        },
+        {
+          "run_id": "8ced11f8476a3116",
+          "time": 3599.335112,
+          "mesh_count": 2564,
+          "rack_count": 2564,
+          "posthoc": 2564
+        }
+      ]
+    },
+    "kpi": {
+      "pass": true,
+      "values": [
+        {
+          "metric": "throughput_per_hour",
+          "display_raw": 480.0,
+          "API": 480,
+          "offline": 480.0,
+          "pass": true,
+          "rendered_text": "480.00"
+        },
+        {
+          "metric": "gt_quality",
+          "display_raw": 0.9874213836477987,
+          "API": 0.9874213836477987,
+          "offline": 0.9874213836477987,
+          "pass": true,
+          "rendered_text": "0.99"
+        },
+        {
+          "metric": "false_positives_per_1000",
+          "display_raw": 0.0,
+          "API": 0,
+          "offline": 0.0,
+          "pass": true,
+          "rendered_text": "0.00"
+        }
+      ],
+      "time": 1800
+    },
+    "rack_queue": {
+      "pass": true,
+      "rendered": 0,
+      "posthoc": 0
+    },
+    "panel_occlusion": {
+      "pass": true,
+      "equipment_pixels": 83678,
+      "covered_pixels": 0,
+      "ratio": 0,
+      "panels": [
+        {
+          "x": 20,
+          "y": 80,
+          "right": 414.984375,
+          "bottom": 170
+        },
+        {
+          "x": 20,
+          "y": 743,
+          "right": 375,
+          "bottom": 834
+        },
+        {
+          "x": 1160,
+          "y": 698,
+          "right": 1420,
+          "bottom": 882
+        },
+        {
+          "x": 1182,
+          "y": 82,
+          "right": 1420,
+          "bottom": 325
+        },
+        {
+          "x": 473.625,
+          "y": 822,
+          "right": 966.375,
+          "bottom": 882
+        }
+      ],
+      "method": "binary render mask of conveyors, vision booth, robot cell, cabinet, racks and diverter"
+    },
+    "console": {
+      "pass": true,
+      "errors": []
+    }
+  },
+  "at": "2026-10-13T03:05:41.045078+00:00"
+}

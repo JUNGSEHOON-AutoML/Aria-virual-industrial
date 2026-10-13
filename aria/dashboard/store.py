@@ -76,3 +76,15 @@ def kpi(run_id,t):
    if e['state']=='PROCESSING':busy+=max(0,end-max(warmup,e['time']))
   resources.append({'id':component,'state':events[-1]['state'] if events else None,'utilization':busy/(t-warmup)})
  return {'time':t,'warmup':warmup,'throughput_per_hour':metrics['throughput_per_hour'],'gt_quality':metrics['gt_quality'],'false_positives_per_1000':norm['false_positives_per_1000'],'person_hours_per_1000':norm['person_hours_per_1000'],'required_staff':norm['required_staff_rho_lt1'],'hold_ratio':metrics['hold_ratio'],'queue_count':queue_at(run,t),'resources':resources,'delta':None,'policy':'B posthoc from saved A','assumed':{'human_service_seconds':30,'human_sensitivity':1,'human_specificity':1,'servers':1}}
+
+# A baseline is comparable only with all non-model run conditions matched.
+_base_kpi = kpi
+@lru_cache(maxsize=96)
+def kpi(run_id,t):
+ result=dict(_base_kpi(run_id,t));cfg=load(run_id)['config']
+ baseline=next((r for r in catalog() if r['selector']=='coreset' and all(r[k]==cfg[k] for k in ('class_name','cell','speed','latency_mode','seed'))),None)
+ if baseline:
+  reference=_base_kpi(baseline['run_id'],t)
+  result['delta']={k:result[k]-reference[k] if result[k] is not None and reference[k] is not None else None for k in ('throughput_per_hour','gt_quality','false_positives_per_1000')}
+  result['baseline_run_id']=baseline['run_id']
+ return result

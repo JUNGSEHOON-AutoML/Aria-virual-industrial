@@ -47,6 +47,16 @@ async def main():
     return {part_id:p.part_id,selected:window.__cnotta.selected?.part_id,score:Number(document.querySelector('[data-score]')?.dataset.score),verdict:document.querySelector('[data-verdict]')?.dataset.verdict,decorations,decoration_handlers:handlers,markers:c.scene.children.flatMap(()=>[]).length,run_id:c.runId,target:c.controls.getTarget().toArray()};
    })()""")
    shot=await cmd('Page.captureScreenshot',{'format':'png'});(OUT/'m3.png').write_bytes(base64.b64decode(shot['data']))
+   report['panels']=await js("""(async()=>{const c=window.__cnotta;c.controls.setLookAt(19,20.3,21,-1,.5,1,false);c.setTime(1800);await new Promise(r=>setTimeout(r,1800));const k=window.__cnotta.kpi;return {run_id:c.runId,kpi:k,display:[...document.querySelectorAll('[data-metric]')].map(e=>({metric:e.dataset.metric,value:e.dataset.value,text:e.textContent})),rack_count:window.__cnotta.rackCount,coverage:window.__cnotta.panelCoverage()}})()""")
+   shot=await cmd('Page.captureScreenshot',{'format':'png'});(OUT/'m4.png').write_bytes(base64.b64decode(shot['data']))
+   report['queue_cases']=[]
+   for rid,t in [('888ddf2b7943f09e',2350.880121),('8ced11f8476a3116',3599.335112)]:
+    await js(f"window.__cnotta.setRun('{rid}')")
+    for _ in range(100):
+     if await js(f"window.__cnotta.timeline?.run_id === '{rid}'"):break
+     await asyncio.sleep(.3)
+    await js(f'window.__cnotta.setTime({t})');await asyncio.sleep(.6)
+    report['queue_cases'].append(await js('({run_id:window.__cnotta.runId,time:window.__cnotta.time,mesh_count:window.__cnotta.scene.getObjectByName("queue-boxes").count,rack_count:window.__cnotta.rackCount})'))
    report['errors']=[e for e in events if e.get('method')=='Runtime.exceptionThrown']
    report['http_errors']=[e['params']['response']['url'] for e in events if e.get('method')=='Network.responseReceived' and e['params']['response']['status']>=400]
  finally:

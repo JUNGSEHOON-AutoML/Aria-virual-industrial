@@ -37,3 +37,10 @@ def test_queue_matches_posthoc(run_id):
  for t in [0,300,600,1800,3599]:
   expected=sum(p['reinspection_queue_enter'] is not None and p['reinspection_queue_enter']<=t and (p['reinspection_start'] is None or p['reinspection_start']>t) for p in parts)
   assert store.queue_at(run,t)==expected
+
+def test_baseline_requires_matching_conditions():
+ result=store.kpi('6e17ce8447426140',1800)
+ assert result['delta'] is None # No coreset robot screw 0.5 pilot exists.
+ result=store.kpi('8dd8e446a095de96',1800)
+ assert result['baseline_run_id']=='8dd8e446a095de96'
+ assert all(v==0 for v in result['delta'].values())
